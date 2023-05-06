@@ -1,0 +1,37 @@
+//! Copyright : see license.txt
+//!
+//! \brief Discrete periodical Geometries
+//
+
+#ifndef _VTKFILEGRID_IXX
+#define _VTKFILEGRID_IXX 1
+
+#include "../VTKinout/VTKStream.hxx"
+
+#include "../MeropeNamespace.hxx"
+
+
+namespace merope {
+
+template<typename T>
+void VTKRead::readMat(std::vector<T>& tab) {
+    seekg(pMId);
+    if (isFor) {
+        for (typename std::vector<T>::iterator i = tab.begin(); i != tab.end();
+            ++i) {
+            *this >> *i;
+        }
+    }
+    else {
+        for (typename std::vector<T>::iterator i = tab.begin(); i != tab.end();
+            ++i) {
+            read((char*)&(*i), sizeof(T));
+            vtkByteSwap(*i);
+        }
+    }
+}
+
+} // namespace merope
+
+
+#endif // _VTKFILEGRID_IXX
