@@ -97,15 +97,15 @@ For impatient reader searching for  :
 ### Phase-field representation
 
 The microstructure is conceptualized by means of phase fields $\mathcal{M}:=\{\rho_i\}$ on the periodic cuboid.
-Namely, fields $`\rho_i(x)`$ represent the concentration for phase $`i`$ at point $`x`$ (by default, $`i=0`$ corresponds to the matrix phase).
+Namely, fields $\rho_i(x)$ represent the concentration for phase $i$ at point $x$ (by default, $i=0$ corresponds to the matrix phase).
 
-It is always assumed that $`\sum_i \rho_i(x)=1`$.
-In case this is not satisfied, the functions $`\rho_i`$ are corrected by the following procedure :
-- if $`\sum_i \rho_i(x)=C<1`$ then we replace $`\rho_0 \rightsquigarrow \rho_0 +(1-C)`$ (favoring the matrix phase),
-- if $`\sum_i \rho_i(x)=C>1`$ then we renormalize $`\rho_i \rightsquigarrow \rho_i/C`$.
+It is always assumed that $\sum_i \rho_i(x)=1$.
+In case this is not satisfied, the functions $\rho_i$ are corrected by the following procedure :
+- if $\sum_i \rho_i(x)=C<1$ then we replace $\rho_0 \rightsquigarrow \rho_0 +(1-C)$ (favoring the matrix phase),
+- if $\sum_i \rho_i(x)=C>1$ then we renormalize $\rho_i \rightsquigarrow \rho_i/C$.
 
-For turning this representation into a .vtk file amenable to computation with `tmfft` or `amitex_fftp`, we basically evaluate the functions $`\rho_i`$, by means of various strategies.
-In our perspective, combining microstructures amounts to defining rules to combine phase fields representations $`\mathcal{M}_0, \mathcal{M}_1, \cdots `$ into another phase field representation $`\mathcal{M}`$.
+For turning this representation into a .vtk file amenable to computation with `tmfft` or `amitex_fftp`, we basically evaluate the functions $\rho_i$, by means of various strategies.
+In our perspective, combining microstructures amounts to defining rules to combine phase fields representations $\mathcal{M}_0, \mathcal{M}_1, \cdots $ into another phase field representation $\mathcal{M}$.
 
 ### Specific microstructures
 
