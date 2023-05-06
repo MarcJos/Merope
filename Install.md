@@ -46,7 +46,9 @@ Moreover, for running, Mérope can be used in combination with the following app
     `bash Installation/Pre-install.sh`   
     Please follow the instructions displayed in your terminal.
     - pybind is automatically downloaded from [here](https://github.com/pybind/pybind11)
-    - voro++ should be manually dowloaded from [here](https://math.lbl.gov/voro++/download/) and its root should be put in module/voro-plus-plus
+    - voro++ should be manually dowloaded from [here](https://math.lbl.gov/voro++/download/) and its root should be put in modules/voro-plus-plus  
+    Execute once more  
+    `bash Installation/Pre-install.sh`   
 - install :  
 `bash Installation/Procedure_install_Merope.sh`
 
