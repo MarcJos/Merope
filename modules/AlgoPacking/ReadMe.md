@@ -75,7 +75,7 @@ intersection).
 ## Maximal volume fraction
 
 For monodisperse spheres (with minimal distance 0), each algorithm has a maximal volume fraction, which is the following :  
-$`
+$
 	\begin{array}{|c |c| c|}
 		\hline
 		& 2D & 3D
@@ -88,7 +88,7 @@ $`
 		\\
 		\hline
 	\end{array}
-`$
+$
 
 If no high volume fraction is desired, the RSA is preferrable, for the random ensemble of the WP algorithm depends on implementation parameters, and produces more heterogeneous configurations.
 
@@ -130,7 +130,7 @@ may lead to very high numbers of spheres even with moderate ratio between the ra
 - For the *RSA*, see the files [`tests/algoRSA.py`](tests/algoRSA.py) and [`tests/algoRSA_phases.py`](tests/algoRSA_phases.py) for exemples of use.
 - For the *WP*, see the file [`tests/algoWP.py`](tests/algoWP.py) for an exemple of use.
 - For the *boolean*, you may use as well these files, replacing `AlgoWP` or `AlgoRSA` prefix as a constructor.
-- See the file [`Interface_python/Interface.cxx`](master/Interface_python/Interface.cxx) for all the possibles functionalies (not documented, but points to the C++ code).
+- See the file [`Interface_python/Interface.cxx`](Interface_python/Interface.cxx) for all the possibles functionalies (not documented, but points to the C++ code).
 
 The manual of the python commands may be found at [`doc/Python_manual.md`](doc/Python_manual.md)
 
@@ -143,7 +143,7 @@ The manual of the python commands may be found at [`doc/Python_manual.md`](doc/P
 
 # Additional documentation
 
-A more precise manual of python commands may be found at [`doc/Python_manual.md`](AlgoPacking/doc/Python_manual.md)
+A more precise manual of python commands may be found at [`doc/Python_manual.md`](doc/Python_manual.md)
 
 A doxygen developper documentation for the C++ algorithm can be obtained by `doxygen Doxydoc` inside the folded `src`.
 
