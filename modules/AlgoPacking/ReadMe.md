@@ -13,6 +13,7 @@ See [Install.md](Install.md)
 
 
 <img src="doc/Pictures/Tore_3D.PNG" alt="drawing" width="250"/><img src="doc/Pictures/Sphe_3D.PNG" alt="drawing" width="250"/><img src="doc/Pictures/Sphere_3D.png" alt="drawing" width="250"/>
+
 <img src="doc/Pictures/Cylinder_3D.png" alt="drawing" width="250"/><img src="doc/Pictures/Tore_2D.PNG" alt="drawing" width="250"/>
 
 # Description of the algorithms
