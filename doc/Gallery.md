@@ -17,6 +17,7 @@ See [overlapping_coated_inclusions.py](/tests/microstructures/coated_inclusions/
 ### Inclusions of 2 types, with composite voxels.
 
 <img src="/doc/Pictures/Voxels_composites.png" alt="drawing" width="500"/>
+
 See [Inclusions_Voxellisation.py](/tests/microstructures/inclusions/Inclusions_Voxellisation.py).
 
 ### Inclusions with layers
