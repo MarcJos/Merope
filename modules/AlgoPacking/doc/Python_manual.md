@@ -57,25 +57,25 @@ An *enum class* represent the type of the algorithm : `TypeAlgo`. Possibilities 
 ### Exclusion distance between spheres
 
 `algo.setExclusionDistance(d_0)`  
-For an exclusion distance $`d_0`$, the algorithms *guarantee* that : the minimal distance between two sphere is larger than $`d_0`$. It is possible to ask for negative exclusion distance. The result will make sense as prescribing a maximum interpenetration distance.
+For an exclusion distance $d_0$, the algorithms *guarantee* that : the minimal distance between two sphere is larger than $d_0$. It is possible to ask for negative exclusion distance. The result will make sense as prescribing a maximum interpenetration distance.
 
-**Default:** $`d_0=0`$.
+**Default:** $d_0=0$.
 
-:warning: If $`d_0 < - r/2`$ (notice the **minus** sign!), where $`r`$ is the minimal radius of the spheres, this will lead to undefined behaviors.
+:warning: If $d_0 < - r/2$ (notice the **minus** sign!), where $r$ is the minimal radius of the spheres, this will lead to undefined behaviors.
 
 ### Exclusion distance between the spheres and the boundary
 
 `algo.setBoundaryExclusionDistance(d_1)`
-For an exclusion distance $`d_1`$, the algorithms *guarantee* that : if the surrounding domain is not the torus, the minimal distance between any sphere and the boundary is larger than $`d_1`$.
+For an exclusion distance $d_1$, the algorithms *guarantee* that : if the surrounding domain is not the torus, the minimal distance between any sphere and the boundary is larger than $d_1$.
 
-**Default:** $`d_1=0.5*d_0`$, where $`d_0`$ is the exclusion distance between two spheres.
+**Default:** $d_1=0.5*d_0$, where $d_0$ is the exclusion distance between two spheres.
 
 
 ## Set the surrounding shape
 
 `algo.setBigShape(L, shape)`  
 Parameters:
-- `L` is a 3 or 2-dimensional vector of double. It encodes the size of the surrounding box (a cuboid with origin $`0`$) in each direction.
+- `L` is a 3 or 2-dimensional vector of double. It encodes the size of the surrounding box (a cuboid with origin $0$) in each direction.
 - `shape` is a string, that should be chosen among `Tore` (torus, a cuboid periodic in every direction), `Cube` (actually, a cuboid, for each length may be fixed), `Sphere`, `Cylinder` (only 3D).
 
 For the Sphere and the Cylinder, the dimensions of the surrounding shape are infered from `L` as follows :
@@ -92,7 +92,7 @@ The latter can be set by two ways:
 - by giving it a fixed sequence of radii, 
 - by requesting a list of radii associated with volume fractions.
 
-**Default:** giving the phase is *optional*. By default, it is assumed to be equal to $`0`$.
+**Default:** giving the phase is *optional*. By default, it is assumed to be equal to $0$.
 
 ### Via a fixed sequence of radii
 
@@ -135,7 +135,7 @@ For example :
 
 (int) `seed` is a random seed.
 
-`method` $`\in \{1,2\}`$ chooses implementation details of the RSA or WP algorithm (AlgoBool is unsensitive to this parameter).
+`method` $\in \{1,2\}$ chooses implementation details of the RSA or WP algorithm (AlgoBool is unsensitive to this parameter).
 This parameter is exclusively for developpers.
 For RSA, the final results are identical (but one is slower), but not for the WP algorithm.
 In general, `method=1` is a good choice.
@@ -147,7 +147,7 @@ In general, `method=1` is a good choice.
 ## The spheres
 
 The classes `Sphere_3D` and `Sphere_2D` have 3 properties:
-- `center` : a point in $`\mathbb{R}^3`$,
+- `center` : a point in $\mathbb{R}^3$,
 - `radius` : a positive scalar parameter,
 - `phase` : a nonnegative integer.
 
