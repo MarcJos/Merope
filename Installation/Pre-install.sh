@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# Script for downloading the prerequisite
+#
+# Should be executed in the root of the directory
+#
+# marc.josien@cea.fr
+#
+###############################################################################################
+
+source Installation/Install_environment.sh
+cd modules
+
+## get  pybind11
+cd merope_core/Interface_python
+rm -rf pybind11
+git clone $MEROPE_PYBIND_REPO pybind11
+cd ../../
+cp -r merope_core/Interface_python/pybind11 AlgoPacking/Interface_python/
+
+if [[ "${HOSTNAME}" == *"pleiades"* ]]
+then
+    ### get voro++
+    rm -rf $VOROPP_NAME_DIR
+    git clone $MEROPE_VOROPP_REPO $VOROPP_NAME_DIR
+    ## put CMake install inside voro++
+else
+    for i in {1..5}
+    do
+        echo "------------------------------------------------------------------------------"
+    done
+    echo " WARNING : "
+    echo " Please dowload the sources of voro++ and put them into the folder : modules/"${VOROPP_NAME_DIR}
+    echo " The sources of voro++ can be found here : "$MEROPE_VOROPP_REPO 
+    echo "then re-execute Pre-install.sh"
+    for i in {1..5}
+    do
+        echo "------------------------------------------------------------------------------"
+    done
+fi
+rm voro-plus-plus/CMakeLists.txt
+rm voro-plus-plus/src/CMakeLists.txt
+cp cmake/for_voropp/voropp_1.cmake voro-plus-plus/CMakeLists.txt
+cp cmake/for_voropp/voropp_2.cmake voro-plus-plus/src/CMakeLists.txt
+
