@@ -69,6 +69,10 @@ If the installation fails, it is likely that some of the system prerequisite are
 - apt -yqq update && apt -yqq install liblapack-dev
 - apt -yqq update && apt -yqq install libopenmpi-dev
 - apt -yqq update && apt -yqq install openmpi-bin
+- apt -yqq update && apt -yqq install libxrender1
+- apt -yqq update && apt -yqq install python3-pip
+- pip3 install vtk
+- pip3 install numpy
 - apt -yqq update && apt -yqq install doxygen
 
 
