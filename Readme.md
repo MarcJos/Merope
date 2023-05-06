@@ -105,7 +105,7 @@ In case this is not satisfied, the functions $\rho_i$ are corrected by the follo
 - if $\sum_i \rho_i(x)=C>1$ then we renormalize $\rho_i \rightsquigarrow \rho_i/C$.
 
 For turning this representation into a .vtk file amenable to computation with `tmfft` or `amitex_fftp`, we basically evaluate the functions $\rho_i$, by means of various strategies.
-In our perspective, combining microstructures amounts to defining rules to combine phase fields representations $\mathcal{M}_0, \mathcal{M}_1, \cdots $ into another phase field representation $\mathcal{M}$.
+In our perspective, combining microstructures amounts to defining rules to combine phase fields representations $\mathcal{M}_0, \mathcal{M}_1, ...$ into another phase field representation $\mathcal{M}$.
 
 ### Specific microstructures
 
