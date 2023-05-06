@@ -1,9 +1,5 @@
 Sac_de_billes is a stand-alone module of Mérope dedicated to placing and packing spheres inside a simple shape.
 
-# Table of contents
-
-[[_TOC_]]
-
 # Quick start
 
 See [Install.md](Install.md)
