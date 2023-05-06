@@ -1,5 +1,3 @@
-[[_TOC_]]
-
 **Remark** : All the Python commands correspond 1 to 1 to the C++ commands. Consider reading the doxygen documentation for more details.
 
 **Remark** : All the classes and functions can be subscripted `_3D` or `_2D` depending on the dimension of the considered space.
