@@ -50,6 +50,8 @@ Moreover, for running, Mérope can be used in combination with the following app
 - install :  
 `bash Installation/Procedure_install_Merope.sh`
 
+See closed issues for various problems that may arise.
+
 
 ## Use
 - source the Mérope environment :  
