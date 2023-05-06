@@ -169,7 +169,7 @@ Here, $c_i$ and $r_i$ can be seen as the center and radius of a sphere.
 ```math
 		a_i = \texttt{aspRatio}[i] \left( \prod_{j=1}^d \texttt{aspRatio}[j] \right)^{-\frac{1}{d}}.
 ```
-	Thus, the criterion for $x$ being in tessel $X$ of center $c$ and radius $R$ is minimizing
+   Thus, the criterion for $x$ being in tessel $X$ of center $c$ and radius $R$ is minimizing
 ```math
 		|\hat{x} - \hat{c}|^2 - R^2 = \sum_{j=1}^d \frac{|x[i] - c[i]|^2}{a[i]^2} - R^2.
 ```
