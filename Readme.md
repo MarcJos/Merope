@@ -119,7 +119,7 @@ There are two main families of microstructures implemented in Mérope (see [Micr
 - the second one is based on real scalar **fields**. These may be deterministic or stochastic (anamorphosed gaussian fields).  
 
 Microstructures simulated by Merope share the following features :
-- They are **2D** as well as **3D** (By changing the postfix \texttt{\_3D} by 		\texttt{\_2D} in each Python class, the user may change the dimension).
+- They are **2D** as well as **3D** (By changing the postfix `_3D` by 		`_2D` in each Python class, the user may change the dimension).
 - They are **periodic** in all directions, and defined inside a periodic cuboidal cell (=*torus* for mathematicians).
 - They can be combined **recursively** (as long as it makes sense) by means of Boolean operations. This allows for a large variety of microstructures.  
 
