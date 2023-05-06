@@ -1,0 +1,127 @@
+CONTRAT DE LICENCE D'UTILISATION A DES FINS DE RECHERCHES DU LOGICIEL MEROPE
+
+L’UTILISATION DU LOGICIEL MEROPE EST SOUMISE AUX TERMES ET CONDITIONS SUIVANTES. SI VOUS N’ÊTES PAS D’ACCORD AVEC CES TERMES ET CONDITIONS, NE CHARGEZ PAS LE LOGICIEL. L’ATTENTION DE L’UTILISATEUR NON-PROFESSIONNEL EST ATTIREE PAR LE FAIT QUE LE LOGICIEL ET LES RISQUES INHERENTS A SON UTILISATION, SA MODIFICATION ET/OU SON DEVELOPPEMENT ET SA REPRODUCTION NE SONT COUVERTS PAR AUCUNE GARANTIE DE LA PART DU CEA ET QUE SA SPECIFICITE LE REND COMPLEXE A MANIPULER. C’EST LA RAISON POUR LAQUELLE IL EST TRES VIVEMENT CONSEILLE D’AVOIR DES CONNAISSANCES INFORMATIQUES APPROFONDIES ET CONSOLIDEES AVANT DE CHARGER ET/OU UTILISER LE LOGICIEL.
+
+LE COMMISSARIAT A L’ENERGIE ATOMIQUE ET AUX ENERGIES ALTERNATIVES, établissement public de recherche à caractère scientifique, technique et industriel, dont le siège est situé Bâtiment le PONANT D - 25 rue Leblanc à Paris 15ème, immatriculé au Registre du Commerce et des Sociétés de Paris sous le numéro R.C.S. PARIS B 775 685 019 ci-après désigné par « le CEA », concède, par le présent contrat, le droit d’utiliser le logiciel MEROPE dans les conditions ci-après définies.
+Cette licence est concédée à la personne physique ou morale – ci-après désigné par le « Licencié » - qui a chargé le Logiciel.
+Il est précisé que les droits d'usage de EDF et de FRAMATOME sur le Logiciel sont définis dans l'accord de coopération en matière de recherche et développement signé entre EDF, FRAMATOME et CEA.
+
+ARTICLE 1.	DEFINITIONS 
+Dans le présent contrat, les termes suivants, lorsqu’ils seront écrits avec une lettre capitale, auront la signification suivante :
+-	« Contrat »: comprend le présent contrat, ses annexes et ses éventuels avenants.
+-	« Logiciel » : comprend, d'une part, le code source du programme général de génération de microstructures dénommé «Mérope » (aussi écrit MEROPE) et, dans leur version en vigueur au jour de l’acceptation des termes de la licence et d’autre part la documentation et les exemples de jeux de données.
+
+ARTICLE 2.	OBJET DU CONTRAT
+Le Contrat a pour objet de concéder au Licencié une licence d'utilisation gratuite, sur un poste de travail ou sur un serveur si ses droits d’accès sont limités à une équipe de recherche ou d’enseignement, à des fins de recherche, non exclusive, non cessible, pour le monde entier et pendant toute la durée des droits de propriété intellectuelle protégeant le logiciel selon les dispositions de l’article 15 du Contrat.
+
+ARTICLE 3.	ACCEPTATION 
+L’acceptation par le Licencié des termes de la Licence est réputée acquise à compter du chargement du Logiciel par le Licencié.
+Le Licencié reconnaît expressément que le Contrat prévaut sur les conditions générales d’achat du Licencié lesquelles sont inopposables quelle qu'en soit la forme.
+
+ARTICLE 4.	ETENDUE DE LA LICENCE
+ 4.1 Le droit d’utilisation concédé à l’article 2 au Licencié, qui l’accepte, comprend le droit d'utiliser le Logiciel pour ses besoins propres de recherche, dans les conditions précisées ci- après.
+4.2 Le Licencié est autorisé à utiliser le Logiciel pour ses besoins internes de recherche et dans le cadre d’accords de collaboration avec un tiers à des fins de recherche uniquement, cette autorisation étant soumise aux conditions cumulatives suivantes :
+-	la convention conclue avec le tiers doit expressément exclure toute possibilité d’exploitation commerciale directe ou indirecte des résultats de cette collaboration ;
+-	le Licencié s'interdit expressément de céder, transmettre ou communiquer à ce tiers, même à titre gratuit, le droit d'utilisation qui lui est concédé par le Contrat ;
+-	le Licencié doit prendre les mesures nécessaires pour interdire l’accès au Logiciel aux salariés de ce tiers, sauf si ce dernier a lui-même conclu un contrat de Licence avec le CEA.
+4.3 Le Licencié s’engage à ne pas utiliser tout ou partie du Logiciel pour tout usage à des fins publicitaires ou commerciales, le terme « usage » incluant notamment (i) toute divulgation, fourniture, cession, transfert, vente, location, distribution et/ou mise à disposition de tout ou partie du Logiciel à un tiers, (ii) toute fourniture d’informations et/ou d’études à un tiers  obtenue du fait de l’utilisation du Logiciel et (iii) toute  utilisation du Logiciel dans des consultations ou des accords de collaboration avec une société commerciale.
+4.4 Toute utilisation du Logiciel non conforme à celle décrite dans le présent contrat est proscrite.
+4.5 Le Licencié ne pourra procéder à aucune reproduction partielle ou totale du Logiciel, quelle qu'en soit la forme:
+-	à l'exception de la reproduction strictement nécessitée par le chargement, l'affichage, l'exécution, la transmission ou le stockage du Logiciel aux seules fins de son utilisation,
+-	ou pour réaliser une copie de sauvegarde et une seule, en prenant alors toutes les précautions nécessaires pour en éviter toute diffusion
+-	ou, dans le cas où le Licencié userait de la faculté prévue à l’article 3.7 , à l’exception des reproductions strictement nécessitées par la réalisation par le Licencié de développements du Logiciel
+4.6 Le Licencié peut proposer au CEA un ou plusieurs de ses développements pour leur intégration dans une future version du logiciel MEROPE. Dans ce cas, le Licencié s’engage à céder, à titre exclusif et gratuit, au CEA l’intégralité de ses droits de propriété intellectuelle sur les développements intégrés dans le cadre d’un contrat à conclure à cet effet entre les Parties.
+4.7 Tout type d'exploitation non explicitement autorisé par le Contrat nécessite l'accord préalable et écrit du CEA et est soumise à la signature d'un accord de licence spécifique définissant notamment les conditions financières de cette exploitation.
+4.8 Le Licencié s'interdit expressément de céder, transmettre ou communiquer à un tiers, même à titre gratuit, le droit d'utilisation qui lui est concédé par le Contrat.
+
+ARTICLE 5.	INSTALLATION DU LOGICIEL
+5.1 Le Licencié fait son affaire du chargement et de l’installation du Logiciel à ses seuls frais, risques et périls. Il sera responsable des contraintes d'environnement et d'installation nécessaires au bon fonctionnement du Logiciel, telles que décrites en annexe 2 du Contrat.
+5.2 Le Licencié n’est autorisé à installer le Logiciel que sur un poste de travail ou sur un serveur si ses droits d’accès sont limités à des équipes utilisant le Logiciel à des fins de recherche ou d’enseignement. Toute installation sur un poste de travail supplémentaire, ou toute extension des droits d’accès au serveur, doit faire l’objet d’une demande écrite et préalable au CEA.
+
+ARTICLE 6.	RETOUR D’EXPERIENCE
+En contrepartie des droits qui lui sont concédés au titre des présentes, le Licencié s'engage à faire ses meilleurs efforts pour informer, gracieusement et dans un délai raisonnable, le CEA de son expérience résultant de l'utilisation du Logiciel, notamment sans y être limité, toutes les erreurs ou défauts détectés, les incohérences entre le programme et la documentation associée, les restrictions aux applications du Logiciel qui n'auraient pas été mentionnées dans la documentation associée et les développements et améliorations qui pourraient être apportés au Logiciel.
+
+ARTICLE 7.	MISE EN CONFORMITÉ DU LICENCIÉ AVEC LES AUTORITÉS DE LEUR PAYS D’ORIGINE
+Dans la mesure où le Logiciel est importé par le Licencié, il incombe à celui-ci de se rapprocher des autorités nationales compétentes afin de garantir le respect de toute réglementation fiscale (notamment en matière de TVA) et douanière (autorisation d’importation par exemple) susceptible de s’appliquer à l’importation du Logiciel. Les frais occasionnés par ces démarches resteront à la charge du Licencié.
+
+ARTICLE 8.	GARANTIE SUR LE LOGICIEL
+Le Licencié reconnaît que le Logiciel est un logiciel expérimental et que l’état actuel des connaissances scientifiques et techniques au moment de sa mise en circulation ne permet pas d’en tester et d’en vérifier toutes les utilisations ni de détecter l’existence d’éventuels défauts.
+Le Licencié reconnaît que le Logiciel est fourni "en l'état" par le CEA, sans aucune garantie de quelque sorte que ce soit, expresse ou tacite, et notamment sans aucune garantie sur sa valeur commerciale, son caractère sécurisé, innovant ou pertinent.
+Le CEA ne garantit pas que le Logiciel est exempt d'erreur, qu’il fonctionnera sans interruption, qu’il sera compatible avec l’équipement du Licencié et sa configuration logicielle ni qu’il remplira les besoins du Licencié.
+
+ARTICLE 9.	SERVICES ASSOCIÉS
+Le Contrat n’inclut aucun service de maintenance et/ou d’assistance sur le Logiciel. Toute prestation fera l’objet d’une demande de la part du Licencié que le CEA sera libre d’accepter ou de refuser, compte tenu de ses moyens humains et financiers au moment de la demande. En cas d’acceptation, le CEA adressera au Licencié un devis qui, s’il est accepté par le Licencié, donnera lieu à la signature d’un acte séparé.
+Le Contrat inclut le droit de télécharger les mises à jour des Sources publiées par le CEA sur le site internet :  https://github.com/MarcJos/Merope
+
+ARTICLE 10.	RESPONSABILITE
+10.1 Si le CEA n’exécutait pas tout ou partie des obligations mises à sa charge par le Contrat, le Licencié aurait la faculté, sous réserve de prouver la faute du CEA, de solliciter la réparation du préjudice direct qu’il subirait et dont il apporterait la preuve.
+10.2	La responsabilité du CEA ne saurait être engagée en raison (i) des dommages dus à l’inexécution, totale ou partielle, de ses obligations par le Licencié et (ii) des dommages indirects, même si le CEA a eu connaissance de la possibilité de survenance de tels dommages. Les Parties conviennent expressément que tout préjudice financier ou commercial (tel que notamment perte de données, perte de bénéfices, perte d’exploitation, perte de clientèle ou de commandes, manque à gagner, trouble commercial quelconque) ou toute action dirigée contre le Licencié par un tiers, constitue un dommage indirect et n’ouvre pas droit à réparation.
+
+ARTICLE 11.	DROITS DE PROPRIETE INTELLECTUELLE
+11.1	Les Parties reconnaissent que le Logiciel reste la propriété exclusive du CEA qui se réserve donc tous droits de propriété à ce titre. La licence objet du Contrat n’entraîne au profit du Licencié le transfert d’aucun droit de propriété intellectuelle sur le Logiciel.
+11.2	Le Licencié s’engage expressément :
+-	à ne pas supprimer ou modifier de quelque manière que ce soit les mentions de propriété intellectuelle ou autres légendes de propriété apposées sur le Logiciel ; et
+-	à reproduire à l’identique lesdites mentions de propriété intellectuelle ou autres légendes de propriété sur la copie de sauvegarde du Logiciel.
+11.3	De même aucun droit sur une marque, un nom commercial ou tout autre signe distinctif n’est conféré au Licencié par le Contrat.
+11.4	Le Licencié s’engage à ne pas porter atteinte, directement ou indirectement, aux droits de propriété intellectuelle du CEA et à prendre à l’égard de son personnel toutes les mesures nécessaires pour assurer le respect desdits droits de propriété intellectuelle du CEA.
+
+ARTICLE 12.	CONTREFACON
+12.1 Tout acte d’utilisation du Logiciel dépassant l’étendue des droits concédés par le CEA sera constitutif de contrefaçon et justifiera l’engagement de poursuites de la part du CEA à l’encontre du Licencié.
+12.2 Si des poursuites en contrefaçon de brevets, logiciels, ou de tout autre doit de propriété intellectuelle de tiers étaient exercées contre le Licencié en raison de l'utilisation du Logiciel, le Licencié supporterait seul les frais du litige, ainsi que les éventuelles condamnations qui pourraient être prononcées contre lui et ne saurait, en aucun cas, réclamer au CEA une quelconque indemnité de ce chef. A la demande du licencié, le CEA s'engage cependant à lui apporter son concours technique et son assistance juridique, étant entendu que les frais en découlant seront à la charge du Licencié.
+12.3 Tout acte de contrefaçon ou de concurrence déloyale qui serait le fait de tiers et dont le Licencié aurait connaissance devra être notifié au CEA qui fera son affaire des poursuites à mener s'il l'estime opportun.
+
+ARTICLE 13.	PUBLICATIONS 
+Dans toutes les publications du Licencié relatives aux études issues du Logiciel, le Licencié est tenu de préciser que ces études ont été réalisées grâce au Logiciel et de mentionner expressément (i) le nom du CEA comme titulaire des droits de propriété intellectuelle sur le logiciel ainsi que (ii) le site internet « https://github.com/MarcJos/Merope».
+Le CEA se réserve le droit de faire figurer le nom du Licencié au titre de ses références.
+
+ARTICLE 14.	DUREE
+Sous réserve des dispositions de l'article 15 du Contrat, le Contrat produira ses effets pendant toute la durée des droits de propriété intellectuelle protégeant le Logiciel à compter de son acceptation conformément à l’article 3.
+
+ARTICLE 15.	RESILIATION
+15 .1 En cas de manquement par l'une des Parties à ses obligations contractuelles, l'autre Partie pourra lui adresser par lettre recommandée avec avis de réception une notification mentionnant ledit manquement et enjoignant à la Partie défaillante de le réparer dans le délai indiqué dans cette même notification. Si la Partie défaillante ne remédie pas au manquement dans le délai précité, le Contrat sera rompu de plein droit.
+Une telle résiliation ne libère pas la Partie défaillante des obligations qu’elle a contractées vis à vis de l’autre Partie à la date de la résiliation. De même, la résiliation ne pourra en aucun cas être considérée comme une renonciation, par l’autre Partie, à la réparation des dommages ou préjudices qu’elle aura subis du fait de la rupture du Contrat, que ceux-ci soient antérieurs ou postérieurs à la résiliation.
+15.2 En cas de cessation des relations contractuelles pour quelque cause que ce soit, le Licencié s'oblige à :
+-	cesser immédiatement d'utiliser le Logiciel,
+-	restituer au CEA l'ensemble des éléments constitutifs du Logiciel, conformément au Contrat, ainsi qu'à détruire ou à restituer au CEA toutes les copies ou reproductions qu'il aurait pu effectuer sous quelque forme que ce soit.
+Le Licencié devra en outre adresser au CEA une attestation officielle selon laquelle il a bien procédé à cette obligation et identifiant tous les éléments détruits ainsi que la date correspondante dans un délai d'un (1) mois à compter du terme du Contrat.
+15.3 Le Licencié indemnisera le CEA pour tout préjudice résultant du non-respect de l'une de ses obligations au titre du présent article.
+15.4 Sauf si le mandataire liquidateur s'oppose à la cessation du présent contrat, celui-ci pourra en outre être résilié de plein droit par le CEA en cas de procédure de redressement ou de liquidation judiciaire du Licencié.
+
+ARTICLE 16.	LANGUE 
+Le présent Contrat est rédigé et établi en français et en anglais. En cas de contradiction entre ces deux versions ou de difficultés d’interprétation, la version française prévaudra.
+
+ARTICLE 17.	DISPOSITIONS DIVERSES
+Le présent Contrat est rédigé et établi en français et en anglais. En cas de contradiction entre ces deux versions ou de difficultés d’interprétation, la version française prévaudra
+
+ARTICLE 18.	DISPOSITIONS DIVERSES
+18.1 Les Parties ne pourront être tenues pour responsables d’un manquement à l’une de leurs obligations qui résulterait de circonstances indépendantes de leur volonté, telles que grèves, évènements, atmosphériques exceptionnels, faits de guerre, terrorisme, émeutes, incendies, cataclysmes naturels, dysfonctionnement ou interruption des moyens de communication ou télécommunication, y compris les réseaux.
+18.2 Le fait, par l’une ou l’autre des Parties, d’omettre en une ou plusieurs occasions de se prévaloir d’une ou plusieurs dispositions du Contrat, ne pourra en aucun cas impliquer renonciation par la Partie intéressée à s’en prévaloir ultérieurement.
+18.3 En aucun cas, le Contrat et/ou les droits qui y sont présents ne pourront être transférés ou concédés par le Licencié.
+18.4 Le Contrat annule et remplace toute convention antérieure, écrite ou orale, entre les Parties sur le même objet et il constitue l’accord entier entre les Parties sur cet objet. En particulier, aucune condition générale figurant dans les documents envoyés ou remis par le Licencié ne pourra s’intégrer au Contrat, notamment les conditions d’achat du Licencié. Aucune addition ou modification aux termes du Contrat n’aura d’effet à l’égard des Parties à moins d’être faite par écrit et signée par leurs représentants dûment habilités.
+18.5 Dans l’hypothèse où une ou plusieurs des dispositions du Contrat s’avèrerait contraire à une loi ou à un texte applicable, existants ou futurs, cette loi ou ce texte prévaudrait, et les Parties feraient les amendements nécessaires pour se conformer à cette loi ou à ce texte. Toutes les autres dispositions resteront en vigueur.
+
+ARTICLE 19.	REGLEMENT DES LITIGES
+19.1 Le Contrat est régi par la loi française.
+19.2 Les Parties conviennent de tenter de régler à l’amiable les différends ou litiges qui viendraient à se produire par suite ou à l’occasion du Contrat. A défaut d’accord amiable dans un délai de deux (2) mois à compter de leur survenance, les différends ou litiges seront portés par la Partie la plus diligente devant les Tribunaux compétents de Paris.
+
+ANNEXE 1 DESCRIPTION DU LOGICIEL (2022-12)
+Mérope est une application dédiée à la construction et à la discrétisation de microstructures de matériaux hétérogènes aléatoires. En outre, elle permet de mener des simulations multi-physiques sur de tels matériaux, en se focalisant sur la simulation en « Volume élémentaire représentatif ».
+-	Mérope est majoritairement implémentée en C++ et Python3.
+-	Mérope utilise les bibliothèques suivantes :
+	-	Voro++  https://math.lbl.gov/voro++/
+	-	Pybind11, https://github.com/pybind/pybind11
+	-	oneMKL, https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html#gs.jssgof
+	-	Lapack https://netlib.org/lapack/
+
+
+
+
+
+
+
+
+
+
+
+
+
