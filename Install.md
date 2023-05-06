@@ -46,11 +46,29 @@ Moreover, for running, Mérope can be used in combination with the following app
     `bash Installation/Pre-install.sh`   
     Please follow the instructions displayed in your terminal.
     - pybind is automatically downloaded from [here](https://github.com/pybind/pybind11)
-    - voro++ should be manually dowloaded from [here](https://math.lbl.gov/voro++/download/)
+    - voro++ should be manually dowloaded from [here](https://math.lbl.gov/voro++/download/) and its root should be put in module/voro-plus-plus
 - install :  
 `bash Installation/Procedure_install_Merope.sh`
 
 See closed issues for various problems that may arise.
+
+If the installation fails, it is likely that some of the system prerequisite are not installed yet. You may consider type one of the following commands :
+- apt install -yqq libmkl-full-dev
+- apt -yqq update && apt -yqq install pkg-config
+- apt -yqq update && apt -yqq install libomp-dev
+- apt -yqq update && apt -yqq install python3-dev
+- apt -yqq update && apt -yqq install build-essential
+- apt -yqq update && apt -yqq install curl
+- apt -yqq update && apt -yqq install cmake
+- apt -yqq update && apt -yqq install gcc
+- apt -yqq update && apt -yqq install g++
+- apt -yqq update && apt -yqq install git
+- apt -yqq update && apt -yqq install libblas-dev
+- apt -yqq update && apt -yqq install liblapack-dev
+- apt -yqq update && apt -yqq install libopenmpi-dev
+- apt -yqq update && apt -yqq install openmpi-bin
+- apt -yqq update && apt -yqq install doxygen
+
 
 
 ## Use
