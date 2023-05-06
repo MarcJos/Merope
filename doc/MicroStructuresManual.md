@@ -162,17 +162,17 @@ Here, $c_i$ and $r_i$ can be seen as the center and radius of a sphere.
 - `computeTessels()` : build the tessellation (for later purpose).
 - `setAspRatio([aspRatio1, aspRatio2, aspRatio3])` : set a uniform aspect ratio on the whole periodic cuboid (in practice, the tessellation is built on a dilatated periodic cuboid and then squeezed back to the initial periodic cuboid). Same convention as *Neper*.
   Mathematically speaking, it boils down to the pre-process transform :
-  ```math
+```math
 		x \mapsto \hat{x} \qquad \text{for} \qquad \hat{x}_i = \frac{1}{a_i} x_i,
-  ```
+```
   where the aspect ratio $a_i$ is normalized such that
-	```math
+```math
 		a_i = \texttt{aspRatio}[i] \left( \prod_{j=1}^d \texttt{aspRatio}[j] \right)^{-\frac{1}{d}}.
-	```
+```
 	Thus, the criterion for $x$ being in tessel $X$ of center $c$ and radius $R$ is minimizing
-	```math
+```math
 		|\hat{x} - \hat{c}|^2 - R^2 = \sum_{j=1}^d \frac{|x[i] - c[i]|^2}{a[i]^2} - R^2.
-	```
+```
 
 **Remark** : Due to the use of `voro++`, more functionalities might be available upon request (orientation or area of the surfaces between crystals, Delaunay graph...).
 
