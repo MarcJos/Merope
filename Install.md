@@ -18,8 +18,9 @@ Mérope needs :
 - C++ 17,
 - cmake 3.16+,
 - the MKL library,
-- gcc 10.2+,
-- openmp.
+- gcc 10.2+ with g++,
+- openmp,
+- git.
 
 For compiling, you should have access to repositories containing `pybind11` and `voro++`, and dowload them. Please modify if necessary [Install_environment.sh](Installation/Install_environment.sh).
 
