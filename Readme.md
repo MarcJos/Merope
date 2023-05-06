@@ -4,7 +4,6 @@
 <img src="doc/Pictures/MultiImages.png" alt="drawing" width="1000"/>
 </div>
 
-[[_TOC_]]
 
 :warning: The use of Mérope is subjected to a licence, only available [in French](Licence.txt).
 
@@ -97,7 +96,7 @@ For impatient reader searching for  :
 
 ### Phase-field representation
 
-The microstructure is conceptualized by means of phase fields $`\mathcal{M}:=\{\rho_i\}`$ on the periodic cuboid.
+The microstructure is conceptualized by means of phase fields $\mathcal{M}:=\{\rho_i\}$ on the periodic cuboid.
 Namely, fields $`\rho_i(x)`$ represent the concentration for phase $`i`$ at point $`x`$ (by default, $`i=0`$ corresponds to the matrix phase).
 
 It is always assumed that $`\sum_i \rho_i(x)=1`$.
