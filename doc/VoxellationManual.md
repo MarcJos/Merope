@@ -1,4 +1,3 @@
-[[_TOC_]]
 
 # Principles of the voxelation
 
@@ -48,10 +47,10 @@ The part inside a rectangle above is invisible to the `Python` user.
 
 In some situations (in particular, for high contrasts), composite voxels can save a lot of computational resources, see \[Schneider, 2021\].
 We **highly recommend** to the user to proceed with a small (empirical) study of the discretization error before making use of large RVEs.
-[Here is an example.](studies/Voxels_composites)
+[Here is an example.](/studies/Voxels_composites)
 
 Here is an example in which we consider lead spheres coated with gold inside water, and we search for the effective conductivity. The contrast is quite high ; indeed, the three materials have the following conductivities :
-$`\lambda_{\rm gold} = 317 Wm^{-1}K^{-1}`$, $`\lambda_{\rm lead} = 35.3Wm^{-1}K^{-1}`$, $`\lambda_{\rm water} = 0.606Wm^{-1}K^{-1}`$.
+$\lambda_{\rm gold} = 317 Wm^{-1}K^{-1}$, $\lambda_{\rm lead} = 35.3Wm^{-1}K^{-1}$, $\lambda_{\rm water} = 0.606Wm^{-1}K^{-1}$.
 
 We study the convergence of the effective conductivity computed by the RVE method, by only varying the discretization parameters.
 The RVE under concern is fixed and quite small (with only 19 spheres).
@@ -60,8 +59,8 @@ When letting the discretization step go to 0, we observe :
 - there is a high discrepancy in the results between the 5 methods, but no significant difference in terms of computation time,
 - the `Reuss` method converges faster than the other ones. For 256 x 256 x 256 voxels (which is not small, since there are 1.6 1e7 voxels), the `Reuss` methods has a relative error of order 1%, the `Smallest` method has a relative error of order 10%, and the 3 other methods suffer from a relative error larger than 100%.
 
-<img src="studies/Voxels_composites/Relative_error.png" alt="drawing" width="500"/>
-<img src="doc/Pictures/Plomb_or.png" alt="drawing" width="400"/>
+<img src="/studies/Voxels_composites/Relative_error.png" alt="drawing" width="500"/>
+<img src="/doc/Pictures/Plomb_or.png" alt="drawing" width="400"/>
 
 
 # Python methods

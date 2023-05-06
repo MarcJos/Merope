@@ -1,4 +1,3 @@
-[[_TOC_]]
 
 # Simplified Interface for building geometric microstructures (obsolete)
 

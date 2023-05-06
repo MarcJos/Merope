@@ -1,4 +1,3 @@
-[[_TOC_]]
 
 
 # Developper's guidelines

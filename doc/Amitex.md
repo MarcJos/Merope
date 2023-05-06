@@ -1,4 +1,3 @@
-[[_TOC_]]
 
 
 # AMITEX-FFTP
@@ -37,7 +36,7 @@ end
 
 Basically, `Mérope` generates a file `Zone.vtk` that contains a voxellation of the RVA into the zones (=phases).
 For *thermics*, it simultaneously generates a coefficient fiels for thermal conductivity. The latter is transferred to `AMITEX-FFTP` through a file `Coeffs.txt` (the **name** is important), which contains the thermal coefficient of each phase.
-When using [composite voxels](doc/VoxellationManual.md), each zone in `Zone.vtk` basically correspond to a certain percentage of the actual phases. (For example, it may contain zone = 0 for 0% phase A and 100% phase B, zone = 1 for 1% phase A and 99% phase B, etc.).
+When using [composite voxels](/doc/VoxellationManual.md), each zone in `Zone.vtk` basically correspond to a certain percentage of the actual phases. (For example, it may contain zone = 0 for 0% phase A and 100% phase B, zone = 1 for 1% phase A and 99% phase B, etc.).
 
 # Python classes
 
