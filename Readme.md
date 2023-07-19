@@ -5,7 +5,7 @@
 </div>
 
 
-:warning: The use of Mérope is subjected to a licence, only available [in French](Licence.txt).
+:warning: The use of Mérope is subjected to a licence, available [in French](Licence_FR.txt) and [in English](Licence.txt).
 
 :warning: Unfortunately, some hyperlinks will not work properly for people without access to the internal resources of the CEA. We are sorry for this inconvenience.
 
