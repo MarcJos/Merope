@@ -88,7 +88,7 @@ protected:
 };
 
 template<unsigned short DIM>
-class VoroMesh_Periodic: public VoroMesh_NotPeriodic<DIM> {
+class VoroMesh_Periodic : public VoroMesh_NotPeriodic<DIM> {
 public:
     //! to identify points copied by periodicity
     std::map<Identifier, PerPoint>          dictPerPoint;
@@ -196,8 +196,8 @@ template<class DICT_LEAF, class DICT_ROOT>
 void restrictTo_RootLeaves_withoutRootConnection(DICT_LEAF& dictThings, const DICT_ROOT& dictRoots);
 
 
-} // meshStructure
-} // mesh
+} // namespace meshStructure
+} // namespace mesh
 } // namespace merope
 
 #include "../Mesh/MeshStructure.ixx"

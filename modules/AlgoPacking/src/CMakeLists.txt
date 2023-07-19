@@ -1,6 +1,6 @@
 find_package(OpenMP)
 
-add_library(RSAalgolib AlgoPacking.cxx Path.cxx MultiDArrayObject.cxx Ellipse.cxx)
+add_library(RSAalgolib AlgoPacking.cxx Path.cxx MultiDArrayObject.cxx Ellipse.cxx BasicGeometricOperations.cxx Area.cxx)
 target_link_libraries(RSAalgolib PUBLIC OpenMP::OpenMP_CXX)
 target_compile_options(RSAalgolib PRIVATE -fPIC)
 install(TARGETS RSAalgolib DESTINATION lib)

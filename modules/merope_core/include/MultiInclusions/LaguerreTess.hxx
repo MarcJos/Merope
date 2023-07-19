@@ -21,14 +21,14 @@
 namespace merope {
 
 template<unsigned short DIM>
-class LaguerreTess: public  PolyInclusions<DIM> {
+class LaguerreTess : public  PolyInclusions<DIM> {
     // class implementing Laguerre tessellation, with possibility to impose aspect ratio
 public:
     //! \param L_ : the torus dimensions
     //! \param seeds_  : a list of seeds parametrizing the tessellation (=centers of tessels + weight + phase Id)
     LaguerreTess(array<double, DIM> L_, vector<Sphere<DIM>> seeds_);
     //! destructor
-    virtual ~LaguerreTess() {};
+    virtual ~LaguerreTess() {}
     //! compute the tessels appealing to voro++
     void computeTessels();
 

@@ -28,13 +28,13 @@ namespace vox {
 
 //! data structure for Voxellation
 template<unsigned short DIM>
-class Voxellation_data: public  PreVoxellation<DIM> {
+class Voxellation_data : public  PreVoxellation<DIM> {
 public:
     //! main constructor
     Voxellation_data(const Structure<DIM>&);
     Voxellation_data(const FieldStructure<DIM>& fieldStructure);
     //! destructor
-    virtual ~Voxellation_data() {};
+    virtual ~Voxellation_data() {}
     //! forbid copy
     Voxellation_data(const Voxellation_data& other) = delete;
     Voxellation_data& operator=(const Voxellation_data& other) = delete;
@@ -54,10 +54,11 @@ public:
     void setDiscretization(array<size_t, DIM> nbNodes_, array<size_t, DIM> nMin_, array<size_t, DIM> nMax_);
 
     // output
-        //! print the output with composite voxels
-        //! \param fileVTK : output file for the phase table (\see Grid)
-        //! \param fileCoeff : output storing the coefficient associated with each phase (compatible with AMITEX format)
+    //! print the output with composite voxels
+    //! \param fileVTK : output file for the phase table (\see Grid)
+    //! \param fileCoeff : output storing the coefficient associated with each phase (compatible with AMITEX format)
     void printFile(string fileVTK, string fileCoeff) const;
+
 protected:
     //! homogenization rule for building voxellization
     homogenization::Rule homogRule;
@@ -87,14 +88,14 @@ private:
 
 //! class for turning geometrical structures to voxellation
 template<unsigned short DIM>
-class Voxellation final: public Voxellation_data<DIM> {
+class Voxellation final : public Voxellation_data<DIM> {
 public:
     //! main constructor
-    Voxellation(const Structure<DIM>& structure_):Voxellation_data<DIM>(structure_) {};
-    Voxellation(const MultiInclusions<DIM>& mIncl):Voxellation_data<DIM>(Structure<DIM>(mIncl)) {};
-    Voxellation(const FieldStructure<DIM>& fieldStructure_): Voxellation_data<DIM>(fieldStructure_) {};
+    Voxellation(const Structure<DIM>& structure_) :Voxellation_data<DIM>(structure_) {}
+    Voxellation(const MultiInclusions<DIM>& mIncl) :Voxellation_data<DIM>(Structure<DIM>(mIncl)) {}
+    Voxellation(const FieldStructure<DIM>& fieldStructure_) : Voxellation_data<DIM>(fieldStructure_) {}
     //! destructor
-    virtual ~Voxellation() {};
+    virtual ~Voxellation() {}
     //! forbid copy
     Voxellation(const Voxellation& other) = delete;
     Voxellation& operator=(const Voxellation& other) = delete;
@@ -113,6 +114,11 @@ public:
     //! builds the array of phase concentrations
     template<VoxelRule VOXEL_RULE>
     vox::CartesianGrid<DIM, OutputFormat<VOXEL_RULE>> getPhaseFracField();
+    // output
+    //! print the output with composite voxels
+    //! \param fileVTK : output file for the phase table (\see Grid)
+    //! \param fileCoeff : output storing the coefficient associated with each phase (compatible with AMITEX format)
+    void printFieldFile(string fileVTK);
     //! computes a field
     GridField<DIM> getField();
     //! compute a phaseGrid

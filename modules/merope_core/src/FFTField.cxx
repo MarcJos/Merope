@@ -26,7 +26,7 @@ unsigned short activePlanesNb_g = 0;
 // FFT field mother class
 //----------------------------------------------
 
-FFTField::FFTField(const Grid& grid, unsigned flags_i):
+FFTField::FFTField(const Grid& grid, unsigned flags_i) :
   isSpatial(true), f(NULL), F(NULL), forwardPlan(NULL), backwardPlan(NULL), flags(flags_i) {
 
   d = grid.getDim();  // Grid dimensions
@@ -59,8 +59,7 @@ void FFTField::alloc(const bool IP) {
   if (IP) {
     f = (rfloat*)F;
     nzb = 2 * (nz / 2 + 1);
-  }
-  else {
+  } else {
     f = (rfloat*)(FFTW_PREF(malloc)(sizeof(rfloat) * fSize * nv));
     nzb = nz;
   }
@@ -183,8 +182,7 @@ void FFTField::backward() {
 
 void FFTField::print(std::ostream& os) const {
   if (isSpatial) {
-  }
-  else {
+  } else {
     if (F) {
       int ncx = n[0] / 2 + 1;
       int ncz = n[2] / 2 + 1;
@@ -370,8 +368,7 @@ void FFTField::minus(const FFTField& ff1, const FFTField& ff2) {
     if (!ff2.isSpatial) throw(logic_error("FFTField::minus: ff1 Spatial and ff2 Spectral"));
     throw(logic_error("FFTField::minus: Spatial difference not yet implemanted"));
     setSpatialField();
-  }
-  else {
+  } else {
     // Spectral representation
     if (ff2.isSpatial) throw(logic_error("FFTField::minus: ff1 Spectral and ff2 Spatial"));
     setSpectralField();
@@ -396,8 +393,7 @@ void FFTField::plus(const FFTField& ff1, const FFTField& ff2) {
     if (!ff2.isSpatial) throw(logic_error("FFTField::minus: ff1 Spatial and ff2 Spectral"));
     throw(logic_error("FFTField::minus: Spatial difference not yet implemanted"));
     setSpatialField();
-  }
-  else {
+  } else {
     // Spectral representation
     if (ff2.isSpatial) throw(logic_error("FFTField::minus: ff1 Spectral and ff2 Spatial"));
     setSpectralField();
@@ -433,8 +429,7 @@ long double FFTField::compare(const FFTField& ff2) const {
       }
     }
     return sum / fSize;
-  }
-  else {
+  } else {
     // Spectral representation
     if (ff2.isSpatial) throw(logic_error("FFTField::Compare: ff1 Spectral and ff2 Spatial"));
 
@@ -442,8 +437,7 @@ long double FFTField::compare(const FFTField& ff2) const {
     unsigned short ncz2;
     if (nz % 2) {
       ncz2 = ncz;
-    }
-    else {
+    } else {
       ncz2 = ncz - 1;
     }
 
@@ -459,8 +453,7 @@ long double FFTField::compare(const FFTField& ff2) const {
         }
         if ((k != ncz2) && k) {
           sum += 2 * s;
-        }
-        else {
+        } else {
           sum += s;
         }
       }
@@ -493,8 +486,7 @@ inline long double FFTField::SpectralScalarProduct(const FFTField& ff2) const {
   unsigned short ncz2;
   if (nz % 2) {
     ncz2 = ncz;
-  }
-  else {
+  } else {
     ncz2 = ncz - 1;
   }
   long double sum = 0;
@@ -515,8 +507,7 @@ inline long double FFTField::SpectralScalarProduct(const FFTField& ff2) const {
         }
         if ((k != ncz2) && k) {
           sum += 2 * s;
-        }
-        else {
+        } else {
           sum += s;
         }
       }
@@ -531,8 +522,7 @@ long double FFTField::scalarProduct(const FFTField& ff2) const {
     // Spatial representation
     if (!ff2.isSpatial) throw(logic_error("FFTField::scalarProduct: ff1 Spatial and ff2 Spectral"));
     return SpatialScalarProduct(ff2);
-  }
-  else {
+  } else {
     // Spectral representation
     if (ff2.isSpatial) throw(logic_error("FFTField::scalarProduct: ff1 Spectral and ff2 Spatial"));
     return SpectralScalarProduct(ff2);
@@ -544,8 +534,7 @@ long double FFTField::norm2() const {
   if (isSpatial) {
     // Spatial representation
     return SpatialScalarProduct(*this);
-  }
-  else {
+  } else {
     // Spectral representation
     return SpectralScalarProduct(*this);
   }

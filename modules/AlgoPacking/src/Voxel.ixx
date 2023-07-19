@@ -11,7 +11,7 @@ using namespace std;
 
 template<unsigned short DIM>
 algoRSA_aux::Voxel<DIM>::Voxel(const DiscPoint<DIM>& discreteCoordinates_,
-    double length_, MotherGrid<DIM>* motherGrid_):
+    double length_, MotherGrid<DIM>* motherGrid_) :
     discreteCoordinates(discreteCoordinates_), length(length_), covered(
         false), motherGrid(motherGrid_), mother(nullptr) {}
 
@@ -34,16 +34,7 @@ void algoRSA_aux::Voxel<DIM>::updateCovered(const Sphere<DIM>& sphere,
 
 template<unsigned short DIM>
 Point<DIM> algoRSA_aux::Voxel<DIM>::corner(int indice) const {
-    if constexpr (DIM == 3) {
-        return (corner(Path_auxi::TABCORNER3D[indice]));
-    }
-    else if constexpr (DIM == 2) {
-        return (corner(Path_auxi::TABCORNER2D[indice]));
-    }
-    else {
-        throw invalid_argument(
-            "algoRSA_aux::Voxel<DIM>::corner. Incorrect DIM");
-    }
+    return (corner(path::TabCorner<DIM>::get().getTab()[indice]));
 }
 
 template<unsigned short DIM>
@@ -82,11 +73,9 @@ void algoRSA_aux::Voxel<DIM>::subdivide(
     if (not subdivision.isEmpty()) {
         if constexpr (NUM_METHOD == 1) {
             subdivision.checkCoveredVoxel_1();
-        }
-        else if constexpr (NUM_METHOD == 2) {
+        } else if constexpr (NUM_METHOD == 2) {
             subdivision.checkCoveredVoxel_2();
-        }
-        else {
+        } else {
             throw invalid_argument(__PRETTY_FUNCTION__);
         }
     }
@@ -105,8 +94,7 @@ bool algoRSA_aux::Voxel<DIM>::isOutside(AmbiantSpace::BigShape<DIM>* bigShape,
             }
             answer = answer and not bigShape->isInside(point, minRadius);
         }
-    }
-    else if constexpr (DIM == 2) {
+    } else if constexpr (DIM == 2) {
         for (auto i : getIndices<2, 2>()) {
             for (size_t j = 0; j < DIM; j++) {
                 point[j] = (discreteCoordinates[j] + i[j]) * length;
@@ -151,7 +139,7 @@ Point<DIM> algoRSA_aux::Voxel<DIM>::position() const {
 template<unsigned short DIM>
 algoRSA_aux::MotherVoxel<DIM>::MotherVoxel(
     const DiscPoint<DIM>& discreteCoordinates_, double length_,
-    MotherGrid<DIM>* motherGrid_):
+    MotherGrid<DIM>* motherGrid_) :
     algoRSA_aux::Voxel<DIM>(discreteCoordinates_, length_, motherGrid_), spheresInside(
         { }), spheresRelativePosition({ }), isClose2Boundary(false) {}
 
@@ -172,20 +160,18 @@ inline bool algoRSA_aux::MotherVoxel<DIM>::isItClose2Boundary(
                     p[j] = (this->discreteCoordinates[j] + 3 * i[j]
                         - 2 * (1 - i[j])) * this->length;
                 }
-        answer = answer or not (bigShape->isInside(p, 0)); // tests if the corner of the big cube is inside the shape
+                answer = answer or not (bigShape->isInside(p, 0)); // tests if the corner of the big cube is inside the shape
             });
-    }
-    else if constexpr (DIM == 2) {
+    } else if constexpr (DIM == 2) {
         loop(2, 2,
             [&](const array<size_t, 2u>& i) {
                 for (size_t j = 0; j < DIM; j++) {
                     p[j] = (this->discreteCoordinates[j] + 3 * i[j]
                         - 2 * (1 - i[j])) * this->length;
                 }
-        answer = answer or not (bigShape->isInside(p, 0)); // tests if the corner of the big cube is inside the shape
+                answer = answer or not (bigShape->isInside(p, 0)); // tests if the corner of the big cube is inside the shape
             });
-    }
-    else {
+    } else {
         throw invalid_argument(__PRETTY_FUNCTION__);
     }
     return answer;
@@ -206,24 +192,22 @@ void algoRSA_aux::VoxelSubdivision<DIM>::initialize() {
                     newVoxel.discreteCoordinates[j] = 2
                         * fatherVoxel->discreteCoordinates[j] + i[j];
                 }
-        tabNewVoxels[compteur] = newVoxel;
-        tabUnCovered[compteur] = true;
-        compteur++;
+                tabNewVoxels[compteur] = newVoxel;
+                tabUnCovered[compteur] = true;
+                compteur++;
             });
-    }
-    else if constexpr (DIM == 2) {
+    } else if constexpr (DIM == 2) {
         loop<0, 2, 0, 2>(
             [&](const array<long, 2u>& i) {
                 for (size_t j = 0; j < DIM; j++) {
                     newVoxel.discreteCoordinates[j] = 2
                         * fatherVoxel->discreteCoordinates[j] + i[j];
                 }
-        tabNewVoxels[compteur] = newVoxel;
-        tabUnCovered[compteur] = true;
-        compteur++;
+                tabNewVoxels[compteur] = newVoxel;
+                tabUnCovered[compteur] = true;
+                compteur++;
             });
-    }
-    else {
+    } else {
         throw invalid_argument(
             "VoxelSubdivision<DIM>::initialize. DIM not 2 or 3.");
     }
@@ -277,8 +261,7 @@ template<unsigned short DIM>
 void algoRSA_aux::VoxelSubdivision<DIM>::checkCoveredVoxel_2() {
     if (not fatherVoxel->mother->isClose2Boundary) {
         testSubVoxels<5>();
-    }
-    else {
+    } else {
         testSubVoxels<7>();
     }
 }
@@ -350,21 +333,17 @@ bool algoRSA_aux::VoxelSubdivision<DIM>::testSphere(const Sphere<DIM>& sphere,
         if constexpr (NUM_METHOD == 1) {
             return checkSphere(j, sphere,
                 Path::get().pathFor27Corners[relativePosition]);
-        }
-        else if constexpr (NUM_METHOD == 2) {
+        } else if constexpr (NUM_METHOD == 2) {
             if constexpr (NB_NGHB == 5) {
                 return (checkSphere(j, sphere,
                     Path::get().pathForCorners[relativePosition]));
-            }
-            else {
+            } else {
                 return (checkSphere(j, sphere, Path::get().pathForCorners[0]));
             }
         }
-    }
-    else if constexpr (DIM == 2) { //\fixme not optimized for 2D.
-        return checkSphere(j, sphere, Path_auxi::get().TABCORNER<DIM>());
-    }
-    else {
+    } else if constexpr (DIM == 2) { //\fixme not optimized for 2D.
+        return checkSphere(j, sphere, path::TabCorner<DIM>::get().getTab());
+    } else {
         throw invalid_argument(
             "VoxelSubdivision<DIM>::testSubVoxels. Incorrect DIM");
     }

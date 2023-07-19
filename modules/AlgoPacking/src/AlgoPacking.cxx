@@ -24,7 +24,7 @@ AlgoRSA2D::AlgoRSA2D(Point<2> L, vector<array<double, 2> > desiredRPhi_,
 
 AlgoRSA3D::AlgoRSA3D(Point<3> L, vector<array<double, 2> > desiredRPhi_,
     double exclusionDistance_, unsigned seed, unsigned short method,
-    string nameShape_): AlgoRSA3D(L, desiredRPhi_, exclusionDistance_, seed, method, AmbiantSpace::readShape(nameShape_)) {}
+    string nameShape_) : AlgoRSA3D(L, desiredRPhi_, exclusionDistance_, seed, method, AmbiantSpace::readShape(nameShape_)) {}
 
 
 AlgoRSA3D::AlgoRSA3D(Point<3> L, vector<array<double, 2> > desiredRPhi_,

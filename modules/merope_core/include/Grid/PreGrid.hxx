@@ -33,15 +33,15 @@ template<unsigned short DIM>
 class With_dx {
 public:
     //! constructor
-    With_dx(array<double, DIM> dx_): dx{ dx_ }, inverse_dx{}, halfDiagVoxel{ 0. } {
+    With_dx(array<double, DIM> dx_) : dx{ dx_ }, inverse_dx{}, halfDiagVoxel{ 0. } {
         setDx(dx);
     }
     //! getter
     const array<double, DIM>& getDx() const { return dx; }
     //! getter
-    const array<double, DIM>& getInverseDx() const { return inverse_dx; };
+    const array<double, DIM>& getInverseDx() const { return inverse_dx; }
     //! getter
-    double getHalfDiagVoxel() const { return halfDiagVoxel; };
+    double getHalfDiagVoxel() const { return halfDiagVoxel; }
 
 private:
     //! discretization step
@@ -59,9 +59,9 @@ protected:
 
 template<unsigned short DIM>
 //! Minimal knowledge for a cartesian grid
-class PreGrid: public InsideTorus<DIM>, public ArrayDimensions<DIM>, public With_dx<DIM> {
+class PreGrid : public InsideTorus<DIM>, public ArrayDimensions<DIM>, public With_dx<DIM> {
 public:
-    PreGrid(array<size_t, DIM> nbNodes_, array<double, DIM> dx_):
+    PreGrid(array<size_t, DIM> nbNodes_, array<double, DIM> dx_) :
         InsideTorus<DIM>(get_L_from<DIM>(nbNodes_, dx_)), ArrayDimensions<DIM>(nbNodes_), With_dx<DIM>(dx_) {}
     //! setter
     void set_nbNodes_L(const array<size_t, DIM>& nbNodes_, const array<double, DIM>& L_);
@@ -70,7 +70,7 @@ private:
 };
 
 template<unsigned short DIM>
-class PreSubGrid: public InsideTorus<DIM>, public SubArrayDimensions<DIM>, public With_dx<DIM> {
+class PreSubGrid : public InsideTorus<DIM>, public SubArrayDimensions<DIM>, public With_dx<DIM> {
     //! the subgrid extracts a grid nMin<= ijk < nMax from the grid 0 <= ijk < nbNodes
 public:
     PreSubGrid(array<size_t, DIM> nbNodes_, array<double, DIM> dx_);

@@ -6,11 +6,9 @@
 
 #include <stdexcept>
 #include "FFTW3/NumericTypes.h"
-#include "Parallelism/OpenmpWrapper.hxx"
-
 #include <iostream>
 
-
+#include "Parallelism/OpenmpWrapper.hxx"
 #include "MeropeNamespace.hxx"
 
 
@@ -62,9 +60,9 @@ void set_num_threads(unsigned short n) {
     if (not FFTW_PREF(init_threads)()) {
         throw logic_error(" Init problem from multi-threaded implementation of FFTW");
     }
-    FFTW_PREF(plan_with_nthreads)((int)n);
+    FFTW_PREF(plan_with_nthreads)(static_cast<int>(n));
 #endif
-    }
+}
 
 } // namespace localFFT
 } // namespace merope

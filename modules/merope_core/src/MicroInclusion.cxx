@@ -21,8 +21,7 @@ size_t smallShape::auxi_MicroInclusions::getIndexPhaseGraphical(size_t phaseInde
     }
     if (phaseIndex == 0) {
         return nbOfLayers - 1;
-    }
-    else {
+    } else {
         return phaseIndex - 1;
     }
 }
@@ -32,8 +31,7 @@ vector<smallShape::LayerInstructions> smallShape::auxi_layerInstructions::buildI
     vector<double> width) {
     if (identifier.size() == 0) {
         return vector<LayerInstructions> {};
-    }
-    else if (width.size() == 0) {
+    } else if (width.size() == 0) {
         return buildInstructionVector(identifier, phase, vector<double>(identifier.size(), 0.));
     }
     if (identifier.size() != phase.size() or identifier.size() != width.size()) {

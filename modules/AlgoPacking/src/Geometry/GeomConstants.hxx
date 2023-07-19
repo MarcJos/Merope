@@ -19,6 +19,7 @@ namespace geomTools {
 //! \brief geometrical functions
 //! for comparing and absorbing errors in float operations
 constexpr double EPSILON = 1e-6;
+constexpr double EPSILON_S = 1e-10;
 } // namespace geomTools
 } // namespace sac_de_billes
 

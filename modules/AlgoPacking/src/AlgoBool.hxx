@@ -31,7 +31,7 @@ public:
         delete placedSpheres;
     }
     //! \return the type of the algorithm
-    algoSpheres::TypeAlgo getTypeAlgo() const { return algoSpheres::TypeAlgo::BOOL; };
+    algoSpheres::TypeAlgo getTypeAlgo() const { return algoSpheres::TypeAlgo::BOOL; }
 
 private:
     //! radius generator

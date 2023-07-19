@@ -17,7 +17,7 @@ namespace gaussianField {
 // Default constructor of a Covariance Function
 // r: Range
 // s: Sill
-CovIso::CovIso(const double r_i, const double s_i):
+CovIso::CovIso(const double r_i, const double s_i) :
     r(r_i), s(s_i) {}
 
 // Default constructor of a Covariance Function
@@ -44,7 +44,7 @@ double CovIso::cov(const double hx, const double hy, const double hz) const {
 // Default constructor of the exponential covariance
 // r: Range
 // s: Sill
-CovExpo::CovExpo(const double r_i, const double s_i):
+CovExpo::CovExpo(const double r_i, const double s_i) :
     CovIso(r_i, s_i) {}
 
 // Isotrope covariance function
@@ -57,7 +57,7 @@ inline double CovExpo::covIso(const double h) const {
 // Default constructor of the spherical covariance
 // r: Range
 // s: Sill
-CovSpherical::CovSpherical(const double r_i, const double s_i):
+CovSpherical::CovSpherical(const double r_i, const double s_i) :
     CovIso(r_i, s_i) {}
 
 // Isotrope covariance function
@@ -71,7 +71,7 @@ inline double CovSpherical::covIso(const double h) const {
 // Default constructor of the spherical covariance
 // r: Range
 // s: Sill
-CovGaussian::CovGaussian(const double r_i, const double s_i):
+CovGaussian::CovGaussian(const double r_i, const double s_i) :
     CovIso(r_i, s_i) {}
 
 // Isotrope covariance function

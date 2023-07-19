@@ -51,7 +51,7 @@ _OutputIterator extract_list(_InputIterator1 __first1, _InputIterator1 __last1,
 //! generic function for converting a vector to a string
 //! \param f : output flux
 template<class VECTOR>
-inline void writeVectorToString(const VECTOR& vect, std::ostream& f);
+inline void writeVectorToString(const VECTOR& vect, std::ostream& f, std::string separator = ",");
 
 //! erase from the container if the predicate is true
 template<class MAP, typename PREDICATE>

@@ -35,7 +35,7 @@ double homog(const vector<double>& fracVol, const vector<double>& coeff);
 //! chooses between the rules. Not compile-time.
 std::function<double(const vector<double>&, const vector<double>&)> getHomogRule(Rule rule);
 
-} // homogenization
+} // namespace homogenization
 } // namespace merope
 
 

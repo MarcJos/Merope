@@ -21,8 +21,7 @@ void writeLongLine(const vector<string>& l, ostream& fout) {
             fout << lp << endl;
             lp = "";
             ls = i;
-        }
-        else {
+        } else {
             lp += i;
             ls = "";
         }

@@ -31,7 +31,7 @@ private:
 };
 
 //! Positive step Probability distribution
-class StepDis: public RV {
+class StepDis : public RV {
     std::vector<double> xi; //!< Interval limits
     std::vector<double> Fi; //!< Cumulative distribution function
 public:
@@ -58,8 +58,8 @@ public:
     //! \param x Value
     double inverseF(double x) const;
     //! get
-    double getMin() const { return xi[0]; };
-    double getMax() const { return xi[xi.size() - 1]; };
+    double getMin() const { return xi[0]; }
+    double getMax() const { return xi[xi.size() - 1]; }
 private:
     //! Read from file
     //! \param nom File name
@@ -89,7 +89,7 @@ public:
 };
 
 //! Truncated Gaussian
-class TGauss: public GaussRV {
+class TGauss : public GaussRV {
     double l; //!< Threshhold
     double A, Fl; //!< Norm
 public:
@@ -110,7 +110,7 @@ private:
 };
 
 //! Lognormal Random Variable
-class LogNorm: public GaussRV {
+class LogNorm : public GaussRV {
 public:
     //! Default constructor of a Lognormal random variable
     //! \param m Mean
@@ -126,7 +126,7 @@ public:
 };
 
 //! Sum of Elementary Random Variables
-class SofERV: public RV, public std::vector<GaussRV*> {
+class SofERV : public RV, public std::vector<GaussRV*> {
     mutable StepDis sd; //!< Step wise approximation
 public:
     //! Destructor

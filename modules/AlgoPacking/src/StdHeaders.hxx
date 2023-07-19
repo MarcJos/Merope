@@ -5,6 +5,10 @@
 #ifndef ALGOPACKING_SRC_STDHEADERS_HXX_
 #define ALGOPACKING_SRC_STDHEADERS_HXX_
 
+
+#include <omp.h>
+#include<parallel/algorithm>
+
 #include <string>
 #include <cstring>
 #include <sstream>
@@ -39,8 +43,6 @@
 
 #include <chrono>
 
-#include <omp.h>
-#include<parallel/algorithm>
 
 #include <random>
 

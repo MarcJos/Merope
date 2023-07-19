@@ -15,7 +15,7 @@
 namespace merope {
 
 //! VTK file managment
-class VTKstream: public std::ofstream {
+class VTKstream : public std::ofstream {
 private:
         bool modeIsSet;   //!< first call of setCELL or setPOINT set the mode
         bool modeIsCELL;  //!< writing mode is CELL_DATA or POINT_DATA
@@ -57,6 +57,13 @@ public:
         //! \param data Data to write
         template<typename DATA>
         void write(DATA data);
+
+        //! @brief : write vector data
+        //! @param vectorData : vector of data
+        //! @param n : vector containing number of voxels in each 3 dimensions
+        template<class VECTOR_DATA, class ARRAY_DIM>
+        void writeVector(const VECTOR_DATA& vectorData, ARRAY_DIM n);
+
 private:
         //! Binary VTK header
         //! \param comment optionnal comment

@@ -22,7 +22,7 @@ std::function<PhaseType(PhaseType, PhaseType)> auxiMicroStructure::replace_by(
             }
         }
         return ph1;
-    };
+        };
     return result;
 }
 

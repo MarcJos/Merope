@@ -39,7 +39,7 @@ struct SingleCell;
 
 template<unsigned short DIM>
 //! Interface for exposing some functionalities of Voro++
-class VoroInterface: protected InsideTorus<DIM> {
+class VoroInterface : protected InsideTorus<DIM> {
     static_assert(DIM == 2 or DIM == 3);
 public:
     //! main constructor
@@ -161,7 +161,7 @@ int findTessel(const Point<3>& pt, voro::container_poly* voropp_container);
 //! \return the list of neighbors of a cell
 //! \param cell : a voro++ cell
 vector<long> getNeighbors(voro::voronoicell_neighbor* cell);
-}
+} // namespace voroInterface_aux
 
 //! for each sphere, get the closest neighbors
 template<unsigned short DIM>

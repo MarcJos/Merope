@@ -80,3 +80,4 @@ When letting the discretization step go to 0, we observe :
   - `getField()` : return, if applicable, the output as a Mérope object `GridField`, which contains the output in the form of a scalar field.
   - `computePhaseGrid([N1, N2, N3])` :  build a voxelation of width `[N1, N2, N3]` voxels in the 3 directions and returns it in the form of a list describing in each voxel the percentage of each phase.
   - `printFile(Zone.vtk, Coeffs.txt)` : write 2 output files. The first one contains the *.vtk* file containing the zones of the material. The second one contains the associated coefficients (important for segmented image) in the ASCII format. These two outputs are expected by the `FFT` solvers.
+  - `printFieldFile(File.vtk)` : write a single output file, containing the field (with real values).

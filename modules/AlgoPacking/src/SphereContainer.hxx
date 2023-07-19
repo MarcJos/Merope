@@ -21,19 +21,17 @@ public:
     TYPE_PHASE phase;
     double fracVol; // volume fraction
     PhaseFrac(TYPE_PHASE p = 0, double f = 0) :
-            phase { p }, fracVol { f } {
-    }
-    bool operator<(PhaseFrac<TYPE_PHASE> &phfv2){
+        phase{ p }, fracVol{ f } {}
+    bool operator<(PhaseFrac<TYPE_PHASE>& phfv2) {
         return this->phase < phfv2.phase;
     }
 };
 
 //! tuple for (phase, volume_fraction,radius)
-class PhaseFracRadN: public PhaseFrac<PhaseType> {
+class PhaseFracRadN : public PhaseFrac<PhaseType> {
 public:
     PhaseFracRadN(unsigned short p = 0, double f = 0, double r = 0) :
-            PhaseFrac(p, f), radius { r }, number { 0 } {
-    }
+        PhaseFrac(p, f), radius{ r }, number{ 0 } {}
     double radius; // radius (of spheres)
     size_t number;
 };
@@ -47,8 +45,7 @@ protected:
     vector<Sphere<DIM>> theSpheres;
 public:
     SphereContainer() :
-            theSpheres{}, dictionary { nullptr } {
-    }
+        theSpheres{}, dictionary{ nullptr } {}
     virtual ~SphereContainer() {
         delete dictionary;
     }
@@ -70,7 +67,7 @@ public:
     //! \return the phases related to the placedSpheres
     vector<PhaseType> getPhases() const;
     //! \return the popsition and radii of all placed spheres
-    const vector<Sphere<DIM>>& getSpheres() const {return theSpheres;};
+    const vector<Sphere<DIM>>& getSpheres() const { return theSpheres; }
     //! total volume
     double totalVolume() const;
     //! return the number of spheres
@@ -89,21 +86,21 @@ private:
     //! \param ost : on which we write
     //! \param sphere : the sphere
     //! \param separator : string to separate the data
-    void printSphere(ofstream &ost, const Sphere<DIM> &sphere,
-            string separator) const;
+    void printSphere(ofstream& ost, const Sphere<DIM>& sphere,
+        string separator) const;
     //! dictionary for names of phases
-    map<PhaseType, string> *dictionary;
+    map<PhaseType, string>* dictionary;
 };
 
 template<unsigned short DIM>
-class SphereCollection: public SphereContainer<DIM> {
+class SphereCollection : public SphereContainer<DIM> {
 public:
     //! default constructor
     SphereCollection() :
-            SphereContainer<DIM>(), bigShape { nullptr }, nbPhases { 0 } {
+        SphereContainer<DIM>(), bigShape{ nullptr }, nbPhases{ 0 } {
     }
     //! acquires a bigShape
-    void setShape(AmbiantSpace::BigShape<DIM> *bs) {
+    void setShape(AmbiantSpace::BigShape<DIM>* bs) {
         bigShape = bs;
     }
     //! initializes the collection of Spheres
@@ -113,7 +110,7 @@ public:
         return bigShape->L;
     }
     //! subscripting
-    inline const Sphere<DIM>& operator[](const size_t &i) const {
+    inline const Sphere<DIM>& operator[](const size_t& i) const {
         return this->theSpheres[i];
     }
     //! get the number of phases
@@ -125,7 +122,7 @@ public:
 
 protected:
     //! refers to the global shape
-    AmbiantSpace::BigShape<DIM> *bigShape;
+    AmbiantSpace::BigShape<DIM>* bigShape;
 private:
     //! avoids to re-compute the nb of Phases at each time
     size_t nbPhases;
@@ -135,8 +132,8 @@ namespace auxi_SphereCollection {
 //! reads the spheres from an imput file containing lines of x, y, z, radius
 //! fixme
 template<unsigned short DIM>
-SphereCollection<DIM> fromFile(istream &fileStream, PhaseType phase,
-        AmbiantSpace::BigShape<DIM> *bigShape_);
+SphereCollection<DIM> fromFile(istream& fileStream, PhaseType phase,
+    AmbiantSpace::BigShape<DIM>* bigShape_);
 }
 } // namespace sac_de_billes
 

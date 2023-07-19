@@ -19,10 +19,10 @@ namespace merope {
 
 //! class implementing non-intersecting spheroPolyhedric inclusions
 template<unsigned short DIM>
-class SpheroPolyhedronInclusions: public InsideTorus<DIM> {
+class SpheroPolyhedronInclusions : public InsideTorus<DIM> {
 public:
     //! constructor
-    SpheroPolyhedronInclusions(): InsideTorus<DIM>() {};
+    SpheroPolyhedronInclusions() : InsideTorus<DIM>() {}
     //! get all the cells
     const vector<smallShape::SpheroPolyhedronInc<DIM>>& getMicroInclusions() const { return spheroPolyInclusions; }
     //! adds another spheroPolyhedron

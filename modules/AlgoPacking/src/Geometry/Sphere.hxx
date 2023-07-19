@@ -22,9 +22,9 @@ class BigShape;
 template<unsigned short DIM>
 class Sphere {
 public:
-        Sphere():
+        Sphere() :
                 center{ create_array<DIM>(0.) }, radius{ 0 }, phase{ 0 } {}
-        Sphere(const Point<DIM>& center_, double radius_, PhaseType phase_):
+        Sphere(const Point<DIM>& center_, double radius_, PhaseType phase_) :
                 center(center_), radius(radius_), phase{ phase_ } {}
         Point<DIM> center;
         double radius;
@@ -36,6 +36,12 @@ public:
 };
 
 using SimpleSphereFormat = array<double, 5>;
+
+//! @return : whether two spheres are intersected
+//! @tparam DIM : dimension of the ambiant space
+//! @param sph1, sph2 : spheres
+template<unsigned short DIM>
+bool areIntersected(const Sphere<DIM>& sph1, const Sphere<DIM>& sph2);
 
 namespace sphereTools {
 //! \return the volume of a ball

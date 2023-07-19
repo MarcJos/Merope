@@ -36,7 +36,7 @@ public:
     //! getter
     const vector<Sphere<DIM>>& boundarySpheres() const { return this->boundarySpheres_; }
     //! getter
-    double minkowskiRadius() const { return this->minkowskiRadius_; };
+    double minkowskiRadius() const { return this->minkowskiRadius_; }
     //! get the underlying vertices
     vector<Point<DIM>> getVertices() const;
 
@@ -69,12 +69,12 @@ private:
     vector<Sphere<DIM>> boundarySpheres_;
 
     //! default constructor
-    SpheroPolyhedron():minkowskiRadius_{ 0. }, center{}, phase{ 0 }, innerPolyhedron{}, outerPolyhedron{}, boundaryPolyhedrons{}, boundaryCylinders{}, boundarySpheres_{} {}
+    SpheroPolyhedron() :minkowskiRadius_{ 0. }, center{}, phase{ 0 }, innerPolyhedron{}, outerPolyhedron{}, boundaryPolyhedrons{}, boundaryCylinders{}, boundarySpheres_{} {}
     //! \return whether inside the polyhedral part of the spheropolyhedron
     bool insidePolyhedralPart(const Point<DIM>& vector_from_center_to_point) const;
 };
 
-} // namespace merope
+} // namespace sac_de_billes
 
 #include "../Geometry/SpheroPolyhedron.ixx"
 

@@ -97,7 +97,7 @@ MEROPE_IMPLEMENT_POINT_SPECOP(2)
 template<unsigned short DIM>
 Point<DIM> average(const vector<Point<DIM>>& vPoints);
 
-// for defining all operators +=, -=, *=, /=, on Points
+// for defining all operators +=, -=, *=, /=, on DiscPoints
 // parameter binop : binary operator +, -, *, /
 #define MEROPE_IMPLEMENT_DISCPOINT_BINOPEG(binop) \
 inline DiscPoint<3>& operator binop ##=(DiscPoint<3>& x, const DiscPoint<3>& y) { x[0] binop ##= y[0]; x[1] binop ##= y[1]; x[2] binop ##= y[2]; return x; } \
@@ -107,7 +107,7 @@ inline DiscPoint<3>& operator binop ## =(DiscPoint<3>& x, long a) { x[0] binop #
 inline DiscPoint<2>& operator binop ## =(DiscPoint<2>& x, long a) { x[0] binop ## = a; x[1] binop ## = a; return x; }\
 \
 
-// for defining all operators +, -, *, / for points
+// for defining all operators +, -, *, / for DiscPoints
 // parameter binop : binary operator +, -, *, /
 // also takes advantage of move without using new memory
 #define MEROPE_IMPLEMENT_DISCPOINT_BINOP(DIM, binop) \

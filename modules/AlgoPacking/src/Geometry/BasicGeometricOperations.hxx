@@ -40,6 +40,9 @@ Point<DIM> prodVec(const C1& v1, const C2& v2);
 //! \return the Hadamart product
 template<unsigned short DIM, class C1, class C2>
 Point<DIM> odot(const C1& v1, const C2& v2);
+//! @return 2D determinant of 2 points
+//! @param pt0, pt1 : ordered 2 2D points
+double determinant(Point<2> pt0, Point<2> pt1);
 
 // NORM AND DISTANCE OPERATIONS
 //! \return the squared norm of a vector
@@ -57,7 +60,7 @@ double renormalize(Point<DIM>& v);
 //! \return whether 2 vectors are equal, up to machine error
 //! uses relative comparison
 template<unsigned short DIM, class T, typename std::enable_if<is_Point<T, DIM>, bool>::type = true >
-bool areEqual(const T& v1, const T& v2);
+bool areEqual(const T& v1, const T& v2, double epsilon = geomTools::EPSILON);
 
 } // namespace geomTools
 } //namespace sac_de_billes

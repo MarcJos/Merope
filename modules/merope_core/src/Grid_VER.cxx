@@ -15,15 +15,15 @@
 
 namespace merope {
 
-Grid_VER::Grid_VER():
+Grid_VER::Grid_VER() :
     Grid() {}
 
-Grid_VER::Grid_VER(VTKRead& geometry):
+Grid_VER::Grid_VER(VTKRead& geometry) :
     Grid(geometry) {
     initCommon();
 }
 
-Grid_VER::Grid_VER(TIFFRead& tf, double dx_):
+Grid_VER::Grid_VER(TIFFRead& tf, double dx_) :
     Grid(tf, dx_) {
     initCommon();
 }

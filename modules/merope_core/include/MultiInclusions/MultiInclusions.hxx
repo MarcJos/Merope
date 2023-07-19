@@ -23,7 +23,7 @@
 namespace merope {
 
 template<unsigned short DIM>
-class MultiInclusions: public InsideTorus<DIM> {
+class MultiInclusions : public InsideTorus<DIM> {
         //! class for NON-INTERSECTING inclusions inside a matrix
 public:
         //! constructor
@@ -147,7 +147,7 @@ vector<Identifier> getIdentifiers(vector<PhaseType> phases, const INCLUSIONVECTO
 template<class C>
 vector<C*> sortInclusionAndInstructions(vector<C>& inclusions,
         vector<smallShape::LayerInstructions>& layerInstructions);
-}
+} // namespace auxi_MultiInclusions
 
 } // namespace merope
 

@@ -20,7 +20,7 @@ struct Cylinder {
     Cylinder(const Segment<DIM>& axis_, double radius_) {
         axis = axis_;
         radius = radius_;
-    };
+    }
     static_assert(DIM == 3);
     // volume of a cylinder
     double volume() { return m_PI * radius * radius * geomTools::norme<DIM>(axis); }

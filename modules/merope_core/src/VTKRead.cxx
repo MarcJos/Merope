@@ -18,7 +18,7 @@ namespace merope {
 
 #define VTK_LINE_MAX 256
 
-Comp::Comp(const char* const name_i):
+Comp::Comp(const char* const name_i) :
     name(name_i), p(1, 0) {}
 
 void Comp::print(std::ostream& fout) const {
@@ -29,7 +29,7 @@ void Comp::print(std::ostream& fout) const {
     fout << endl;
 }
 
-VTKRead::VTKRead(const char* const fname):
+VTKRead::VTKRead(const char* const fname) :
     vel(""), isList(false) {
     open(fname);
     if (!(*this)) {
@@ -72,8 +72,7 @@ VTKRead::VTKRead(const char* const fname):
     if (nz > 1) {
         d = 3;
         --nz;
-    }
-    else {
+    } else {
         d = 2;
     }
 
@@ -114,17 +113,13 @@ VTKRead::VTKRead(const char* const fname):
     string dT(dataType);
     if ("unsigned_char" == dT) {
         mt = UC;
-    }
-    else if ("unsigned_short" == dT) {
+    } else if ("unsigned_short" == dT) {
         mt = US;
-    }
-    else if ("short" == dT) {
+    } else if ("short" == dT) {
         mt = ST;
-    }
-    else if ("char" == dT) {
+    } else if ("char" == dT) {
         mt = CH;
-    }
-    else {
+    } else {
         string msg("VTKRead::VTKRead: ");
         msg +=
             "In VTK File '" + string(fname)
@@ -191,8 +186,7 @@ void VTKRead::variables(const char* const strainN, const char* const stressN) {
             is.clear();
             is.str(line);
             is >> w;
-        }
-        else if ("POINT_DATA" == w) {
+        } else if ("POINT_DATA" == w) {
             N = NTP;
             getline(line, VTK_LINE_MAX);
             is.clear();
@@ -213,8 +207,7 @@ void VTKRead::variables(const char* const strainN, const char* const stressN) {
             getline(line, VTK_LINE_MAX);
             cmp->p[0] = tellg();
             seekg(N * sizeof(float), ios_base::cur);
-        }
-        else if ("VECTORS" == w) {
+        } else if ("VECTORS" == w) {
             is >> w;
             vel.name = w;
             is >> w;
@@ -224,8 +217,7 @@ void VTKRead::variables(const char* const strainN, const char* const stressN) {
 
             vel.p[0] = tellg();
             seekg(3 * N * sizeof(float), ios_base::cur);
-        }
-        else {
+        } else {
             cout << "Line = " << line << endl;
             throw(logic_error(
                 "VTKRead::variables: Type must be SCALARS or VECTORS"));

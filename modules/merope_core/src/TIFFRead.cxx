@@ -15,7 +15,7 @@
 
 namespace merope {
 
-TIFFRead::TIFFRead(const char* const nom):
+TIFFRead::TIFFRead(const char* const nom) :
     ifstream(nom) {
     Header();
 }

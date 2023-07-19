@@ -21,11 +21,11 @@ class WPGrid;
 
 
 namespace algoWP_aux {
-class Pair: public array<size_t, 2> {
+class Pair : public array<size_t, 2> {
 public:
-    Pair(size_t i1, size_t i2):
+    Pair(size_t i1, size_t i2) :
         array<size_t, 2>({ i1, i2 }) {}
-    Pair():
+    Pair() :
         Pair(0, 0) {}
     // lexicographical order
     bool operator<(const algoWP_aux::Pair& pair2) const;
@@ -35,7 +35,7 @@ template<unsigned short DIM>
 class IntersectedSpheres {
 public:
     IntersectedSpheres(WPGrid<DIM>* motherGrid_,
-        AmbiantSpace::BigShape<DIM>* bigShape_):
+        AmbiantSpace::BigShape<DIM>* bigShape_) :
         motherGrid{ motherGrid_ }, bigShape{ bigShape_ } {}
 
     virtual ~IntersectedSpheres() {}
@@ -68,7 +68,7 @@ private:
 } // namespace algoWP_aux
 
 template<unsigned short DIM>
-class WPGrid: public algoRSA_aux::MotherGrid<DIM> {
+class WPGrid : public algoRSA_aux::MotherGrid<DIM> {
 public:
     WPGrid(DiscPoint<DIM> sizes_, AmbiantSpace::BigShape<DIM>* bigShape_,
         double voxelLength_, double minRadius_, double maxRadius_);
@@ -128,7 +128,7 @@ public:
     //! Ambiant space
     AmbiantSpace::BigShape<DIM>* bigShape;
     //! \return the type of the algorithm
-    algoSpheres::TypeAlgo getTypeAlgo() const { return algoSpheres::TypeAlgo::WP; };
+    algoSpheres::TypeAlgo getTypeAlgo() const { return algoSpheres::TypeAlgo::WP; }
 private:
     //! radius generator
     algoRSA_aux::RadiusGenerator<DIM>* radiusGen;

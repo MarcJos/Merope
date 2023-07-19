@@ -18,21 +18,19 @@ inline void VTKstream::headerBIN(const char* const comment) {
     *this << "# vtk DataFile Version 4.0" << endl;
     if (comment) {
         *this << comment << endl;
-    }
-    else {
+    } else {
         *this << "Periodic GridGenerator" << endl;
     }
     *this << "BINARY" << endl;
 }
 
 VTKstream::VTKstream(const char* const filename, const char* const comment,
-    ios_base::openmode mode):
+    ios_base::openmode mode) :
     ofstream(filename, mode) {
     if (mode != ofstream::app) {
         modeIsSet = false;
         headerBIN(comment);
-    }
-    else {
+    } else {
         modeIsSet = true;
         modeIsCELL = true;
     }
@@ -44,8 +42,7 @@ void VTKstream::open(const char* const filename, const char* const comment,
     if (mode != ofstream::app) {
         modeIsSet = false;
         headerBIN(comment);
-    }
-    else {
+    } else {
         modeIsSet = true;
         modeIsCELL = true;
     }

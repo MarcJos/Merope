@@ -76,8 +76,8 @@ vector<SameThings<IdentifierSort>> DictPointer::getResult() const {
     return vecSameThing;
 }
 
-} // namespace sameThings
 } // namespace auxi
+} // namespace sameThings
 } // namespace mesh
 } // namespace merope
 

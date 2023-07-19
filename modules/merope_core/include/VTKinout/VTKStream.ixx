@@ -99,6 +99,24 @@ inline void vtkRead(DATA* data, std::istream& is) {
 }
 #endif
 
+
+template<class VECTOR_DATA, class ARRAY_DIM>
+void VTKstream::writeVector(const VECTOR_DATA& vectorData, ARRAY_DIM n) {
+    size_t n2 = 1;
+    if (n.size() == 3) {
+        n2 = n[2];
+    }
+    size_t i, j, k;
+    //
+    for (k = 0; k < n2; ++k) {
+        for (j = 0; j < n[1]; ++j) {
+            for (i = 0; i < n[0]; ++i) {
+                write(vectorData[k + n2 * (j + i * n[1])]);
+            }
+        }
+    }
+}
+
 // Binary writing (Big Endian)
 // \param data: Data to write
 template<typename DATA>

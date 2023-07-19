@@ -15,7 +15,7 @@
 namespace merope {
 
 Hyper::Hyper(const double xa, const double ya, const double xb, const double yb,
-    const double Ra, const double Rb, const double EPS2_i):
+    const double Ra, const double Rb, const double EPS2_i) :
     EPS2(EPS2_i) {
     // Point milieu
     xc = (xa + xb) / 2;
@@ -28,8 +28,7 @@ Hyper::Hyper(const double xa, const double ya, const double xb, const double yb,
         DRs2 = (Ra - Rb) / 2;
         ux = dx / dAB;
         uy = dy / dAB;
-    }
-    else {
+    } else {
         DRs2 = (Rb - Ra) / 2;
         ux = -dx / dAB;
         uy = -dy / dAB;
@@ -41,7 +40,7 @@ Hyper::Hyper(const double xa, const double ya, const double xb, const double yb,
 
 Hyper::Hyper(const double xa, const double ya, const double za, const double xb,
     const double yb, const double zb, const double Ra, const double Rb,
-    const double EPS2_i):
+    const double EPS2_i) :
     EPS2(EPS2_i) {
     // Point milieu
     xc = (xa + xb) / 2;
@@ -57,8 +56,7 @@ Hyper::Hyper(const double xa, const double ya, const double za, const double xb,
         ux = dx / dAB;
         uy = dy / dAB;
         uz = dz / dAB;
-    }
-    else {
+    } else {
         DRs2 = (Rb - Ra) / 2;
         ux = -dx / dAB;
         uy = -dy / dAB;

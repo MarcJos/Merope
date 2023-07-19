@@ -21,10 +21,10 @@ namespace vox {
 template<unsigned short DIM, class VOXEL_TYPE>
 //! general class for cartesian grid of voxels containing an information of a certain type
 //! can use subgrid (price is perf)
-class CartesianGrid: public MultiDArrayObject<DIM, VOXEL_TYPE, SubArrayDimensions<DIM>> {
+class CartesianGrid : public MultiDArrayObject<DIM, VOXEL_TYPE, SubArrayDimensions<DIM>> {
 public:
     //! constructor
-    CartesianGrid(PreSubGrid<DIM> gridParameters_):
+    CartesianGrid(PreSubGrid<DIM> gridParameters_) :
         MultiDArrayObject<DIM, VOXEL_TYPE, SubArrayDimensions<DIM>>(
             SubArrayDimensions<DIM>(gridParameters_.getNbNodes(), gridParameters_.getNMin(), gridParameters_.getNMax()),
             VOXEL_TYPE{}
@@ -53,19 +53,19 @@ private:
 template<unsigned short DIM, class VOXEL_TYPE>
 //! general class for cartesian grid of voxels containing an information of a certain type
 //! cannot use subgrid here
-class EfficientCartesianGrid: public MultiDArrayObject<DIM, VOXEL_TYPE, ArrayDimensions<DIM>>,
+class EfficientCartesianGrid : public MultiDArrayObject<DIM, VOXEL_TYPE, ArrayDimensions<DIM>>,
     public With_dx<DIM> {
 public:
     //! @brief 
     //! @param gridParameters_ : describes dx and nb voxels per edge
-    EfficientCartesianGrid(PreGrid<DIM> gridParameters_):
+    EfficientCartesianGrid(PreGrid<DIM> gridParameters_) :
         MultiDArrayObject<DIM, VOXEL_TYPE, ArrayDimensions<DIM>>(
             ArrayDimensions<DIM>(gridParameters_.getNbNodes()), VOXEL_TYPE{}
         ),
         With_dx<DIM>(gridParameters_.getDx()),
         L(gridParameters_.getL()) {}
     //! getter
-    const Point<DIM>& getL()const { return L; };
+    const Point<DIM>& getL()const { return L; }
 
 private:
     //! L

@@ -17,7 +17,7 @@ template<class PHASE_TYPE>
 class TabPhaseCoeff {
     //! auxiliary class to make sure that the final grid has phases [0, N-1], with at least one voxel per phase
 public:
-    TabPhaseCoeff(vector<PHASE_TYPE>& phases_, vector<double>& coeff_):
+    TabPhaseCoeff(vector<PHASE_TYPE>& phases_, vector<double>& coeff_) :
         phases{ phases_ }, coeff{ coeff_ } {}
     //! verifies if coeff_ is sufficiently large
     bool verifyCoherent() const;
@@ -32,7 +32,7 @@ private:
     vector<double>& coeff;
 };
 
-} // vox
+} // namespace vox
 } // namespace merope
 
 #include "../Grid/VtkHistogramm.ixx"

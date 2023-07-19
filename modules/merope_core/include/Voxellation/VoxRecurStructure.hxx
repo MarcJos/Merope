@@ -25,13 +25,13 @@ template<unsigned short DIM, class VOXEL_TYPE>
 class VoxGrid {
     using GRID_TYPE = CartesianGrid<DIM, VOXEL_TYPE>;
 public:
-    VoxGrid(PreSubGrid<DIM> gridParameters_):
+    VoxGrid(PreSubGrid<DIM> gridParameters_) :
         gridParameters{ gridParameters_ },
         voxGrid{ nullptr } {
         voxGrid = make_unique<GRID_TYPE>(GRID_TYPE(gridParameters));
     }
     //! destructor
-    virtual ~VoxGrid() {};
+    virtual ~VoxGrid() {}
     //! getter on the grid of volume fractions
     GRID_TYPE operator()() {
         build();
@@ -43,7 +43,7 @@ protected:
     //! fills the vector phaseFracVol
     virtual void build() = 0;
     //! getter
-    GRID_TYPE& getVoxGrid() { return *voxGrid; };
+    GRID_TYPE& getVoxGrid() { return *voxGrid; }
 private:
     //! grid parameters
     PreSubGrid<DIM> gridParameters;
@@ -53,12 +53,12 @@ private:
 
 template<unsigned short DIM, class VOXEL_TYPE, class BasicStruct, class BasicType>
 //! Class for building a phase field from a Structure geometry adapted to the recursive shape of RecursiveStructure
-class VoxStructure: public VoxGrid<DIM, VOXEL_TYPE> {
+class VoxStructure : public VoxGrid<DIM, VOXEL_TYPE> {
     using SELF_TYPE = VoxStructure<DIM, VOXEL_TYPE, BasicStruct, BasicType>;
     using RecurStruct = RecursiveStructure<DIM, BasicStruct, BasicType>;
 public:
     //! constructor
-    VoxStructure(const RecurStruct& structure_, PreSubGrid<DIM> gridParameters_):
+    VoxStructure(const RecurStruct& structure_, PreSubGrid<DIM> gridParameters_) :
         VoxGrid<DIM, VOXEL_TYPE>(gridParameters_), structure{ &structure_ } {}
 protected:
     //! inner representation

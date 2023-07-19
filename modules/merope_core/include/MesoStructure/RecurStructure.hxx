@@ -32,7 +32,7 @@ enum class TypeOfCombination {
 
 
 template<unsigned short DIM, class BasicStruct, class BasicType>
-class RecursiveStructure: public InsideTorus<DIM> {
+class RecursiveStructure : public InsideTorus<DIM> {
     //
     static_assert(std::is_base_of<InsideTorus<DIM>, BasicStruct>::value);
     //
@@ -40,7 +40,7 @@ public:
     //! Default initialization
     RecursiveStructure(auxiMicroStructure::TypeOfCombination typeOf_ = auxiMicroStructure::TypeOfCombination::Void);
     //! destructor
-    virtual ~RecursiveStructure() {};
+    virtual ~RecursiveStructure() {}
     //! copy and move constructors. The deep copy is used here.
     RecursiveStructure(const RecursiveStructure<DIM, BasicStruct, BasicType>& other);
     RecursiveStructure(RecursiveStructure<DIM, BasicStruct, BasicType>&& other) = default;
@@ -89,14 +89,14 @@ template<unsigned short DIM>
 using RecurField = RecursiveStructure<DIM, CartesianField<DIM>, double>;
 
 template<unsigned short DIM>
-class RecurGeom: public RecursiveStructure<DIM, MultiInclusions<DIM>, PhaseType> {
+class RecurGeom : public RecursiveStructure<DIM, MultiInclusions<DIM>, PhaseType> {
     using BasicStruct = MultiInclusions<DIM>;
     using BasicType = PhaseType;
 public:
     //! Default initialization
     RecurGeom();
     //! get all contained phases
-    const vector<PhaseType>& getAllPhases() const { return allPhases; };
+    const vector<PhaseType>& getAllPhases() const { return allPhases; }
     //! setter
     void setMultiInclusions(const MultiInclusions<DIM>& mi);
     void setCombination2(const RecurGeom<DIM>& mi1, const RecurGeom<DIM>& mi2,

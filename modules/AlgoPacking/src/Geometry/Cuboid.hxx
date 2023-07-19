@@ -15,7 +15,7 @@ using namespace std;
 template<unsigned short DIM>
 struct Cuboid {
     //! a cuboid with edges directed by the vectors of the canonical base
-    Cuboid(Point<DIM> x_min_, Point<DIM> x_max_):
+    Cuboid(Point<DIM> x_min_, Point<DIM> x_max_) :
         x_min{ x_min_ }, x_max{ x_max_ } {}
     Point<DIM> x_min;
     Point<DIM> x_max;
@@ -23,7 +23,7 @@ struct Cuboid {
     void linearTransform(const Point<DIM>& linTransform);
 };
 
-}
+} // namespace sac_de_billes
 
 #include "../Geometry/Cuboid.ixx"
 

@@ -16,6 +16,10 @@ inline void WithAspratio<DIM>::setAspRatio(array<double, DIM> aspratio_) {
     auxi_aspratio::renormalizeAspRatio <DIM>(aspratio_);
     aspratio = aspratio_;
     for (size_t i = 0; i < DIM; i++) {
+        if (aspratio[i] <= 0) {
+            cerr << __PRETTY_FUNCTION__ << endl;
+            throw runtime_error("Nonpositive aspect ratio does not make sense!");
+        }
         inverse_aspratio[i] = 1. / aspratio[i];
     }
 }

@@ -33,7 +33,7 @@ struct SliceInstruction {
         //! 2 possibilities:
         //! -> we know the phase, recorded into phase
         //! -> we do NOT know the phase, and then have to consider composite voxels
-        SliceInstruction(array<INT_TYPE, 2> limits_, VoxelType voxelType_, PhaseType phaseId_):
+        SliceInstruction(array<INT_TYPE, 2> limits_, VoxelType voxelType_, PhaseType phaseId_) :
                 limits(limits_), voxelType(voxelType_), phase(phaseId_) {}
         //! limits of the slice
         array<INT_TYPE, 2> limits;
@@ -61,10 +61,10 @@ public:
         size_t getNbFirstIndices() const { return allFirstIndices.size(); }
         //! \return a DiscPoint<DIM> {i,j,k}, with i,j corresponding to allFirstIndices[index]
         //! \param index : index of the {i,j} firstindices in the ConvexGrid
-        const DiscPoint<DIM>& getIndexAllCoordinates(size_t index) const { return allFirstIndices[index]; };
+        const DiscPoint<DIM>& getIndexAllCoordinates(size_t index) const { return allFirstIndices[index]; }
         //! \return the vector of whole slice instructions corresponding to a fixed index
         //! \param index : index of the {i,j} firstindices in the ConvexGrid
-        vector<SliceInstruction<long>> getSliceInstructions(size_t index) const { return sliceInstructions[index]; };
+        vector<SliceInstruction<long>> getSliceInstructions(size_t index) const { return sliceInstructions[index]; }
 private:
         //! helper function. It adds new slices to the sliceInstructions, corresponding to the surface
         //! \param singleSurface : encodes the surface of the inclusion
@@ -79,7 +79,7 @@ private:
                 const Point<DIM>& center, double distanceToSurface,
                 array<long, 2>& limitFormerSurface, size_t index, VoxelType voxelType, PhaseType phase);
         //! getter
-        const vector<DiscPoint<DIM>>& getAllFirstIndices() const { return allFirstIndices; };
+        const vector<DiscPoint<DIM>>& getAllFirstIndices() const { return allFirstIndices; }
 
         //! space discretization
         array<double, DIM> dx;
@@ -154,9 +154,9 @@ geomTools::Intersection_LineConvex getLimitSpheroPolyhedron(array<double, 2>& ne
         const Point<DIM - 1>& x1x2, double distance);
 //! fixme
 void verifySliceInstruction(vector<vox::auxi::SliceInstruction<long>>);
-} // namespace vox::auxi::auxi_convexGrid
+} // namespace auxi_convexGrid
 
-} // namespace vox::auxi
+} // namespace auxi
 } // namespace vox
 } // namespace merope
 

@@ -48,6 +48,34 @@ void Grid::readVTK(VTKRead& vf) {
     }
 }
 
+
+template<unsigned short DIM>
+void Grid::toVTKCELL_T(VTKstream& fvtk) const {
+    // File header
+    VTKheaderCELL_T<DIM>(fvtk);
+    fvtk << "SCALARS MaterialId unsigned_short" << endl;
+    fvtk << "LOOKUP_TABLE default" << endl;
+    // Geometry reconstruction
+    vector<unsigned short> ids(ng);
+    vtkReorderMaterialIdx(&ids[0]);
+    // Write phase indices values in file
+    fvtk.writeVector(ids, array<size_t, 3>{nx, ny, nz});
+}
+
+template<unsigned short DIM>
+void Grid::VTKheaderCELL_T(VTKstream& fvtk) const {
+    static_assert(DIM == 2 or DIM == 3);
+    if constexpr (DIM == 2) {
+        const double dx = lx / nx, dy = ly / ny;
+        fvtk.STRUCTURED_POINTS(nx, ny, dx, dy);
+    } else if constexpr (DIM == 3) {
+        const double dx = lx / nx, dy = ly / ny, dz = lz / nz;
+        fvtk.STRUCTURED_POINTS(nx, ny, nz, dx, dy, dz);
+    }
+    // Data type and associated color table
+    fvtk.setCELL(ng);
+}
+
 } // namespace merope
 
 #endif // _GRID_IXX

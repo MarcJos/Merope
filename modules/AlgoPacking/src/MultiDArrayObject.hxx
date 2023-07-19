@@ -17,13 +17,13 @@ using namespace sac_de_billes;
 namespace vox {
 
 template<unsigned short DIM, class VOXEL_TYPE, class ARRAY_DIMENSION>
-class MultiDArrayObject: public vector<VOXEL_TYPE> {
+class MultiDArrayObject : public vector<VOXEL_TYPE> {
 public:
     //! default constructor
-    MultiDArrayObject(): vector<VOXEL_TYPE>{}, arrayDim(create_array<DIM, size_t>(0)) {}
+    MultiDArrayObject() : vector<VOXEL_TYPE>{}, arrayDim(create_array<DIM, size_t>(0)) {}
     //! repetitive constructor
     MultiDArrayObject(ARRAY_DIMENSION arrayDim_, VOXEL_TYPE voxel)
-        : vector<VOXEL_TYPE>(arrayDim_.getTotalNumberVoxels(), voxel), arrayDim(arrayDim_) {};
+        : vector<VOXEL_TYPE>(arrayDim_.getTotalNumberVoxels(), voxel), arrayDim(arrayDim_) {}
 
     //! fill all the voxels with the same data
     void fillAll(VOXEL_TYPE voxelData);
@@ -51,7 +51,7 @@ public:
     //! using the operator with periodic indices. Beware, expensive!
     const VOXEL_TYPE& operator[](const array<long, DIM>& ijk) const;
     //! getter
-    const ARRAY_DIMENSION& getArrayDimensions() const { return arrayDim; };
+    const ARRAY_DIMENSION& getArrayDimensions() const { return arrayDim; }
 
 private:
     //! tests wheter an array is a subarray
@@ -67,7 +67,7 @@ private:
     //! fill a voxel with the data
     void fillVoxel(const array<size_t, DIM>& ijk, const VOXEL_TYPE& data);
     //! fill a voxel with the data (fast for available linearIndex)
-    void fillVoxelLinear(size_t linearIndex, const VOXEL_TYPE& data) { (*this)[linearIndex] = data; };
+    void fillVoxelLinear(size_t linearIndex, const VOXEL_TYPE& data) { (*this)[linearIndex] = data; }
     //! array dimensions
     ARRAY_DIMENSION arrayDim;
 };
@@ -120,7 +120,7 @@ void loopOnIndexSlice(array<size_t, DIM> ijk, const array<size_t, 2>& limits, co
 
 } // namespace vox
 
-} // namespace sac_de_billes
+} // namespace merope
 
 #include "MultiDArrayObject.ixx"
 

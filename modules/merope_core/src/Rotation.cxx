@@ -31,8 +31,7 @@ Rotation2D::Rotation2D(const CastemReal* const v, const bool verif) {
         CastemReal n = sqrt(v[0] * v[0] + v[1] * v[1]);
         a[0] = v[0] / n; // a[1,1]
         a[1] = v[1] / n; // a[2,1]
-    }
-    else {
+    } else {
         a[0] = v[0]; // a[1,1]
         a[1] = v[1]; // a[2,1]
     }
@@ -113,8 +112,7 @@ Rotation3D::Rotation3D(const CastemReal* const v, const bool verif) {
         a[3] = a[7] * a[2] - a[8] * a[1]; // a[1,2]
         a[4] = a[8] * a[0] - a[6] * a[2]; // a[2,2]
         a[5] = a[6] * a[1] - a[7] * a[0]; // a[3,2]
-    }
-    else {
+    } else {
         a[0] = v[0]; // a[1,1]
         a[1] = v[1]; // a[2,1]
         a[2] = v[2]; // a[3,1]

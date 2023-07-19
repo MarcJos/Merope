@@ -31,8 +31,7 @@ void GeoObject::replaceLeaf(Identifier id_1, Identifier id_2, long sense) {
 sameThings::IdentifierSort GeoObject_PerLeave::getId_forSort() const {
     if (not isPeriodic()) {
         return IdentifierSort({ 0, identifier });
-    }
-    else {
+    } else {
         return IdentifierSort({ -periodicRoot, identifier });
     }
 }

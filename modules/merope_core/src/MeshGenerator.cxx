@@ -25,8 +25,7 @@ void MeshGenerator::write(string nameFile) const {
 void MeshGenerator::write(std::ostream& f) const {
     if (multiInclusions->getPolyhedrons().size() == 0) {
         this->writeSphericalInclusions(f);
-    }
-    else {
+    } else {
         this->writeLaguerreTess(f);
     }
     gmsh_writer::auxi::writeEnd(f, this->getMeshSize(), this->getMeshOrder(), this->binaryOutput);
@@ -68,8 +67,7 @@ void MeshGenerator::writeLaguerreTess(std::ostream& f) const {
             if (voroMeshPer.dictSolid.find(id) != voroMeshPer.dictSolid.end()) {
                 if (nonVoidSurface) {
                     physicalVolumes.at(phase).leaves.push_back(id);
-                }
-                else {
+                } else {
                     physicalVolumes.insert(make_pair(phase, geoObjects::PhysicalVolume(phase, { id })));
                     nonVoidSurface = true;
                 }
@@ -129,8 +127,7 @@ void MeshGenerator::writeSphericalInclusions(std::ostream& f) const {
         for (long i = listSpheres.size() - 1; i >= 0; i--) {
             if (i == listSpheres.size() - 1) { // no inner sphere
                 gmsh_writer::auxi::write_sphere(listSpheres[i], f);
-            }
-            else {
+            } else {
                 gmsh_writer::auxi::write_sphere(listSpheres[i], f, { listSpheres[i + 1].phase });
             }
         }
@@ -152,6 +149,6 @@ void MeshGenerator::writeSphericalInclusions(std::ostream& f) const {
     }
 }
 
-} // namespace mesh
 } // namespace generator
+} // namespace mesh
 } // namespace merope

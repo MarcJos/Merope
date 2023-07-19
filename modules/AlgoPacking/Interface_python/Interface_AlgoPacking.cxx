@@ -1,3 +1,4 @@
+//! Copyright : see license.txt
 //! \file Interface.cxx
 //! \date 26 avr. 2021
 //!

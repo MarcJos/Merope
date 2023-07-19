@@ -126,7 +126,7 @@ void StepDis::setApprox() const {}
 
 // GaussRV
 
-GaussRV::GaussRV(const double m_i, const double s_i, const double w_i):
+GaussRV::GaussRV(const double m_i, const double s_i, const double w_i) :
     m(m_i), s(s_i), w(w_i) {}
 
 GaussRV::~GaussRV() {}
@@ -145,7 +145,7 @@ inline void TGauss::MAJ() {
     Fl *= w;
 }
 
-TGauss::TGauss(const double m_i, const double s_i, const double w_i):
+TGauss::TGauss(const double m_i, const double s_i, const double w_i) :
     GaussRV(m_i, s_i, w_i), l(0) {
     MAJ();
 }
@@ -160,13 +160,12 @@ double TGauss::PDF(const double x) const {
 double TGauss::CDF(const double x) const {
     if (x < l) {
         return 0.;
-    }
-    else {
+    } else {
         return A * (GaussRV::CDF(x) - Fl);
     }
 }
 
-LogNorm::LogNorm(const double m_i, const double s_i, const double w_i):
+LogNorm::LogNorm(const double m_i, const double s_i, const double w_i) :
     GaussRV(m_i, s_i, w_i) {}
 
 double LogNorm::PDF(const double x) const {
@@ -180,8 +179,7 @@ double LogNorm::PDF(const double x) const {
 double LogNorm::CDF(const double x) const {
     if (x <= 0) {
         return 0.;
-    }
-    else {
+    } else {
         return GaussRV::CDF(log(x));
     }
 }

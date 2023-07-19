@@ -48,7 +48,7 @@ inline void MultiInclusions<DIM>::setInnerShapes(const C& inclusions) {
 }
 
 template<unsigned short DIM>
-inline MultiInclusions<DIM>::MultiInclusions():
+inline MultiInclusions<DIM>::MultiInclusions() :
     InsideTorus<DIM>(), polyhedrons{ }, sphereInc{ }, ellipseInc{}, spheroPolyhedrons{}, matrixPhase{ 0 } {
 }
 
@@ -138,8 +138,8 @@ inline void MultiInclusions<DIM>::addLayer(
 
 template<unsigned short DIM>
 inline void MultiInclusions<DIM>::setInclusions(
-    const SpheroPolyhedronInclusions<DIM>& spheroPolyhedrons) {
-    setInclusions(spheroPolyhedrons.getMicroInclusions(), spheroPolyhedrons.getL());
+    const SpheroPolyhedronInclusions<DIM>& spheroPolyhedrons_) {
+    setInclusions(spheroPolyhedrons_.getMicroInclusions(), spheroPolyhedrons_.getL());
 }
 
 template<unsigned short DIM>
@@ -150,7 +150,7 @@ inline bool MultiInclusions<DIM>::checkAddLayer(
         cerr << __PRETTY_FUNCTION__ << endl;
         cerr << "Identifier = " << identifier << endl;
         throw runtime_error("Unknown identifier!");
-    };
+        };
     ///
     auto allIdentifiers = getAllIdentifiers();
     sort(allIdentifiers.begin(), allIdentifiers.end());
@@ -163,11 +163,9 @@ inline bool MultiInclusions<DIM>::checkAddLayer(
             }
             if (layer.identifier < allIdentifiers[j]) {
                 errorMessage(layer.identifier);
-            }
-            else if (layer.identifier == allIdentifiers[j]) {
+            } else if (layer.identifier == allIdentifiers[j]) {
                 break;
-            }
-            else {
+            } else {
                 j++;
             }
         }
@@ -291,7 +289,7 @@ inline void auxi_MultiInclusions::changePhase_T(
     >(inclusions, layerInstructions);
     auto instruction = [](C* inclusion, smallShape::LayerInstructions layerInstruction) {
         inclusion->getPhaseGraphical(0) = layerInstruction.phase;
-    };
+        };
     applyLayerInstruction_T < C
     >(layerInstructions, pointerInclusions, instruction);
 }
@@ -304,7 +302,7 @@ inline void auxi_MultiInclusions::addLayer_T(
     >(inclusions, layerInstructions);
     auto instruction = [](C* inclusion, smallShape::LayerInstructions layerInstruction) {
         inclusion->pushLayer(layerInstruction.width, layerInstruction.phase);
-    };
+        };
     applyLayerInstruction_T<C>(layerInstructions, pointerInclusions, instruction);
 }
 
@@ -323,11 +321,9 @@ inline void auxi_MultiInclusions::applyLayerInstruction_T(
             applyInstruction(poly, instruction);
             //poly->pushLayer(layerInstruction.width, layerInstruction.phase);
             i_inc++;
-        }
-        else if (instruction.identifier > poly->identifier) {
+        } else if (instruction.identifier > poly->identifier) {
             i_inc++;
-        }
-        else {
+        } else {
             i_lay++;
         }
     }
@@ -362,10 +358,10 @@ inline vector<Identifier> auxi_MultiInclusions::getIdentifiers(
     //
     auto fun1 = [&inclusionList = std::as_const(inclusionList)](auto index) {
         return inclusionList[index].getPhaseGraphical(0);
-    };
+        };
     auto fun2 = [](const PhaseType phase) {
         return phase;
-    };
+        };
     auxi_function::extract_list(indicesInclusion.begin(), indicesInclusion.end(),
         phases.begin(), phases.end(),
         std::back_inserter(selectedIndices), fun1, fun2);

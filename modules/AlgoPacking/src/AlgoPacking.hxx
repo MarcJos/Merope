@@ -67,9 +67,9 @@ public:
 };
 
 template<unsigned short DIM>
-class AlgoPacking: public AlgoPacking_gen, public SphereContainer<DIM> {
+class AlgoPacking : public AlgoPacking_gen, public SphereContainer<DIM> {
 public:
-        AlgoPacking():
+        AlgoPacking() :
                 AlgoPacking_gen(), SphereContainer<DIM>(), exclusionDistance(0), boundaryExclusionDistance{
                         0 }, isSet_exclusionDistance(false), isSet_bigShape(false), isSet_radiusGen(
                                 false), has_proceeded(false) {}
@@ -106,7 +106,7 @@ public:
         //! \return volume fraction
         double volumeFraction() const;
         //! \see AlgoPacking_gen::proceed
-        virtual map<string, string> proceed(unsigned seed, unsigned method) override;
+        map<string, string> proceed(unsigned seed, unsigned method) override;
         //! puts the output of the algorithm inside the sphere collection theSpheres
         virtual void setSpheres() = 0;
         //! get the type of the algorithm
@@ -143,9 +143,9 @@ protected:
 };
 
 template<unsigned short DIM, class T> // T the type of algo used
-class AlgoInterface: public AlgoPacking<DIM> {
+class AlgoInterface : public AlgoPacking<DIM> {
 public:
-        AlgoInterface():
+        AlgoInterface() :
                 AlgoPacking<DIM>(), algo(nullptr) {}
         virtual ~AlgoInterface() {
                 delete algo;
@@ -165,7 +165,7 @@ private:
 template<unsigned short DIM>
 using AlgoRSA = AlgoInterface<DIM, algoRSA_aux::AlgoRSA_Template<DIM>>;
 
-class AlgoRSA2D: public AlgoRSA<2> {
+class AlgoRSA2D : public AlgoRSA<2> {
 public:
         //! \param desiredRPhi_ : an array containing in 1st position the radii of the spheres, in 2nd position the desired volume fraction of them.
         //! \param exclusionDistance_ : exclusion distance between spheres
@@ -176,7 +176,7 @@ public:
                 string nameShape_ = "Tore");
 };
 
-class AlgoRSA3D: public AlgoRSA<3> {
+class AlgoRSA3D : public AlgoRSA<3> {
 public:
         //! \param desiredRPhi_ : an array containing in 1st position the radii of the spheres, in 2nd position the desired volume fraction of them.
         //! \param exclusionDistance_ : exclusion distance between spheres

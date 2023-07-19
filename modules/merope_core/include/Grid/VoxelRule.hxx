@@ -21,7 +21,7 @@ enum class VoxelRule {
 class WithVoxelRule {
     //! class from which other inherit
 public:
-    WithVoxelRule(VoxelRule voxelRule_): voxelRule{ voxelRule_ } {}
+    WithVoxelRule(VoxelRule voxelRule_) : voxelRule{ voxelRule_ } {}
     //! set the rule for choosing which phase is in the voxel
     void setVoxelRule(VoxelRule voxelRule_) { voxelRule = voxelRule_; }
 protected:
@@ -36,8 +36,7 @@ template<class OUTPUT_FORMAT>
 constexpr vox::VoxelRule GetVoxelRule() {
     if constexpr (std::is_same<OUTPUT_FORMAT, vox::VoxelPhaseFrac>::value) {
         return vox::VoxelRule::Average;
-    }
-    else {
+    } else {
         return vox::VoxelRule::Center;
     }
 }

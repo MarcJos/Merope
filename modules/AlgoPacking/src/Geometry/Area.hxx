@@ -8,7 +8,6 @@
 #include "../StdHeaders.hxx"
 
 #include "../Geometry/GeomTypes.hxx"
-#include "../Geometry/GeomTools_1.hxx"
 
 namespace sac_de_billes {
 namespace geomTools {
@@ -20,9 +19,8 @@ namespace area {
 template<unsigned short DIM>
 double triangle(Point<DIM> pt0, Point<DIM> pt1, Point<DIM> pt2);
 
-//! @return : the area of a given polygon
+//! @return : the area of a given polygon, (positive if in the trigonometric sense, negative otherwise)
 //! @param vertices : the vertices of the polygone, in direct order
-//! @warning : not implemented yet
 double polygon(vector<Point<2>> vertices);
 
 } // namespace area

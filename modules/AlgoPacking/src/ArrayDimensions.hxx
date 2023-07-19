@@ -21,7 +21,7 @@ template<unsigned short DIM>
 class ArrayDimensions {
 public:
     //! constructor
-    ArrayDimensions(array<size_t, DIM> nbNodes_): nbNodes(nbNodes_) {}
+    ArrayDimensions(array<size_t, DIM> nbNodes_) : nbNodes(nbNodes_) {}
     //! setter
     void setNbNodes(array<size_t, DIM> nbNodes_) { nbNodes = nbNodes_; }
     //! getter
@@ -29,7 +29,7 @@ public:
     //! getter, size of the grid covering the torus
     const array<size_t, DIM>& getNbNodeBigGrid() const { return nbNodes; }
     //! getter, size of the subgrid
-    const array<size_t, DIM>& getNbNodeSubGrid() const { return nbNodes; };
+    const array<size_t, DIM>& getNbNodeSubGrid() const { return nbNodes; }
     //! getter
     size_t getTotalNumberVoxels() const { return auxi_function::productOf<size_t>(getNbNodes()); }
 private:
@@ -57,11 +57,11 @@ public:
     //! getter
     size_t getTotalNumberVoxels() const { return auxi_function::productOf<size_t>(getNbNodeSubGrid()); }
     //! getter, size of the subgrid
-    const array<size_t, DIM>& getNbNodeSubGrid() const { return nbNodeSubgrid; };
+    const array<size_t, DIM>& getNbNodeSubGrid() const { return nbNodeSubgrid; }
     //! getter, size of the grid covering the torus
     const array<size_t, DIM>& getNbNodeBigGrid() const { return nbNodes; }
     //! \return whether the grid covers the whole torus or not
-    const bool& doesCoverTorus() const { return coverTorus; };
+    const bool& doesCoverTorus() const { return coverTorus; }
     //! set nbNodes, and default nMin and nMax
     void setNbNodes(array<size_t, DIM> nbNodes_);
     //! set nMin and nMax

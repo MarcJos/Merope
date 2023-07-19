@@ -100,7 +100,7 @@ mesh::meshStructure::VoroMesh_UnStructureData<3> getRawMeshGraph(const Point<3>&
     return getRawMeshGraph(singleCell);
 }
 
-} //namespace microToMesh
 } //namespace voroTranslater
+} //namespace microToMesh
 } // namespace merope
 

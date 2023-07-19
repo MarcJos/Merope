@@ -171,7 +171,7 @@ public:
     //! Ambiant space
     AmbiantSpace::BigShape<DIM>* bigShape;
     //! \return the type of the algorithm
-    algoSpheres::TypeAlgo getTypeAlgo() const { return algoSpheres::TypeAlgo::RSA; };
+    algoSpheres::TypeAlgo getTypeAlgo() const { return algoSpheres::TypeAlgo::RSA; }
 
 private:
     //! number of darts per uncovered voxel

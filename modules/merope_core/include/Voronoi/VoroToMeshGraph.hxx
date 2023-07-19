@@ -20,13 +20,13 @@ namespace microToMesh {
 namespace voroTranslater {
 
 
-class VoroToMeshGraph: public voroInterface::VoroInterface<3> {
+class VoroToMeshGraph : public voroInterface::VoroInterface<3> {
     static constexpr unsigned short DIM = 3;
 public:
     //! main constructor
     //! \param L : lengths of the torus
     //! \param centerTesssels : center and weights of the tessels
-    VoroToMeshGraph(array<double, DIM> L, const vector<Sphere<DIM>>& centerTessels_): VoroInterface<DIM>(L, centerTessels_), centerTessels(centerTessels_), rawMeshGraph() {};
+    VoroToMeshGraph(array<double, DIM> L, const vector<Sphere<DIM>>& centerTessels_) : VoroInterface<DIM>(L, centerTessels_), centerTessels(centerTessels_), rawMeshGraph() {}
     //! return the data related to the voro++
     mesh::meshStructure::VoroMesh_UnStructureData<3> getMeshData();
 private:
@@ -46,7 +46,7 @@ mesh::meshStructure::VoroMesh_UnStructureData<3> getRawMeshGraph(const Point<3>&
 mesh::meshStructure::VoroMesh_UnStructureData<3> getRawMeshGraph(const voroInterface::SingleCell& singleCell);
 
 } // namespace voroTranslater
-} // namespace mesh
+} // namespace microToMesh
 } // namespace merope
 
 

@@ -17,11 +17,9 @@ void algoRSA_aux::MotherGrid<DIM>::addSphere(const Sphere<DIM>& sphere,
     motherVoxel->updateCovered(sphere, minRadius);
     if constexpr (NUM_METHOD == 1) {
         linkSphereToVoxel(motherVoxel, sphere, iSphe);
-    }
-    else if constexpr (NUM_METHOD == 2) {
+    } else if constexpr (NUM_METHOD == 2) {
         motherVoxel->spheresInside.push_back(iSphe);
-    }
-    else {
+    } else {
         throw invalid_argument(__PRETTY_FUNCTION__);
     }
 }
@@ -81,8 +79,7 @@ inline vector<tuple<array<int, DIM>, algoRSA_aux::MotherVoxel<DIM>*>> algoRSA_au
                 }
             }
         }
-    }
-    else if constexpr (DIM == 2) {
+    } else if constexpr (DIM == 2) {
         int size_0 = iMax[0] - iMin[0];
         int size_1 = iMax[1] - iMin[1];
         result.resize(size_1 * size_0);
@@ -94,8 +91,7 @@ inline vector<tuple<array<int, DIM>, algoRSA_aux::MotherVoxel<DIM>*>> algoRSA_au
                 result[idx] = make_tuple(i, getVoxel(index));
             }
         }
-    }
-    else {
+    } else {
         throw invalid_argument(__PRETTY_FUNCTION__);
     }
 
@@ -206,13 +202,11 @@ bool algoRSA_aux::MotherGrid<DIM>::isPlaceable(const Sphere<DIM>& sph1,
     const MotherVoxel<DIM>* mother) {
     if constexpr (NUM_METHOD == 1) {
         return isPlaceable_1(sph1, mother);
-    }
-    else if constexpr (NUM_METHOD == 2) {
+    } else if constexpr (NUM_METHOD == 2) {
         return isPlaceable_2(sph1, mother);
-    }
-    else {
+    } else {
         throw invalid_argument(
-            "algoRSA_aux::MotherGrid<DIM>::isPlaceable Incorrect DIM");
+            "algoRSA_aux::MotherGrid<DIM>::isPlaceable Incorrect NUM_METHOD");
     }
 }
 
@@ -234,8 +228,7 @@ bool algoRSA_aux::MotherGrid<DIM>::isPlaceable_2(const Sphere<DIM>& sphere,
     const MotherVoxel<DIM>* mother) {
     if (mother->isClose2Boundary) {
         return checksOtherSpheres_2<7>(mother->discreteCoordinates, sphere, Path::get().pathForNeighbors<DIM, 7>());
-    }
-    else {
+    } else {
         return checksOtherSpheres_2<5>(mother->discreteCoordinates, sphere, Path::get().pathForNeighbors<DIM, 5>());
     }
 }
@@ -286,15 +279,13 @@ algoRSA_aux::MotherGrid<DIM>::MotherGrid(DiscPoint<DIM> sizes_,
                 }
             }
         }
-    }
-    else if constexpr (DIM == 2) {
+    } else if constexpr (DIM == 2) {
         for (i[0] = 0; i[0] < sizes[0]; i[0]++) {
             for (i[1] = 0; i[1] < sizes[1]; i[1]++) {
                 initializeVoxel(i);
             }
         }
-    }
-    else {
+    } else {
         throw invalid_argument(
             "algoRSA_aux::MotherGrid<DIM>::MotherGrid : incorrect DIM");
     }
@@ -317,7 +308,7 @@ void algoRSA_aux::MotherGrid<DIM>::initializeVoxel(const DiscPoint<DIM>& i) {
 
 template <unsigned short DIM>
 algoRSA_aux::CurrentGrid<DIM>::CurrentGrid(MotherGrid<DIM>* motherGrid_,
-    mt19937* randGen_): motherGrid(motherGrid_), randGen(randGen_), nbUncoveredVoxels(0) {
+    mt19937* randGen_) : motherGrid(motherGrid_), randGen(randGen_), nbUncoveredVoxels(0) {
     size_t compteur = 0;
     if constexpr (DIM == 3) {
         long nbVoxels = motherGrid->sizes[0] * motherGrid->sizes[1] * motherGrid->sizes[2];
@@ -331,8 +322,7 @@ algoRSA_aux::CurrentGrid<DIM>::CurrentGrid(MotherGrid<DIM>* motherGrid_,
                     compteur++;
             });
         setTabVoxels(futureTabVoxels);
-    }
-    else if constexpr (DIM == 2) {
+    } else if constexpr (DIM == 2) {
         long nbVoxels = motherGrid->sizes[0] * motherGrid->sizes[1];
         // defines the grid of voxels
         vector<Voxel<DIM>> futureTabVoxels(nbVoxels, motherGrid->tabVoxels[0]);
@@ -343,8 +333,7 @@ algoRSA_aux::CurrentGrid<DIM>::CurrentGrid(MotherGrid<DIM>* motherGrid_,
                     compteur++;
             });
         setTabVoxels(futureTabVoxels);
-    }
-    else {
+    } else {
         throw invalid_argument("CurrentGrid<DIM>::CurrentGrid. Uncorrect DIM.");
     }
 }
@@ -378,7 +367,7 @@ algoRSA_aux::Voxel<DIM>* algoRSA_aux::CurrentGrid<DIM>::pickUncoveredVoxel() {
 template <unsigned short DIM>
 algoRSA_aux::AlgoRSA_Template<DIM>::AlgoRSA_Template(
     AmbiantSpace::BigShape<DIM>* T_, RadiusGenerator<DIM>* radiusGen_,
-    unsigned seed): bigShape{ T_ }, radiusGen{ radiusGen_ } {
+    unsigned seed) : bigShape{ T_ }, radiusGen{ radiusGen_ } {
     // radius and volume fraction
     minRadius = radiusGen->minRadius();
     maxRadius = radiusGen->maxRadius();
@@ -419,12 +408,7 @@ inline map<string, string> algoRSA_aux::AlgoRSA_Template<DIM>::proceed(unsigned 
     default:
         throw invalid_argument(__PRETTY_FUNCTION__);
     }
-    if (packed) {
-        return map<string, string>{ { "Packed", "True" }};
-    }
-    else {
-        return map<string, string>{ { "Packed", "False" }};
-    }
+    return map<string, string>{ { "Packed", packed ? "True" : "False" }};
 }
 
 template <unsigned short DIM>
@@ -471,8 +455,7 @@ bool algoRSA_aux::AlgoRSA_Template<DIM>::throwDart() {
     if (pickedVoxel->mother->covered) {
         pickedVoxel->covered = true;
         currentGrid->nbUncoveredVoxels--;
-    }
-    else {
+    } else {
         Point<DIM> point = pickedVoxel->pickPoint(randGenerator, randomReal);
         Sphere<DIM> sphere(point, radius, phase);
         if (not pickedVoxel->mother->isClose2Boundary or (bigShape->isInside(point, minRadius) and bigShape->isInside(sphere))) {
@@ -514,8 +497,7 @@ void algoRSA_aux::AlgoRSA_Template<DIM>::printFinalMessage(
     }
     if (currentGrid->nbUncoveredVoxels > 0) {
         cout << "Not fully packed" << endl;
-    }
-    else {
+    } else {
         cout << "Fully packed" << endl;
     }
     cout << "Nb of spheres : " << motherGrid->placedSpheres.size() << endl;

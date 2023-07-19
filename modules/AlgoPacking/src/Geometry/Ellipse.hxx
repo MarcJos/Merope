@@ -29,6 +29,8 @@ public:
     bool isInside(const Point<DIM>& point) const;
     //! getter
     const array<double, DIM>& getAlphas() const { return alphas; }
+    //! print
+    void print(ostream& os) const;
 
 private:
     //! compute the quantities alphas
@@ -53,6 +55,10 @@ array<Point<DIM>, DIM> defaultAxes();
 //! @param x_0 : 1st point delimitating the chord
 //! @param x_1  : 2nd point delimitating the chord
 double computeChordArea(const Ellipse<2>& ellipse, Point<2> x_0, Point<2> x_1);
+//! @return : a polar representation of a point on the ellipse
+//! @param ellipse : ellipse
+//! @param pointOnEllipse : point assumed to be on the ellipse
+double angleOnEllipse(const Ellipse<2>& ellipse, Point<2> pointOnEllipse);
 //! @return the area delimitated by the angular portion of the ellipse delimitated by the first axis and of angle theta
 //! @param ellipse : ellipse
 //! @param theta : angle of the angular portion, starting from the first axis

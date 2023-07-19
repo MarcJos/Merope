@@ -82,10 +82,8 @@ inline ConvexPolyhedronInc<DIM> smallShape::PolyhedronFactory<DIM>::fromVertices
     }
     auto faces = facesFromVertices<DIM>(renormalized_vertices, face_indices);
     Cuboid<DIM> cuboid = smallShape::createCuboid<DIM>(renormalized_vertices);
-    for (size_t i = 0; i < DIM; i++) {
-        cuboid.x_min[i] += center[i];
-        cuboid.x_max[i] += center[i];
-    }
+    cuboid.x_min += center;
+    cuboid.x_max += center;
     return ConvexPolyhedronInc<DIM>(ident, cuboid, center, sac_de_billes::ConvexPolyhedron<DIM>(center, faces));
 
 }
@@ -103,10 +101,8 @@ inline SpheroPolyhedronInc<DIM> merope::smallShape::SpheroPolyhedronFactory<DIM>
     }
     auto faces = facesFromVertices<DIM>(renormalized_vertices, face_indices);
     Cuboid<DIM> cuboid = smallShape::createCuboid<DIM>(renormalized_vertices, minkowskiRadius);
-    for (size_t i = 0; i < DIM; i++) {
-        cuboid.x_min[i] += center[i];
-        cuboid.x_max[i] += center[i];
-    }
+    cuboid.x_min += center;
+    cuboid.x_max += center;
     return SpheroPolyhedronInc<DIM>(phase, cuboid, center, sac_de_billes::SpheroPolyhedron<DIM>(phase, vertices, face_indices, minkowskiRadius));
 }
 
@@ -124,7 +120,7 @@ inline long  MicroInclusion_<DIM, SOLID>::whichLayer(const Point<DIM>& point) co
 
 template<unsigned short DIM>
 inline Rectangle<DIM>::Rectangle(Identifier ident, Point<DIM> xmin,
-    Point<DIM> xmax): ConvexPolyhedron<DIM>(ident, createCuboid<DIM>(xmin, xmax), 0.5 * (xmin + xmax), { ConvexPolyhedron<DIM>(Cuboid<DIM>(xmin, xmax)) }) {}
+    Point<DIM> xmax) : ConvexPolyhedron<DIM>(ident, createCuboid<DIM>(xmin, xmax), 0.5 * (xmin + xmax), { ConvexPolyhedron<DIM>(Cuboid<DIM>(xmin, xmax)) }) {}
 
 template<unsigned short DIM, class SOLID>
 inline void MicroInclusion_<DIM, SOLID>::linearTransform(
@@ -170,7 +166,7 @@ inline bool MicroInclusion_<DIM, SOLID>::isInside(const Point<DIM>& point,
 }
 
 template<unsigned short DIM, class SOLID>
-inline MicroInclusion_<DIM, SOLID>::MicroInclusion_(const SOLID& solid):
+inline MicroInclusion_<DIM, SOLID>::MicroInclusion_(const SOLID& solid) :
     MicroInclusion_<DIM, SOLID>(solid.phase, createCuboid<DIM>(solid), solid.center, solid) {}
 
 template<unsigned short DIM, class SOLID>

@@ -157,22 +157,24 @@ A Laguerre tessellation is a collection of tessels $X_i$ covering the periodic c
 ```
 Here, $c_i$ and $r_i$ can be seen as the center and radius of a sphere.
 
+**Remark** : Laguerre tessellations generalize *Voronoi Tessellations* in the following sense : for Voronoi tessellations, all the radii $r_i$ are equal to a single value $r$ -and in general $r=0$.
+
 **Main methods** :
 - `LaguerreTess_3D([L1,L2,L3], sphereList)` : constructor, build from a list of spheres.
 - `computeTessels()` : build the tessellation (for later purpose).
 - `setAspRatio([aspRatio1, aspRatio2, aspRatio3])` : set a uniform aspect ratio on the whole periodic cuboid (in practice, the tessellation is built on a dilatated periodic cuboid and then squeezed back to the initial periodic cuboid). Same convention as *Neper*.
   Mathematically speaking, it boils down to the pre-process transform :
-```math
+  ```math
 		x \mapsto \hat{x} \qquad \text{for} \qquad \hat{x}_i = \frac{1}{a_i} x_i,
-```
+  ```
   where the aspect ratio $a_i$ is normalized such that
-```math
+	```math
 		a_i = \texttt{aspRatio}[i] \left( \prod_{j=1}^d \texttt{aspRatio}[j] \right)^{-\frac{1}{d}}.
-```
-   Thus, the criterion for $x$ being in tessel $X$ of center $c$ and radius $R$ is minimizing
-```math
+	```
+	Thus, the criterion for $x$ being in tessel $X$ of center $c$ and radius $R$ is minimizing
+	```math
 		|\hat{x} - \hat{c}|^2 - R^2 = \sum_{j=1}^d \frac{|x[i] - c[i]|^2}{a[i]^2} - R^2.
-```
+	```
 
 **Remark** : Due to the use of `voro++`, more functionalities might be available upon request (orientation or area of the surfaces between crystals, Delaunay graph...).
 
@@ -287,6 +289,7 @@ graph TB
 graph TB
   subgraph " "
   GaussianField-->CartesianField;
+  NumericalCovariance->CartesianField;
   ScalarField-->CartesianField;
   GridField-->CartesianField;
   CartesianField--combine-->FieldStructure;
@@ -305,6 +308,15 @@ We refer to [Gaussian random functions, Lifshits, 1995](https://link.springer.co
 - `gaussianField.GaussianField_3D(covariance, nonlinear_transform)` : constructor for a `covariance` $c :\mathbb{R}^d \rightarrow \mathbb{R}$, and the `nonlinear_transform` $A : \mathbb{R} \rightarrow \mathbb{R}$. The parameters are lambda functions.
 - `gaussianField_3D.seed` : direct access to the seed property, for controlling the randomness of the field.
 
+:warning: The analytical covariance that is imposed is **only approximately** the numerical covariance of the Gaussian field. To plot the numerical covariance, you may consider the class described below `NumericalCovariance_3D`.
+
+### Numerical covariance (of a Gaussian field)
+
+This class is intended to plot the actual covariance of the discretized Gaussian field, which correspond to the class `GaussianField_3D`. 
+
+***Methods***
+- `gaussianField.NumericalCovariance_3D(covariance)` : constructor for a Covariance from a lambda function `covariance` $c :\mathbb{R}^d \rightarrow \mathbb{R}$.
+
 ### Scalar Fields (defined by a function f(x))
 
 This class contains a function $f$ depending on the spatial variable $x$.
@@ -319,10 +331,11 @@ Such an object can be obtained from the method `Voxellation\_3D.getField()`.
 
 ### CartesianField
 
-This is either a `GaussianField_3D`, a `ScalarField_3D`, or a discretized `GridField_3D`, with the additional information of the size of the cuboid.
+This is either a `GaussianField_3D`, a `NumericalCovariance_3D`, a `ScalarField_3D`, or a discretized `GridField_3D`, with the additional information of the size of the cuboid.
 
 **Methods**
 - `CartesianField_3D(gaussianField, [L1, L2, L3])` : constructor based on a `GaussianField_3D`, `[L1, L2, L3]` edgelenths of the cuboid.
+- `CartesianField_3D(numericalCovariance, [L1, L2, L3])` : constructor based on a `NumericalCovariance_3D`, `[L1, L2, L3]` edgelenths of the cuboid.
 - `CartesianField_3D(scalarField, [L1, L2, L3])` : constructor based on a `ScalarField_3D`, `[L1, L2, L3]` edgelenths of the cuboid.
 - `CartesianField_3D(gridField, [L1, L2, L3])` : constructor based on a `GridField_3D`, `[L1, L2, L3]` edgelenths of the cuboid.
 

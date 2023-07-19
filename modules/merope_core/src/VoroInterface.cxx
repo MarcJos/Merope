@@ -28,7 +28,7 @@ void voroInterface_aux::buildTessellation(
     voro::container_poly*& voropp_container, array<bool, 3> periodicity) {
     voro::pre_container_poly precont(0., L[0], 0., L[1], 0., L[2],
         periodicity[0], periodicity[1], periodicity[2]);
-// Place the centers
+    // Place the centers
     for (size_t i = 0; i < centerTessels.size(); i++) {
         const auto& sphere = centerTessels[i];
         precont.put(i, sphere.center[0], sphere.center[1], sphere.center[2],
@@ -123,15 +123,14 @@ int voroInterface_aux::findTessel(const Point<3>& pt,
         b, c, indexTessel);
     if (success) {
         return indexTessel;
-    }
-    else {
+    } else {
         throw runtime_error(__PRETTY_FUNCTION__);
     }
 }
 
 vector<vector<Identifier>> voroInterface_aux::getFacesToVertices(
     voro::voronoicell_neighbor* cell) {
-//! extract the information
+    //! extract the information
     vector<int> face2vertices{};
     cell->face_vertices(face2vertices);
     //! convert the information
@@ -150,7 +149,7 @@ vector<vector<Identifier>> voroInterface_aux::getFacesToVertices(
 }
 
 SingleCell::SingleCell(Identifier identifier_, const Point<3>& center_,
-    voro::voronoicell_neighbor* c):
+    voro::voronoicell_neighbor* c) :
     SingleCell{ identifier_, center_,
             voroInterface_aux::getVertices(c, center_),
             voroInterface_aux::getNormals(c),
@@ -201,7 +200,7 @@ SingleCell::SingleCell(Identifier identifier_, const Point<3>& center_,
     const vector<Point<3> >& vertices_,
     const vector<Point<3> >& faceNormal_,
     const vector<vector<Identifier> >& faceVertices_,
-    const vector<Identifier>& neighbors_):
+    const vector<Identifier>& neighbors_) :
     identifier{ identifier_ }, center(center_), vertices(vertices_), faceNormal(faceNormal_), faceVertices(faceVertices_),
     neighbors(neighbors_) {
     correctNormals(); // for avoiding 0 normals

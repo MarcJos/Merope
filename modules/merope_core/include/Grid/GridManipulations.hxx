@@ -59,7 +59,7 @@ VOXEL_TYPE combineVoxelFunc(const VOXEL_TYPE& voxelData1, const VOXEL_TYPE& voxe
 //! \seed combineVoxelMask
 array<double, 2> translateMask(const VoxelPhaseFrac& voxelMask);
 
-} // namespace vox::gridAuxi
+} // namespace gridAuxi
 } // namespace vox
 } // namespace merope
 

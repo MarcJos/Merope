@@ -17,7 +17,7 @@ namespace geomTools {
 template<unsigned short DIM, class SOLID>
 SOLID trim(const SOLID& solid, double layerWidth);
 
-} // namespace Corners_of_Cubes
+} // namespace geomTools
 } // namespace sac_de_billes
 #include "../Geometry/Trim.ixx"
 

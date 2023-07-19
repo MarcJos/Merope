@@ -23,18 +23,14 @@ inline TypeCrystal str_2_TypeCrystal(const string s) {
     TypeCrystal typeCrystal;
     if (s == "Voronoi" or s == "voronoi") {
         typeCrystal = TypeCrystal::Voronoi;
-    }
-    else if (s == "Laguerre" or s == "laguerre") {
+    } else if (s == "Laguerre" or s == "laguerre") {
         typeCrystal = TypeCrystal::Laguerre;
-    }
-    else if (s == "JohnsonMehl" or s == "johnsonmehl") {
+    } else if (s == "JohnsonMehl" or s == "johnsonmehl") {
         typeCrystal = TypeCrystal::JohnsonMehl;
-    }
-    else if (s == "Inclusions" or s == "inclusions" or s == "Inclusion"
+    } else if (s == "Inclusions" or s == "inclusions" or s == "Inclusion"
         or s == "inclusion") {
         typeCrystal = TypeCrystal::Spheres;
-    }
-    else {
+    } else {
         throw runtime_error("PolyCrystal::setTypeCrystal, Unknown crystal");
     }
     return typeCrystal;
@@ -55,17 +51,13 @@ enum class ColorMaterialID {
 inline ColorMaterialID str_2_ColorMaterialID(const string s) {
     if (s == "Poly") {
         return ColorMaterialID::Poly;
-    }
-    else if (s == "Erode") {
+    } else if (s == "Erode") {
         return ColorMaterialID::Erode;
-    }
-    else if (s == "Erode2Mat") {
+    } else if (s == "Erode2Mat") {
         return ColorMaterialID::Erode2Mat;
-    }
-    else if (s == "Erode3Mat") {
+    } else if (s == "Erode3Mat") {
         return ColorMaterialID::Erode3Mat;
-    }
-    else {
+    } else {
         throw invalid_argument("FromString_2_ColorMaterialID : invalid string");
     }
 }

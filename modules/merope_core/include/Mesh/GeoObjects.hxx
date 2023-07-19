@@ -58,30 +58,30 @@ private:
     TYPE<TypeRelation::Root> roots;
 public:
     //! constructor
-    GeoObject(TypeObject name_, Identifier identifier_, const vector<Identifier>& leaves_):
+    GeoObject(TypeObject name_, Identifier identifier_, const vector<Identifier>& leaves_) :
         identifier{ identifier_ }, leaves(leaves_), name{ name_ } {}
     //! destructor
-    virtual ~GeoObject() {};
+    virtual ~GeoObject() {}
     //! remove all roots
     void resetRoots() { roots = {}; }
     //! remove a root
-    void removeRoot(Identifier id) { roots.erase(id); };
+    void removeRoot(Identifier id) { roots.erase(id); }
     //! removes a leaf
     //! \warning : only if the leaf is singular. Otherwise, unexpected behaviour
     void removeLeafSingular(Identifier id);
     //! add a root
-    void addRoot(Identifier id) { roots.insert(id); };
+    void addRoot(Identifier id) { roots.insert(id); }
     //! replace a leaf
     void replaceLeaf(Identifier id_1, Identifier id_2, long sense);
     //! return the identifier for sorting (when merging)
-    virtual IdentifierSort getId_forSort() const { return IdentifierSort({ 0, identifier }); };
+    virtual IdentifierSort getId_forSort() const { return IdentifierSort({ 0, identifier }); }
     //! test whether the object is cohrent or not
-    virtual bool isCoherent()const { return true; };
+    virtual bool isCoherent()const { return true; }
     //! throws an error in case of problem
     //! fixme : when it works, remove it
     void bugTest() const { if (not isCoherent()) throw runtime_error("The object " + getName(name) + " is not coherent"); }
     //! test whether the object is singular or not
-    virtual bool isSingular()const { bugTest(); return leaves.size() == 0; };
+    virtual bool isSingular()const { bugTest(); return leaves.size() == 0; }
     //! return the desired list
     template<TypeRelation RELAT>
     TYPE<RELAT>& get();
@@ -97,23 +97,23 @@ public:
 };
 
 //! base class for geometrical mesh object that connects periodic copies
-class PerGeoObject: public GeoObject {
+class PerGeoObject : public GeoObject {
 public:
     //! constructor
-    PerGeoObject(TypeObject name_, Identifier identifier_, vector<Identifier> leaves_): GeoObject(name_, identifier_, leaves_) {};
+    PerGeoObject(TypeObject name_, Identifier identifier_, vector<Identifier> leaves_) : GeoObject(name_, identifier_, leaves_) {}
     //! add a leaf
-    void addLeaf(Identifier id) { leaves.push_back(id); };
+    void addLeaf(Identifier id) { leaves.push_back(id); }
 };
 
 //! base class for geometrical mesh object the periodic copies of which are tracked by a PerGeoObject
-class GeoObject_PerLeave: public GeoObject {
+class GeoObject_PerLeave : public GeoObject {
 public:
     //! constructor
     GeoObject_PerLeave() = delete;
     //! constructor
-    GeoObject_PerLeave(TypeObject name_, Identifier identifier_, const vector<Identifier>& leaves_): GeoObject(name_, identifier_, leaves_), hasPeriodicRoot{ false }, periodicRoot{ 0 } {}
+    GeoObject_PerLeave(TypeObject name_, Identifier identifier_, const vector<Identifier>& leaves_) : GeoObject(name_, identifier_, leaves_), hasPeriodicRoot{ false }, periodicRoot{ 0 } {}
     //! return whether the object is periodic or not
-    bool isPeriodic() const { return hasPeriodicRoot; };
+    bool isPeriodic() const { return hasPeriodicRoot; }
     //! return the identifier for sorting (when merging)
     IdentifierSort getId_forSort() const override;
     //! getter
@@ -130,11 +130,11 @@ private:
 };
 
 template<unsigned short DIM>
-class GeoPoint final: public GeoObject_PerLeave {
+class GeoPoint final : public GeoObject_PerLeave {
 public:
     Point<DIM> coordinates;
     //! constructor
-    GeoPoint(Identifier id_, const Point<DIM>& coordinates_): GeoObject_PerLeave(TypeObject::Point, id_, {}), coordinates(coordinates_) {}
+    GeoPoint(Identifier id_, const Point<DIM>& coordinates_) : GeoObject_PerLeave(TypeObject::Point, id_, {}), coordinates(coordinates_) {}
     //! are two points the same?
     AreSame areSame(const GeoPoint<DIM>& point2, double epsilon) const {
         return static_cast<AreSame>(geomTools::distanceCarre<DIM>(this->coordinates, point2.coordinates) < epsilon * epsilon);
@@ -144,80 +144,80 @@ public:
         return static_cast<AreSame>(torus.distanceCarre(this->coordinates, point2.coordinates) < epsilon * epsilon);
     }
     //! a point is never singular
-    bool isSingular() const override { return false; };
+    bool isSingular() const override { return false; }
 };
 
 
-class Edge final: public GeoObject {
+class Edge final : public GeoObject {
 public:
     //! constructor
-    Edge(Identifier identifier_, const vector<Identifier>& leaves_): GeoObject(TypeObject::Edge, identifier_, leaves_) {}
+    Edge(Identifier identifier_, const vector<Identifier>& leaves_) : GeoObject(TypeObject::Edge, identifier_, leaves_) {}
     //! return whether the line is singular or not
-    bool isSingular() const override { return leaves[0] == leaves[1]; };
+    bool isSingular() const override { return leaves[0] == leaves[1]; }
     //! return whether the line is coherent or not
-    bool isCoherent() const override { return leaves.size() == 2; };
+    bool isCoherent() const override { return leaves.size() == 2; }
 };
 
 
-class CurveLoop final: public GeoObject {
+class CurveLoop final : public GeoObject {
 public:
     //! constructor
-    CurveLoop(Identifier identifier_, const vector<Identifier>& leaves_): GeoObject(TypeObject::CurveLoop, identifier_, leaves_) {}
+    CurveLoop(Identifier identifier_, const vector<Identifier>& leaves_) : GeoObject(TypeObject::CurveLoop, identifier_, leaves_) {}
 };
 
 
-class Surface final: public GeoObject_PerLeave {
+class Surface final : public GeoObject_PerLeave {
 public:
     //! constructor
-    Surface(Identifier identifier_, const vector<Identifier>& leaves_): GeoObject_PerLeave(TypeObject::Surface, identifier_, leaves_) {};
+    Surface(Identifier identifier_, const vector<Identifier>& leaves_) : GeoObject_PerLeave(TypeObject::Surface, identifier_, leaves_) {}
 };
 
 
-class SurfaceLoop final: public GeoObject {
+class SurfaceLoop final : public GeoObject {
 public:
     //! constructor
-    SurfaceLoop(Identifier identifier_, const vector<Identifier>& leaves_): GeoObject(TypeObject::SurfaceLoop, identifier_, leaves_) {};
+    SurfaceLoop(Identifier identifier_, const vector<Identifier>& leaves_) : GeoObject(TypeObject::SurfaceLoop, identifier_, leaves_) {}
 };
 
 
-class Solid final: public GeoObject {
+class Solid final : public GeoObject {
 public:
     //! constructor
-    Solid(Identifier identifier_, const vector<Identifier>& leaves_): GeoObject(TypeObject::Solid, identifier_, leaves_) {}
+    Solid(Identifier identifier_, const vector<Identifier>& leaves_) : GeoObject(TypeObject::Solid, identifier_, leaves_) {}
 };
 
-class PhysicalSurface final: public GeoObject {
+class PhysicalSurface final : public GeoObject {
 public:
     //! constructor
-    PhysicalSurface(Identifier identifier_, const vector<Identifier>& leaves_): GeoObject(TypeObject::PhysicalSurface, identifier_, leaves_) {}
+    PhysicalSurface(Identifier identifier_, const vector<Identifier>& leaves_) : GeoObject(TypeObject::PhysicalSurface, identifier_, leaves_) {}
 };
 
-class PhysicalVolume final: public GeoObject {
+class PhysicalVolume final : public GeoObject {
 public:
     //! constructor
-    PhysicalVolume(Identifier identifier_, const vector<Identifier>& leaves_): GeoObject(TypeObject::PhysicalSolid, identifier_, leaves_) {}
+    PhysicalVolume(Identifier identifier_, const vector<Identifier>& leaves_) : GeoObject(TypeObject::PhysicalSolid, identifier_, leaves_) {}
 };
 
-class PerPoint: public PerGeoObject {
+class PerPoint : public PerGeoObject {
 public:
     //! constructor
-    PerPoint(Identifier identifier_, const vector<Identifier>& leaves_): PerGeoObject(TypeObject::PerPoint, identifier_, leaves_) {}
+    PerPoint(Identifier identifier_, const vector<Identifier>& leaves_) : PerGeoObject(TypeObject::PerPoint, identifier_, leaves_) {}
 };
 
 
 template<unsigned short DIM>
-class PerSurface final: public PerGeoObject {
+class PerSurface final : public PerGeoObject {
 public:
     //! constructor
     //PerSurface(Identifier identifier_, const vector<Identifier>& leaves_): PerGeoObject(TypeObject::PeriodicSurface, identifier_, leaves_){}
     //! constructor
-    PerSurface(Identifier identifier_, const vector<Identifier>& leaves_, const Point<DIM>& translation_):
+    PerSurface(Identifier identifier_, const vector<Identifier>& leaves_, const Point<DIM>& translation_) :
         PerGeoObject(TypeObject::PeriodicSurface, identifier_, leaves_), translation(translation_) {}
     //! translation between the first and second surface (=pt_surf_1 - pt_surf_2)
     Point<DIM> translation;
 public:
     //! verify coherence
-    bool isCoherent() const override { return leaves.size() == 0 or leaves.size() == 2; };
+    bool isCoherent() const override { return leaves.size() == 0 or leaves.size() == 2; }
     //! swap the periodic surfaces
     void swapSurf();
 };

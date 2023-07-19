@@ -31,11 +31,11 @@ using SameThings = tuple<C, C, AreSame>;
 
 //! define an order on the geometrical objects.
 //! the object with the larger IdentifierSort should be merged into the object with the lesser one
-struct IdentifierSort: public array<Identifier, 2>{
-    IdentifierSort(const array<Identifier, 2>& array_): array<Identifier, 2>(array_) {};
-    bool operator<(IdentifierSort ids2) { return std::lexicographical_compare(this->begin(), this->end(), ids2.begin(), ids2.end()); };
-    bool operator>(IdentifierSort ids2) { return std::lexicographical_compare(this->begin(), this->end(), ids2.begin(), ids2.end(), [](const auto& o1, const auto& o2) {return o1 > o2;}); };
-    bool operator==(IdentifierSort ids2) { return (*this)[0] == ids2[0] and (*this)[1] == ids2[1]; };
+struct IdentifierSort : public array<Identifier, 2>{
+    IdentifierSort(const array<Identifier, 2>& array_) : array<Identifier, 2>(array_) {}
+    bool operator<(IdentifierSort ids2) { return std::lexicographical_compare(this->begin(), this->end(), ids2.begin(), ids2.end()); }
+    bool operator>(IdentifierSort ids2) { return std::lexicographical_compare(this->begin(), this->end(), ids2.begin(), ids2.end(), [](const auto& o1, const auto& o2) {return o1 > o2;}); }
+    bool operator==(IdentifierSort ids2) { return (*this)[0] == ids2[0] and (*this)[1] == ids2[1]; }
 };
 
 inline ostream& operator<<(ostream& os, const IdentifierSort& is) {
@@ -69,7 +69,7 @@ vector<SameThings<Identifier>> replaceGraph(const vector<SameThings<THING>>& vec
 struct DictPointer {
 public:
     //! constructor
-    DictPointer(const vector<mesh::sameThings::SameThings<IdentifierSort>>& vecSameThings_): vecSameThings(vecSameThings_), internalGraph{} {};
+    DictPointer(const vector<mesh::sameThings::SameThings<IdentifierSort>>& vecSameThings_) : vecSameThings(vecSameThings_), internalGraph{} {};
     //! apply
     vector<mesh::sameThings::SameThings<IdentifierSort>> getOrdered();
 private:

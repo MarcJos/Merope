@@ -32,8 +32,7 @@ array<double, 2> gridAuxi::translateMask(
     for (const auto& phfv : mask_i) {
         if (phfv.phase == 1) {
             result[1] += phfv.fracVol;
-        }
-        else {
+        } else {
             result[0] += phfv.fracVol;
         }
     }

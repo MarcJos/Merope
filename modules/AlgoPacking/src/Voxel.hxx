@@ -25,7 +25,7 @@ class MotherVoxel;
 template<unsigned short DIM>
 class Voxel {
 public:
-    Voxel() {}
+    Voxel() : discreteCoordinates(create_array<DIM, long>(0)), length{ 0. }, covered{ false }, motherGrid{ nullptr }, mother{ nullptr } {}
     //! constructor
     Voxel(const DiscPoint<DIM>& discreteCoordinates_, double length_,
         MotherGrid<DIM>* motherGrid_);
@@ -41,7 +41,7 @@ public:
     //bool isInSphere(const Sphere<DIM>& sphere, double minRadius) const;
     bool isInSphere(const Sphere<DIM>& sphere, const double& minRadius,
         const vector<array<unsigned short, DIM>>& pathForCorner =
-        Path_auxi::get().TABCORNER<DIM>()) const;
+        path::TabCorner<DIM>::get().getTab()) const;
     //! \return if covered by any of the speres in the sphereList
     bool isCovered(const vector<Sphere<DIM>>* sphereList,
         double minRadius) const;
@@ -85,11 +85,11 @@ public:
 };
 
 template<unsigned short DIM>
-class MotherVoxel: public Voxel<DIM> {
+class MotherVoxel : public Voxel<DIM> {
     //! Special voxels of the motherGrid.
     //! Besides the normal properties, helps to find spheres.
 public:
-    MotherVoxel() {}
+    MotherVoxel() : Voxel<DIM>{}, spheresInside{}, spheresRelativePosition{}, isClose2Boundary{ false } {}
     //! Constructor
     MotherVoxel(const DiscPoint<DIM>& discreteCoordinates_, double length_,
         MotherGrid<DIM>* motherGrid_);
@@ -128,7 +128,7 @@ private:
     //! Number of uncovered subvoxels in the table tabNewVoxels
     size_t NbUncoveredVoxels;
 public:
-    VoxelSubdivision(const Voxel<DIM>* voxel):
+    VoxelSubdivision(const Voxel<DIM>* voxel) :
         fatherVoxel(voxel), minRadius(voxel->motherGrid->minRadius), midPoint(
             voxel->center()), tabNewVoxels{ }, tabUnCovered{ }, NbUncoveredVoxels(
                 SIZE), closeSpheres{ }, closeSpheresRelativePos{ } {

@@ -6,6 +6,7 @@
 #define ALGOPACKING_SRC_GEOMETRY_BASICGEOMETRICOPERATIONS_IXX_
 
 #include "../Geometry/Point.hxx"
+#include "BasicGeometricOperations.hxx"
 
 namespace sac_de_billes {
 
@@ -14,8 +15,7 @@ Point<DIM1>  geomTools::linearProjection(Point<DIM2> oldPoint) {
     static_assert(DIM1 <= DIM2);
     if constexpr (DIM1 == 2 and DIM2 == 3) {
         return Point<DIM1>{oldPoint[0], oldPoint[1]};
-    }
-    else {
+    } else {
         throw runtime_error(__PRETTY_FUNCTION__);
     }
 }
@@ -50,8 +50,7 @@ inline Point<DIM> geomTools::projection(const Segment<DIM>& line,
 inline void geomTools::bounce_1D(double& x, const double& L, const double& r) {
     if (x - r < 0) {
         x += 2 * (r - x);
-    }
-    else if (x + r > L) {
+    } else if (x + r > L) {
         x -= 2 * (x + r - L);
     }
 }
@@ -97,14 +96,11 @@ template<unsigned short DIM, class T, typename std::enable_if<is_Point<T, DIM>, 
 inline double geomTools::norme(const T& vec) {
     if constexpr (DIM == 1) {
         return abs(vec[0]);
-    }
-    else if constexpr (DIM == 2) {
+    } else if constexpr (DIM == 2) {
         return hypot(vec[0], vec[1]);
-    }
-    else if constexpr (DIM == 3) {
+    } else if constexpr (DIM == 3) {
         return hypot(vec[0], vec[1], vec[2]);
-    }
-    else {
+    } else {
         throw runtime_error("Unexpected");
     }
 }
@@ -119,8 +115,9 @@ inline double geomTools::distanceCarre(const T& v1, const T& v2) {
 }
 
 template<unsigned short DIM, class T, typename std::enable_if<is_Point<T, DIM>, bool>::type>
-inline bool geomTools::areEqual(const T& v1, const T& v2) {
-    return distanceCarre<DIM>(v1, v2) < geomTools::EPSILON * (std::numeric_limits<double>::epsilon() + geomTools::normeCarre(v1) + geomTools::normeCarre(v2));
+inline bool geomTools::areEqual(const T& v1, const T& v2, double epsilon) {
+    return distanceCarre<DIM>(v1, v2) <= epsilon * (std::numeric_limits<double>::epsilon()
+        + geomTools::normeCarre<DIM>(v1) + geomTools::normeCarre<DIM>(v2));
 }
 
 template<unsigned short DIM>

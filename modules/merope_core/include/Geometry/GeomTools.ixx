@@ -56,21 +56,18 @@ inline geomTools::Intersection_LineConvex geomTools::computeIntersection(const H
         sumOther -= halfSpace.vec()[i] * x1x2[i];
     }
     //! fixme : magical constant
-    if (abs(halfSpace.vec()[DIM - 1]) < 1.e-10) { // consider that last coordinate of vec is 0
+    if (abs(halfSpace.vec()[DIM - 1]) < geomTools::EPSILON_S) { // consider that last coordinate of vec is 0
         z = numeric_limits<double>::max();;
         if (sumOther > 0) {
             return Intersection_LineConvex::All;
-        }
-        else {
+        } else {
             return Intersection_LineConvex::Empty;
         }
-    }
-    else {
+    } else {
         z = sumOther / halfSpace.vec()[DIM - 1];
         if (halfSpace.vec()[DIM - 1] > 0) {
             return Intersection_LineConvex::Minus;
-        }
-        else {
+        } else {
             return Intersection_LineConvex::Plus;
         }
     }
@@ -150,8 +147,7 @@ inline double geomTools::fracVolIntersection(const HalfSpace<DIM>& hspace) {
     constexpr double sqrtDIM = sqrt(DIM);
     if (hspace.c() > sqrtDIM) {
         return 1;
-    }
-    else if (hspace.c() < -sqrtDIM) {
+    } else if (hspace.c() < -sqrtDIM) {
         return 0;
     }
     // proceed with numerical computation
@@ -161,25 +157,21 @@ inline double geomTools::fracVolIntersection(const HalfSpace<DIM>& hspace) {
             < EPSILON * norme2) {
             return fracVolIntersection < 2 >(HalfSpace<2> { Point<2> {
                 outerNormal[1], outerNormal[2] }, hspace.c() });
-        }
-        else if (abs(auxi_function::puissance < 2 >(outerNormal[1]))
+        } else if (abs(auxi_function::puissance < 2 >(outerNormal[1]))
             < EPSILON * norme2) {
             return fracVolIntersection < 2 >(HalfSpace<2> { Point<2> {
                 outerNormal[0], outerNormal[2] }, hspace.c() });
-        }
-        else if (abs(auxi_function::puissance < 2 >(outerNormal[2]))
+        } else if (abs(auxi_function::puissance < 2 >(outerNormal[2]))
             < EPSILON * norme2) {
             return fracVolIntersection < 2 >(HalfSpace<2> { Point<2> {
                 outerNormal[0], outerNormal[1] }, hspace.c() });
         }
-    }
-    else if constexpr (DIM == 2) {
+    } else if constexpr (DIM == 2) {
         if (abs(auxi_function::puissance < 2 >(outerNormal[0]))
             < EPSILON * norme2) {
             return fracVolIntersection < 1 >(HalfSpace<1> { Point<1> {
                 outerNormal[1] }, hspace.c() });
-        }
-        else if (abs(auxi_function::puissance < 2 >(outerNormal[1]))
+        } else if (abs(auxi_function::puissance < 2 >(outerNormal[1]))
             < EPSILON * norme2) {
             return fracVolIntersection < 1 >(HalfSpace<1> { Point<1> {
                 outerNormal[0] }, hspace.c() });
@@ -199,18 +191,15 @@ inline double geomTools::fracVolIntersect::core(const HalfSpace<DIM>& hspace) {
     if constexpr (DIM == 1) {
         if (outerNormal[0] > 0) {
             return max(min(1., hspace.c() / outerNormal[0]), 0.);
-        }
-        else {
+        } else {
             return max(min(1., 1. - hspace.c() / outerNormal[0]), 0.);
         }
-    }
-    else {
+    } else {
         // case 2 or 3
         double prefactor;
         if constexpr (DIM == 2) {
             prefactor = 1. / (2 * outerNormal[0] * outerNormal[1]);
-        }
-        else if constexpr (DIM == 3) {
+        } else if constexpr (DIM == 3) {
             prefactor = -1.
                 / (6 * outerNormal[0] * outerNormal[1] * outerNormal[2]);
         }

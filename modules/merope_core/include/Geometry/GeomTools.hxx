@@ -15,7 +15,7 @@ namespace sac_de_billes {
 namespace geomTools {
 
 enum class Intersection_LineConvex {
-    //! 4 possibilities of intersection between a line (x_0, y_0, z) and a convexShape
+        //! 4 possibilities of intersection between a line (x_0, y_0, z) and a convexShape
         Empty, // no intersection
         Plus,  // z > z_0
         Minus, // z < z_0
@@ -68,7 +68,7 @@ template<unsigned short DIM, unsigned short SIGN>
 Intersection_LineConvex computeIntersection(const Sphere<DIM>& sphere, const array<double, DIM - 1>& x1x2, double& z);
 
 //! \return the volume of the intersection of a unit cube with a half-space
-//! \see The Volume of Simplices Clipped by a Half Space, CHO and CHO, 2000
+//! \see The Volume of Simplices Clipped by a Half Space, CHO and CHO, Applied Mathematics Letters, 2000
 template<unsigned short DIM>
 double fracVolIntersection(const HalfSpace<DIM>& hf);
 //! additional parameter here : the cuboid is supposed to be of form [0,cubeLenght[0]] x [0,cubeLenght[1]] ...
@@ -123,7 +123,7 @@ constexpr array<array<double, 2>, 4> TABCORNER2D{ array<double, 2> { 0, 0 },
 //! stores the result of Indices_TABCORNER
 constexpr array<short, 8> Indices_TABCORNER3D{ -1, 1, 1, -1, 1, -1, -1, 1 };
 constexpr array<short, 4> Indices_TABCORNER2D{ 1, 1, -1, -1 };
-}
+} // namespace auxi_Corner_of_Cubes
 
 namespace Corners_of_Cubes {
 //! Class to manage corners of cubes
@@ -135,7 +135,7 @@ constexpr const array<array<double, DIM>,
 template<unsigned short DIM>
 constexpr const array<short, auxi_Corner_of_Cubes::NumberOfCorners<DIM>()>& Indices_TabCorner();
 
-} // namespace Corners_of_Cubes
+} // namespace Corner_of_Cubes
 } // namespace sac_de_billes
 
 

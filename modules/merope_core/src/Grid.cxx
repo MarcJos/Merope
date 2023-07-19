@@ -50,7 +50,7 @@ void Grid::oneMat() {
     } // end parallel section
 }
 
-Grid::Grid(const double lx_i, const size_t nx_i):
+Grid::Grid(const double lx_i, const size_t nx_i) :
     nx(nx_i), lx(lx_i) {
     d = 1;
     initCommon();
@@ -58,7 +58,7 @@ Grid::Grid(const double lx_i, const size_t nx_i):
 }
 
 Grid::Grid(const double lx_i, const double ly_i, const size_t nx_i,
-    const size_t ny_i):
+    const size_t ny_i) :
     nx(nx_i), ny(ny_i), lx(lx_i), ly(ly_i) {
     d = 2;
     initCommon();
@@ -66,7 +66,7 @@ Grid::Grid(const double lx_i, const double ly_i, const size_t nx_i,
 }
 
 Grid::Grid(const double lx_i, const double ly_i, const double lz_i,
-    const size_t nx_i, const size_t ny_i, const size_t nz_i):
+    const size_t nx_i, const size_t ny_i, const size_t nz_i) :
     nx(nx_i), ny(ny_i), nz(nz_i), lx(lx_i), ly(ly_i), lz(lz_i) {
     d = 3;
     initCommon();
@@ -174,81 +174,29 @@ void Grid::vtkReorderMaterialIdx(unsigned short* const ids) const {
     }
 }
 
-void Grid::VTKheaderCELL2D(VTKstream& fvtk) const {
-    const double dx = lx / nx, dy = ly / ny;
-    fvtk.STRUCTURED_POINTS(nx, ny, dx, dy);
-
-    // Data type and associated color table
-    fvtk.setCELL(ng);
-}
-
-void Grid::VTKheaderCELL3D(VTKstream& fvtk) const {
-    const double dx = lx / nx, dy = ly / ny, dz = lz / nz;
-    fvtk.STRUCTURED_POINTS(nx, ny, nz, dx, dy, dz);
-
-    // Data type and associated color table
-    fvtk.setCELL(ng);
-}
-
 void Grid::VTKheaderCELL(VTKstream& fvtk) const {
     switch (d) {
     case 1:
+        throw runtime_error("Not programmed");
+        break;
     case 2:
-        VTKheaderCELL2D(fvtk);
+        VTKheaderCELL_T<2>(fvtk);
         break;
     case 3:
-        VTKheaderCELL3D(fvtk);
-    }
-}
-
-void Grid::toVTKCELL2D(VTKstream& fvtk) const {
-    // File header
-    VTKheaderCELL2D(fvtk);
-    fvtk << "SCALARS MaterialId unsigned_short" << endl;
-    fvtk << "LOOKUP_TABLE default" << endl;
-
-    // Geometry reconstruction
-    vector<unsigned short> ids(ng);
-    vtkReorderMaterialIdx(&ids[0]);
-
-    // Write phase indices values in file
-    size_t i, j;
-    for (j = 0; j < ny; ++j) {
-        for (i = 0; i < nx; ++i) {
-            fvtk.write(ids[j + i * ny]);
-        }
-    }
-}
-
-void Grid::toVTKCELL3D(VTKstream& fvtk) const {
-    // File header
-    VTKheaderCELL3D(fvtk);
-    fvtk << "SCALARS MaterialId unsigned_short" << endl;
-    fvtk << "LOOKUP_TABLE default" << endl;
-
-    // Geometry reconstruction
-    vector<unsigned short> ids(ng);
-    vtkReorderMaterialIdx(&ids[0]);
-
-    // Write phase indices values in file
-    size_t i, j, k;
-    for (k = 0; k < nz; ++k) {
-        for (j = 0; j < ny; ++j) {
-            for (i = 0; i < nx; ++i) {
-                fvtk.write(ids[k + nz * (j + i * ny)]);
-            }
-        }
+        VTKheaderCELL_T<3>(fvtk);
     }
 }
 
 void Grid::toVTKCELL(VTKstream& fvtk) const {
     switch (d) {
     case 1:
+        throw runtime_error("Not possible");
+        break;
     case 2:
-        toVTKCELL2D(fvtk);
+        toVTKCELL_T<2>(fvtk);
         break;
     case 3:
-        toVTKCELL3D(fvtk);
+        toVTKCELL_T<3>(fvtk);
     }
 }
 
@@ -276,11 +224,11 @@ double Grid::phaseFraction(unsigned long i) const {
         throw runtime_error(
             "Grid::phaseFraction : phase index must be less than "
             + to_string(n));
-    return (double)phases[i].size() / ng;
+    return phases[i].size() * 1. / ng;
 }
 
 void Grid::print(std::ostream& os) const {
-    os << "====== Grid info: " << (int)d << "D [" << nx << "x" << ny << "x"
+    os << "====== Grid info: " << static_cast<int>(d) << "D [" << nx << "x" << ny << "x"
         << nz << "]\n";
     os << "Number of nodes  : " << ng << endl;
     os << "Number of phases : " << phases.size() << endl;
@@ -288,7 +236,7 @@ void Grid::print(std::ostream& os) const {
     unsigned short i2 = 0;
     for (i = phases.begin(); i != phases.end(); ++i, ++i2) {
         os << "  Phase[" << i2 << "]: " << i->size() << " nodes = "
-            << (double)(i->size()) / (0.01 * ng) << " %" << endl;
+            << i->size() / (0.01 * ng) << " %" << endl;
     }
 }
 
@@ -333,8 +281,8 @@ void Grid::covX(const unsigned short a, const unsigned short b,
     }
 
     // Phase proportions
-    double fa = ((double)phases[a].size()) / ng;
-    double fb = ((double)phases[b].size()) / ng;
+    double fa = phases[a].size() * 1. / ng;
+    double fb = phases[b].size() * 1. / ng;
     // Normalisation and output
     double dx = lx / nx, x;
     for (vi = var.begin(), x = 0; vi != var.end(); ++vi, x += dx) {
@@ -379,8 +327,8 @@ void Grid::covY(const unsigned short a, const unsigned short b,
     }
 
     // Phase proportions
-    double fa = ((double)phases[a].size()) / ng;
-    double fb = ((double)phases[b].size()) / ng;
+    double fa = phases[a].size() * 1. / ng;
+    double fb = phases[b].size() * 1. / ng;
     // Normalisation and output
     double dy = ly / ny, y;
     for (vi = var.begin(), y = 0; vi != var.end(); ++vi, y += dy) {
@@ -421,8 +369,8 @@ void Grid::covZ(const unsigned short a, const unsigned short b,
     }
 
     // Phase proportions
-    double fa = ((double)phases[a].size()) / ng;
-    double fb = ((double)phases[b].size()) / ng;
+    double fa = phases[a].size() * 1. / ng;
+    double fb = phases[b].size() * 1. / ng;
     // Normalisation and output
     double dz = lz / nz, z;
     for (vi = var.begin(), z = 0; vi != var.end(); ++vi, z += dz) {

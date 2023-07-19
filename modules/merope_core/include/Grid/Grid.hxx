@@ -144,18 +144,14 @@ protected:
     //! Fill a 1/2/3D table with phaseIdx saved in each point of the grid
     //! \param ids Filled table defining geometry phases on the grid
     void vtkReorderMaterialIdx(unsigned short* const ids) const;
-    //! VTK CELL header 2D file
+    //! VTK CELL header DIM-D file
     //! \param fvtk VTK file stream
-    void VTKheaderCELL2D(VTKstream& fvtk) const;
-    //! VTK CELL header 3D file
+    template<unsigned short DIM>
+    void VTKheaderCELL_T(VTKstream& fvtk) const;
+    //! Writes a VTK CELL DIM-D file, for VTK generation purpose.
     //! \param fvtk VTK file stream
-    void VTKheaderCELL3D(VTKstream& fvtk) const;
-    //! Writes a VTK CELL 2D file, for VTK generation purpose.
-    //! \param fvtk VTK file stream
-    void toVTKCELL2D(VTKstream& fvtk) const;
-    //! Writes a VTK CELL 3D file, for VTK generation purpose.
-    //! \param fvtk VTK file stream
-    void toVTKCELL3D(VTKstream& fvtk) const;
+    template<unsigned short DIM>
+    void toVTKCELL_T(VTKstream& fvtk) const;
 };
 
 } // namespace merope

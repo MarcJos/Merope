@@ -10,6 +10,7 @@
 #include "../Voxellation/VoxRecurStructure.hxx"
 
 #include "../MeropeNamespace.hxx"
+#include "../VTKinout/VTK_adapter.hxx"
 
 
 namespace merope {
@@ -17,7 +18,7 @@ namespace vox {
 
 // Voxellation_data
 template<unsigned short DIM>
-inline Voxellation_data<DIM>::Voxellation_data(array<double, DIM> L):
+inline Voxellation_data<DIM>::Voxellation_data(array<double, DIM> L) :
     PreVoxellation<DIM>(L),
     homogRule{ homogenization::Rule::Smallest },
     structure{ nullptr }, fieldStructure{ nullptr },
@@ -25,13 +26,13 @@ inline Voxellation_data<DIM>::Voxellation_data(array<double, DIM> L):
 }
 
 template<unsigned short DIM>
-inline Voxellation_data<DIM>::Voxellation_data(const Structure<DIM>& structure_):
+inline Voxellation_data<DIM>::Voxellation_data(const Structure<DIM>& structure_) :
     Voxellation_data(structure_.getL()) {
     structure.reset(new Structure<DIM>(structure_));
 }
 
 template<unsigned short DIM>
-inline Voxellation_data<DIM>::Voxellation_data(const FieldStructure<DIM>& fieldStructure_):
+inline Voxellation_data<DIM>::Voxellation_data(const FieldStructure<DIM>& fieldStructure_) :
     Voxellation_data(fieldStructure_.getL()) {
     fieldStructure.reset(new FieldStructure<DIM>(fieldStructure_));
 }
@@ -124,14 +125,18 @@ inline GridField<DIM> Voxellation<DIM>::getField() {
     this->checkStructure(__PRETTY_FUNCTION__);
     if (this->fieldStructure) {
         return getField_FieldStructure();
-    }
-    else if (this->structure) {
+    } else if (this->structure) {
         return getField_Structure();
-    }
-    else {
+    } else {
         cerr << __PRETTY_FUNCTION__ << endl;
         throw runtime_error("Unexpected");
     }
+}
+
+template<unsigned short DIM>
+inline void Voxellation<DIM>::printFieldFile(string fileVTK) {
+    auto field = this->getField();
+    merope::printVTK(fileVTK, field, "Value", "double");
 }
 
 template<unsigned short DIM>
@@ -179,12 +184,10 @@ inline vector<vector<tuple<vox::VTK_PHASE, double>>> vox::Voxellation<DIM>::comp
     auto VOXEL_RULE = this->voxelRule;
     if (VOXEL_RULE == vox::VoxelRule::Average) {
         return convertGrid::fromCartesianToVector(getPhaseFracField<vox::VoxelRule::Average>());
-    }
-    else if (VOXEL_RULE == vox::VoxelRule::Center) {
+    } else if (VOXEL_RULE == vox::VoxelRule::Center) {
         return convertGrid::fromCartesianToVector(convertGrid::fromPhaseToFracVol(
             getPhaseFracField<vox::VoxelRule::Center>()));
-    }
-    else {
+    } else {
         cerr << __PRETTY_FUNCTION__ << endl;
         throw runtime_error("Unexpected");
     }
@@ -194,8 +197,7 @@ template<unsigned short DIM>
 vox::CartesianGrid<DIM, vox::VTK_PHASE> Voxellation<DIM>::getPhaseGrid() {
     if (this->structure and this->voxelRule == vox::VoxelRule::Center) {
         return getPhaseFracField<vox::VoxelRule::Center>();
-    }
-    else {
+    } else {
         return vox::convertGrid::fromFieldToPhase(this->getField(), this->coefficients);
     }
 }
@@ -206,17 +208,13 @@ GridField<DIM> Voxellation<DIM>::applyHomogRule(const CartesianGrid<DIM, VoxelPh
     /////////////////
     if (this->homogRule == homogenization::Rule::Voigt) {
         return applyHomogRule_T<homogenization::Rule::Voigt>(phaseFracVol);
-    }
-    else if (this->homogRule == homogenization::Rule::Reuss) {
+    } else if (this->homogRule == homogenization::Rule::Reuss) {
         return applyHomogRule_T<homogenization::Rule::Reuss>(phaseFracVol);
-    }
-    else if (this->homogRule == homogenization::Rule::Largest) {
+    } else if (this->homogRule == homogenization::Rule::Largest) {
         return applyHomogRule_T<homogenization::Rule::Largest>(phaseFracVol);
-    }
-    else if (this->homogRule == homogenization::Rule::Smallest) {
+    } else if (this->homogRule == homogenization::Rule::Smallest) {
         return applyHomogRule_T<homogenization::Rule::Smallest>(phaseFracVol);
-    }
-    else {
+    } else {
         cerr << __PRETTY_FUNCTION__ << endl;
         throw invalid_argument("HomogRule");
     }

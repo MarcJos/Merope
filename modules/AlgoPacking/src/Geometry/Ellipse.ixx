@@ -9,7 +9,7 @@
 namespace sac_de_billes {
 
 template<unsigned short DIM>
-Ellipse<DIM>::Ellipse(): Ellipse(Sphere<DIM>()) {}
+Ellipse<DIM>::Ellipse() : Ellipse(Sphere<DIM>()) {}
 
 template<unsigned short DIM>
 Ellipse<DIM>::Ellipse(const Sphere<DIM> sphere) : Ellipse(sphere.center, ellipseAux::defaultAxes<DIM>()) {
@@ -21,7 +21,7 @@ Ellipse<DIM>::Ellipse(const Sphere<DIM> sphere) : Ellipse(sphere.center, ellipse
 
 template<unsigned short DIM>
 inline Ellipse<DIM>::Ellipse(const Point<DIM>& center_,
-    const array<Point<DIM>, DIM>& axes_): phase{ 0 }, center(center_), axes(axes_) {
+    const array<Point<DIM>, DIM>& axes_) : phase{ 0 }, center(center_), axes(axes_) {
     compute_alphas();
 }
 
@@ -52,6 +52,21 @@ inline bool Ellipse<DIM>::isInside(const Point<DIM>& point) const {
         res += auxi_function::puissance<2>(geomTools::prodScal<DIM>(point - this->center, axes[i]));
     }
     return res < 1;
+}
+
+template<unsigned short DIM>
+void Ellipse<DIM>::print(ostream& os) const {
+    os << "Ellipse = {";
+    os << "center = ["; auxi_function::writeVectorToString(center, os); os << "], ";
+    os << "axes = ";
+    for (const auto& ax : axes) {
+        os << "[";
+        for (auto x_i : ax) {
+            os << x_i << ", ";
+        }
+        os << "] ";
+    }
+    os << "}";
 }
 
 

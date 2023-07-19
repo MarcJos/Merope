@@ -19,17 +19,17 @@
 namespace merope {
 
 template<unsigned short DIM>
-class PolyInclusions: public InsideTorus<DIM>, public WithAspratio<DIM> {
+class PolyInclusions : public InsideTorus<DIM>, public WithAspratio<DIM> {
     // class implementing non-intersecting polyhedric inclusions
 public:
     //! constructor
-    PolyInclusions(): InsideTorus<DIM>(), WithAspratio<DIM>(), polyInclusions{}{};
+    PolyInclusions() : InsideTorus<DIM>(), WithAspratio<DIM>(), polyInclusions{}{}
     //! destructor
-    virtual ~PolyInclusions() {};
+    virtual ~PolyInclusions() {}
     //! get all the cells
     const vector<smallShape::ConvexPolyhedronInc<DIM>>& getMicroInclusions() const { return polyInclusions; }
     //! adds a new polyhedron
-    virtual void addInclusion(const smallShape::ConvexPolyhedronInc<DIM>& polyhedron) { this->polyInclusions.push_back(polyhedron); };
+    virtual void addInclusion(const smallShape::ConvexPolyhedronInc<DIM>& polyhedron) { this->polyInclusions.push_back(polyhedron); }
     //! set spheroPolyhedrons
     void setInclusions(vector<smallShape::ConvexPolyhedronInc<DIM>> polyInclusions_) { this->polyInclusions = polyInclusions_; }
 

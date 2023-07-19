@@ -33,11 +33,9 @@ template<unsigned short EXPONENT, class C>
 inline constexpr C puissance(const C& x) {
     if constexpr (EXPONENT == 2) {
         return x * x;
-    }
-    else if constexpr (EXPONENT == 3) {
+    } else if constexpr (EXPONENT == 3) {
         return x * x * x;
-    }
-    else {
+    } else {
         constexpr unsigned short new_expo = EXPONENT / 2;
         return puissance<new_expo>(x) * puissance<EXPONENT - new_expo>(x);
     }
@@ -47,11 +45,9 @@ template<class C>
 C puissance(C x, size_t exponent) {
     if (exponent == 0) {
         return 1;
-    }
-    else if (exponent == 1) {
+    } else if (exponent == 1) {
         return x;
-    }
-    else {
+    } else {
         size_t expo1 = exponent / 2;
         return puissance(x, expo1) * puissance(x, exponent - expo1);
     }
@@ -75,11 +71,9 @@ _OutputIterator extract_list(_InputIterator1 __first1, _InputIterator1 __last1,
             *__result = *__first1;
             __result++;
             __first1++;
-        }
-        else if (f1 < f2) {
+        } else if (f1 < f2) {
             __first1++;
-        }
-        else {
+        } else {
             __first2++;
         }
     }
@@ -87,9 +81,9 @@ _OutputIterator extract_list(_InputIterator1 __first1, _InputIterator1 __last1,
 }
 
 template<class VECTOR>
-inline void writeVectorToString(const VECTOR& vect, std::ostream& f) {
+inline void writeVectorToString(const VECTOR& vect, std::ostream& f, std::string separator) {
     for (auto it = vect.begin(); it != vect.end(); it++) {
-        if (it != vect.begin()) f << ",";
+        if (it != vect.begin()) f << separator;
         f << *it;
     }
 }
@@ -100,8 +94,7 @@ size_t erase_if(MAP& c, PREDICATE pred) {
     for (auto i = c.begin(), last = c.end(); i != last; ) {
         if (pred(*i)) {
             i = c.erase(i);
-        }
-        else {
+        } else {
             ++i;
         }
     }

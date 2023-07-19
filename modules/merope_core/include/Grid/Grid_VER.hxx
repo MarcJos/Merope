@@ -29,7 +29,7 @@ class Voxellation;
 }
 
 
-class Grid_VER: public Grid {
+class Grid_VER : public Grid {
 public:
     //! Default constructor
     Grid_VER();
@@ -100,7 +100,7 @@ void symmetrize(string inputFileName, string outputFileName, array<size_t, DIM> 
 namespace aux {
 //! see Grid_VER::symmetrize
 size_t symmetriseAuxi(size_t N1, size_t i, size_t N2);
-} // namespace vox::aux
+} // namespace aux
 
 } // namespace vox
 } // namespace merope

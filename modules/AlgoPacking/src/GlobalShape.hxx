@@ -23,17 +23,13 @@ enum class NameShape {
 inline NameShape readShape(string s) {
     if (s == "Tore") {
         return NameShape::Tore;
-    }
-    else if (s == "Cube") {
+    } else if (s == "Cube") {
         return NameShape::Cube;
-    }
-    else if (s == "Sphere") {
+    } else if (s == "Sphere") {
         return NameShape::Sphere;
-    }
-    else if (s == "Cylinder") {
+    } else if (s == "Cylinder") {
         return NameShape::Cylinder;
-    }
-    else {
+    } else {
         throw invalid_argument("readShapes");
     }
 }
@@ -49,7 +45,7 @@ public:
     Point<DIM> L;
 
     //! Default Constructor
-    BigShape(Point<DIM> L_):
+    BigShape(Point<DIM> L_) :
         d{ DIM }, L{ L_ }, boundaryExclusionDistance{ 0 } {}
 
     virtual ~BigShape() {}
@@ -97,7 +93,7 @@ protected:
 };
 
 template<short unsigned DIM>
-class Cube: public BigShape<DIM> {
+class Cube : public BigShape<DIM> {
 public:
     // constructor
     //! \param L_ : the lengths of the sides of the cube
@@ -107,22 +103,21 @@ public:
     double volume() const override;
     //! \return the squared PERIODIC distance between two points
     //! \param x1, x2 two points
-    virtual double distanceCarre(const Point<DIM>& x1,
+    double distanceCarre(const Point<DIM>& x1,
         const Point<DIM>& x2) const override;
     //! \return whether the point is inside the cube
-    bool isInside(const Point<DIM>& point, const double& minRadius) const
-        override;
+    bool isInside(const Point<DIM>& point, const double& minRadius) const override;
     //! a sphere may cross the boundary of the cube
     bool isInside(const Sphere<DIM>& sph) const override;
     //! \see BigShape::geomVector
-    virtual Point<DIM> geomVector(const Point<DIM>& p1,
+    Point<DIM> geomVector(const Point<DIM>& p1,
         const Point<DIM>& p2) const override;
     //! \return the projection of a point inside the Cube
     virtual void projection(Point<DIM>& point) const;
     //! \see BigShape::bounce
-    virtual void bounce(Sphere<DIM>& sph) const override;
+    void bounce(Sphere<DIM>& sph) const override;
     //! \see BigShape::type
-    virtual NameShape type() const override {
+    NameShape type() const override {
         return NameShape::Cube;
     }
     //! return the area of a given face
@@ -130,7 +125,7 @@ public:
 };
 
 template<short unsigned DIM>
-class Tore: public Cube<DIM> {
+class Tore : public Cube<DIM> {
 public:
     // constructor
     Tore(Point<DIM> L_);
@@ -145,22 +140,22 @@ public:
     //! a sphere is always inside the bigShape
     bool isInside(const Sphere<DIM>& sph) const override;
     //! \see BigShape::geomVector
-    virtual Point<DIM> geomVector(const Point<DIM>& p1,
+    Point<DIM> geomVector(const Point<DIM>& p1,
         const Point<DIM>& p2) const override;
     //! \see BigShape::type
-    virtual NameShape type() const override {
+    NameShape type() const override {
         return NameShape::Tore;
     }
 
     //! \return the projection of a point inside the Cube
     void projection(Point<DIM>& point) const override;
     //! \see BigShape::bounce
-    virtual void bounce(Sphere<DIM>& sph) const override;
+    void bounce(Sphere<DIM>& sph) const override;
 };
 
 //! warning : why does BigSphere inherit from Cube ?
 template<short unsigned DIM>
-class BigSphere: public Cube<DIM> {
+class BigSphere : public Cube<DIM> {
 private:
     Point<DIM> center;
     double radius;
@@ -173,14 +168,13 @@ public:
     //! \return the volume of the sphere
     double volume() const override;
     //! \return whether the point is inside the bigShape
-    bool isInside(const Point<DIM>& point, const double& minRadius) const
-        override;
+    bool isInside(const Point<DIM>& point, const double& minRadius) const override;
     //! a sphere is always inside the bigShape
     bool isInside(const Sphere<DIM>& sph) const override;
     //! \see BigShape::bounce
-    virtual void bounce(Sphere<DIM>& sph) const override;
+    void bounce(Sphere<DIM>& sph) const override;
     //! \see BigShape::type
-    virtual NameShape type() const override {
+    NameShape type() const override {
         return NameShape::Sphere;
     }
     //! not applicable
@@ -188,7 +182,7 @@ public:
 };
 
 template<short unsigned DIM>
-class BigCylinder: public Cube<DIM> {
+class BigCylinder : public Cube<DIM> {
 private:
     double height;
     BigSphere<2> circle;
@@ -206,9 +200,9 @@ public:
     //! a sphere is always inside the bigShape
     bool isInside(const Sphere<DIM>& sph) const override;
     //! \see BigShape::bounce
-    virtual void bounce(Sphere<DIM>& sph) const override;
+    void bounce(Sphere<DIM>& sph) const override;
     //! \see BigShape::type
-    virtual NameShape type() const override {
+    NameShape type() const override {
         return NameShape::Cylinder;
     }
 };
@@ -219,17 +213,13 @@ inline unique_ptr<AmbiantSpace::BigShape<DIM>> createShape(
     unique_ptr<AmbiantSpace::BigShape<DIM>> ptr;
     if (nameShape == AmbiantSpace::NameShape::Tore) {
         ptr.reset(new AmbiantSpace::Tore<DIM>(L));
-    }
-    else if (nameShape == AmbiantSpace::NameShape::Cube) {
+    } else if (nameShape == AmbiantSpace::NameShape::Cube) {
         ptr.reset(new AmbiantSpace::Cube<DIM>(L));
-    }
-    else if (nameShape == AmbiantSpace::NameShape::Sphere) {
+    } else if (nameShape == AmbiantSpace::NameShape::Sphere) {
         ptr.reset(new AmbiantSpace::BigSphere<DIM>(L));
-    }
-    else if (nameShape == AmbiantSpace::NameShape::Cylinder) {
+    } else if (nameShape == AmbiantSpace::NameShape::Cylinder) {
         ptr.reset(new AmbiantSpace::BigCylinder<DIM>(L));
-    }
-    else {
+    } else {
         throw invalid_argument(__PRETTY_FUNCTION__);
     }
     return ptr;
