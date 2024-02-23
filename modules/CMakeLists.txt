@@ -8,10 +8,14 @@ enable_testing()
 
 # FFTW
 #include("cmake/modules/fftw3.cmake")
+# MKL
+include("cmake/modules/mkl.cmake")   
+
 include("cmake/modules/gcc.cmake")
 
 # AlgoPacking implicitly includes compiler options
 add_subdirectory(AlgoPacking)
 add_subdirectory(merope_core)
+add_subdirectory(Optimization)
 
 

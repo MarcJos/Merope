@@ -164,5 +164,32 @@ void testMesh::test4() {
     meshGenerator.write("LaguerreTess_mesh.geo");
 }
 
+void testMesh::test5() {
+    Point<3> L = { 2, 2, 2 };
+    unsigned seed = 0;
+    vector<array<double, 2>> desiredRPhi = { {0.5, 1} };
+    vector<PhaseType> tabPhases = { 1 };
+    auto spheres = sac_de_billes::algoSpheres::throwSpheres<3>(sac_de_billes::algoSpheres::TypeAlgo::RSA, sac_de_billes::AmbiantSpace::NameShape::Tore, L, seed, desiredRPhi, tabPhases, 0.);
+    // print
+    SphereInclusions<3> mIncl{};
+    mIncl.setLength(L);
+    mIncl.setSpheres(spheres);
+    mIncl.printVER("Seeds.txt");
+    // print
+    LaguerreTess<3> polyCrystal(L, spheres);
+    MultiInclusions<3> multiInclusions{};
+    multiInclusions.setInclusions(polyCrystal);
+    multiInclusions.changePhase(multiInclusions.getAllIdentifiers(), multiInclusions.getAllIdentifiers());
+
+    mesh::generator::MeshGenerator meshGenerator{};
+    meshGenerator.setMeshOrder(1);
+    meshGenerator.setMeshSize(0.025);
+    meshGenerator.setMultiInclusions(multiInclusions);
+    meshGenerator.setAdimMergeDistance0(1.e-5);
+    meshGenerator.setAdimMergeDistance1(1.e-2);
+    meshGenerator.write("mmm_mesh.geo");
+}
+
+
 } // namespace merope
 

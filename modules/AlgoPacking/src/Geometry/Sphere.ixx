@@ -25,18 +25,33 @@ bool areIntersected(const Sphere<DIM>& sph1, const Sphere<DIM>& sph2) {
         < (sph1.radius + sph2.radius) * (sph1.radius + sph2.radius);
 }
 
+/* Volume of a unit sphere in dimension D*/
+inline constexpr double volumeUnitSphere(int DIM) {
+    double mult = 1;
+    if (DIM % 2 == 0) {
+        for (int k = 0; k <= DIM / 2 - 1; k++) {
+            mult *= (2 * m_PI) / (DIM - 2 * k);
+        }
+    } else {
+        mult = 1. / m_PI;
+        for (int k = 0; k <= (DIM - 1) / 2; k++) {
+            mult *= (2 * m_PI) / (DIM - 2 * k);
+        }
+    }
+    return mult;
+}
+
 template<unsigned short DIM>
 inline double sphereTools::volumeSphere(const double& R) {
-    if constexpr (DIM == 1) {
-        return 2 * R;
-    } else if constexpr (DIM == 2) {
-        return m_PI * R * R;
-    } else if constexpr (DIM == 3) {
-        return 4. / 3. * m_PI * R * R * R;
-    } else {
-        throw invalid_argument(
-            "BigShape<DIM>::volumeBoule: La dimension doit etre 1, 2 ou 3");
-    }
+    constexpr double mult = volumeUnitSphere(DIM);
+    /*
+    various tests for the formula of the volume of the sphere
+    */
+    static_assert((DIM != 1) or abs(mult - 1) < 1e-10);
+    static_assert((DIM != 2) or abs(mult - m_PI) < 1e-10);
+    static_assert((DIM != 3) or abs(mult - (4. / 3.) * m_PI) < 1e-10);
+    static_assert((DIM != 4) or abs(mult - 0.5 * m_PI * m_PI) < 1e-10);
+    return mult * auxi_function::puissance<DIM>(R);
 }
 
 template<unsigned short DIM>

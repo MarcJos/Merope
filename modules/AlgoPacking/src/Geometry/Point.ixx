@@ -28,19 +28,15 @@ ostream& operator<<(ostream& out, const Point<DIM>& p) {
     return print(&out, &p);
 }
 
+template<int DIM, size_t... I, class C>
+constexpr array<C, DIM> create_array(C x, std::index_sequence<I...>) {
+    auto f = [&x](size_t) {return x;};
+    return array<C, DIM> {(f(I))...};
+}
+
 template<unsigned short DIM, class C>
 constexpr array<C, DIM> create_array(C x) {
-    // fixme
-    static_assert(DIM == 1 or DIM == 2 or DIM == 3);
-    if constexpr (DIM == 1) {
-        return array<C, DIM> {x};
-    }
-    else if constexpr (DIM == 2) {
-        return array<C, DIM>{x, x};
-    }
-    else if constexpr (DIM == 3) {
-        return array<C, DIM>{x, x, x};
-    }
+    return create_array<DIM>(x, std::make_index_sequence<DIM>{});
 }
 
 template<unsigned short DIM>

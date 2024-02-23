@@ -14,7 +14,9 @@
 #include "Obsolete_MesoStructure/MicroType.hxx"
 #include "Voxellation/Voxellation.hxx"
 #include "VTKinout/VTKStream.hxx"
-
+#include "Parallelism/SetNbOfThreads.hxx"
+#include "AlgoLaguerre/Optimize_LaguerreTess.hxx"
+#include "AlgoLaguerre/MakeCentroidal.hxx"
 
 #include "MeropeNamespace.hxx"
 
@@ -208,6 +210,7 @@ void Tests::polyCrystal1() {
     voxGrid.printFile("poro2D_2.vtk", "Coeffs.txt");
 }
 
+
 void Tests::polyCrystal9() {
     auto sv = 0; // Random number generations seed for seperating spheres positionning
     auto N = 150; // Nb spheres
@@ -242,6 +245,78 @@ void Tests::polyCrystal9() {
 
     voxGrid.printFile("poro3D-gdVolume.vtk", "Coeffs.txt");
 }
+
+template<unsigned short DIM>
+inline void auxi_polyCrystal_fit_volumes(string fileVTK) {
+    auto sv = 0; // Random number generations seed for seperating spheres positionning
+    auto N = 200; // Nb spheres
+    double l3D = 10; // RVE dimensions
+    array<double, DIM> L = create_array<DIM>(l3D);
+    double mindist = 0;
+    // Discretization
+    auto theSpheres = algoSpheres::fillMaxRSA<DIM>(AmbiantSpace::NameShape::Tore, L, N, sv, mindist);
+    for (size_t i = 0; i < theSpheres.size(); i++) {
+        theSpheres[i].phase = i;
+    }
+    /////////////////////////////////////
+    vector<double> volumeFractions(theSpheres.size(), auxi_function::productOf<double>(L) / theSpheres.size());
+    optimizeLaguerreTess::algo_fit_volumes<DIM> algo(L, theSpheres, volumeFractions);
+    clock_t t0 = clock();
+    /////////////////////////////
+    ///// Important lines
+    /////////////////////////////
+    algo.proceed(1e-5, 300, true);
+    auto vols = algo.getCurrentVolumes();
+    for (size_t i = 0; i < vols.size(); i++) {
+        std::cerr << vols[i] << " , ";
+    }
+    std::cerr << endl;
+    auto new_center_tessels = algo.getCenterTessels();
+    std::cerr << "Nb of spheres" << vols.size() << " = " << new_center_tessels.size() << endl;
+    /////////////////////////////
+    /////////////////////////////
+    double total_time = (static_cast<double>(clock() - t0)) / CLOCKS_PER_SEC;
+
+    cerr << "############" << endl;
+    cerr << "############" << endl;
+    std::cerr << "Here is the total time :" << total_time << endl;
+    cerr << "############" << endl;
+    cerr << "############" << endl;
+
+    /////////////////////////////// PRINT
+    LaguerreTess<DIM> lag(L, new_center_tessels);
+    MultiInclusions<DIM> mi{};
+    mi.setInclusions(lag);
+    //////////////////////////////////////
+    vox::Voxellation<DIM> voxellation{ mi };
+    array<size_t, DIM> nbVox = create_array<DIM, size_t>(64);
+    voxellation.proceed(nbVox);
+    //////////////////////////////////////
+    string fileCoeff = "Coeffs.txt";
+    voxellation.printFile(fileVTK, fileCoeff);
+}
+
+void Tests::polyCrystal_fit_volumes_3D(string fileVTK) {
+    auxi_polyCrystal_fit_volumes<3>(fileVTK);
+}
+
+void Tests::polyCrystal_fit_volumes_2D(string fileVTK) {
+    auxi_polyCrystal_fit_volumes<2>(fileVTK);
+}
+
+void Tests::polyCrystalCentroidal(bool use_acceleration) {
+    auto sv = 0; // Random number generations seed for seperating spheres positionning
+    auto N = 4000; // Nb spheres
+    double l3D = 10; // RVE dimensions
+    constexpr unsigned short DIM = 3;
+    array<double, DIM> L = { l3D, l3D, l3D };
+    double mindist = 0;
+    // Discretization
+    auto theSpheres = algoSpheres::fillMaxRSA<DIM>(AmbiantSpace::NameShape::Tore, L, N, sv, mindist);
+    optimizeLaguerreTess::makeCentroidal<DIM, 4>(L, theSpheres, 100, 1e-5, use_acceleration, true);
+    std::cerr << theSpheres.size() << endl;
+}
+
 
 void Tests::polyCrystal8() {
     auto sv = 0; // Random number generations seed for seperating spheres positionning
@@ -357,7 +432,7 @@ void Tests::extraction() {
 }
 
 void Tests::testPerf0() {
-    const size_t NB_XP = 50;
+    const long NB_XP = 50;
     constexpr short DIM = 2;
     array<double, DIM> L = { 20., 20. };
     array<size_t, DIM> nbVox = { 609, 1176 };
@@ -397,6 +472,95 @@ void Tests::testFields() {
     FieldStructure<DIM> fieldStructure(cartesianField);
     vox::Voxellation<DIM> myVox(fieldStructure);
 }
+
+void Tests::testFields2() {
+    constexpr unsigned short DIM = 3;
+    double r_0 = 2;
+    double r_1 = 3;
+    double r_2 = 4;
+    double l_silver = 0.3;
+    double phi_1 = 0.2;
+    double  phi_2 = 0.3;
+    double lambda_0clay = 0.6;
+    double lambda_lead = 35.3;
+    double lambda_silver = 429;
+
+    array<double, DIM> L = { 50, 50, 50 };
+    array<size_t, DIM> N3D = { 128, 128, 128 };
+    int seed_sph = 0;
+    int seed_Gauss = 1;
+
+    // define gaussian field
+    auto covariance = [r_0](Point<DIM> x) {return exp((-x[0] * x[0] - x[1] * x[1] - x[2] * x[2]) / (2 * r_0 * r_0));};
+    auto nonLin = [lambda_0clay](double g) {return lambda_0clay * (2 + tanh(g));};
+    merope::gaussianField::SimpleGaussianField<DIM> gaussianne(covariance, nonLin);
+    gaussianne.seed = seed_Gauss;
+    // get spheres
+    vector<array<double, 2>> desiredRPhi = { {r_1, phi_1}, {r_2, phi_2} };
+    vector<long> tabPhases = { 1, 1 };
+    double minDist = 0.;
+    auto the_spheres = sac_de_billes::algoSpheres::throwSpheres<3>(sac_de_billes::algoSpheres::TypeAlgo::WP, sac_de_billes::AmbiantSpace::NameShape::Tore, L, seed_sph, desiredRPhi, tabPhases, minDist);
+    // spherical inclusions
+    merope::SphereInclusions<3> sphIncl{};
+    sphIncl.setLength(L);
+    sphIncl.setSpheres(the_spheres);
+    merope::MultiInclusions<3> mIncl{};
+    mIncl.setInclusions(sphIncl);
+    auto list_id = mIncl.getAllIdentifiers();
+    mIncl.addLayer(list_id, 2, l_silver);
+    mIncl.setMatrixPhase(2);
+    // mask
+    merope::SphereInclusions<3> maskSphIncl{};
+    maskSphIncl.setLength(L);
+    maskSphIncl.setSpheres(the_spheres);
+    merope::MultiInclusions<3> mask{};
+    mask.setInclusions(sphIncl);
+    mask.setMatrixPhase(0);
+    // printStruc
+    auto printStruc = [](const auto& struc, const auto& N3D_, const string& name) {
+        merope::vox::Voxellation<DIM> voxelTot(struc);
+        voxelTot.proceed(N3D_);
+        voxelTot.printFile(name + ".vtk", name + ".txt");
+        };
+    // print Gaussian Field
+    merope::CartesianField<DIM> cField_Gauss(gaussianne, L);
+    merope::FieldStructure<DIM> struc_gauss(cField_Gauss);
+    merope::vox::Voxellation<DIM> vox(struc_gauss);
+    vox.proceed(N3D);
+    vox.printFile("gauss.vtk", "gauss.txt");
+    printStruc(struc_gauss, N3D, "struc_gauss");
+    // print mask
+    merope::Structure<DIM> structureMask(mask);
+    merope::vox::Voxellation<DIM> voxellationMask(structureMask);
+    voxellationMask.setVoxelRule(merope::vox::VoxelRule::Average);
+    voxellationMask.setHomogRule(merope::homogenization::Rule::Voigt);
+    voxellationMask.proceed(N3D);
+    voxellationMask.printFile("mask.vtk", "mask.txt");
+    auto fieldMask = voxellationMask.getField();
+    merope::CartesianField<DIM> cField_mask(fieldMask, L);
+    merope::FieldStructure<DIM> struc_mask(cField_mask);
+    printStruc(struc_mask, N3D, "struc_mask");
+    // print inclusions
+    merope::Structure<DIM> structureIncl(mIncl);
+    merope::vox::Voxellation<DIM> voxellationIncl(structureIncl);
+    voxellationIncl.setVoxelRule(merope::vox::VoxelRule::Average);
+    voxellationIncl.setHomogRule(merope::homogenization::Rule::Reuss);
+    voxellationIncl.setPureCoeffs({ lambda_0clay, lambda_lead, lambda_silver });
+    voxellationIncl.proceed(N3D);
+    voxellationIncl.printFile("inclusions.vtk", "inclusions.txt");
+    auto fieldInclusions = voxellationIncl.getField();
+    merope::CartesianField<DIM> cField_inclusions(fieldInclusions, L);
+    merope::FieldStructure<DIM> struc_incl(cField_inclusions);
+    printStruc(struc_incl, N3D, "struc_incl");
+    // resulting microstructure
+    merope::FieldStructure<DIM>fieldStructureTot(struc_gauss, struc_incl, struc_mask);
+    merope::vox::Voxellation<DIM> voxelTot(fieldStructureTot);
+    voxelTot.setVoxelRule(merope::vox::VoxelRule::Average);
+    voxelTot.setHomogRule(merope::homogenization::Rule::Reuss);
+    voxelTot.proceed(N3D);
+    voxelTot.printFile("totalStruct.vtk", "totalStruct.txt");
+}
+
 
 } // namespace merope
 

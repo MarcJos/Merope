@@ -12,10 +12,19 @@ using namespace sac_de_billes;
 using namespace merope;
 
 int main() {
+    testMesh::test5();
+    cerr << "testMesh::test5();" << endl;
+    //
+    Tests::testFields2();
+    cerr << "Tests::testFields2();" << endl;
     testMesh::test3();
+    cerr << "testMesh::test3();" << endl;
     testMesh::test4();
+    cerr << "testMesh::test4();" << endl;
     testMesh::test2();
+    cerr << "testMesh::test2();" << endl;
     testMesh::test1();
+    cerr << "testMesh::test1();" << endl;
     ///
 
     clock_t t_0 = clock();
@@ -42,7 +51,8 @@ int main() {
     Tests::testFields();
     cerr << "---------------11" << endl;
 
+
     cerr << "Time : " << (static_cast<double>(clock() - t_0)) / CLOCKS_PER_SEC << endl;
 
-    return 0;
+    return EXIT_SUCCESS;
 }

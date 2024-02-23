@@ -32,7 +32,7 @@ namespace vox {
 
 //! Class for building a phase field from a MultiInclusions geometry
 template<unsigned short DIM, vox::VoxelRule VOXEL_RULE>
-class VoxSimpleMultiInclusions: public VoxGrid<DIM, vox::OutputFormat<VOXEL_RULE>> {
+class VoxSimpleMultiInclusions : public VoxGrid<DIM, vox::OutputFormat<VOXEL_RULE>> {
     // Preconditions
     static_assert(VOXEL_RULE == VoxelRule::Center or VOXEL_RULE == VoxelRule::Average);
     //
@@ -43,6 +43,8 @@ public:
 protected:
     //! inner inclusions ref
     const MultiInclusions<DIM>* multiInclusions;
+    //! is there a matrix ?
+    bool matrixPresence;
     //! phase of the matrix
     PhaseType matrixPhase;
     //! fills the vector phaseFracVol

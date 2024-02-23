@@ -13,7 +13,7 @@ namespace merope {
 
 //! Pre_Interface
 template<unsigned short DIM>
-Pre_InterfaceMultiInclusions<DIM>::Pre_InterfaceMultiInclusions():
+Pre_InterfaceMultiInclusions<DIM>::Pre_InterfaceMultiInclusions() :
     MicroType(), SphereSeeds<DIM>(), WithAspratio<DIM>() {}
 
 template<unsigned short DIM>
@@ -38,7 +38,7 @@ inline vector<Identifier> Pre_InterfaceMultiInclusions<DIM>::getAllIdentifiers()
 ////////////////////////////
 
 template<unsigned short DIM>
-inline InterfaceMultiInclusions<DIM>::InterfaceMultiInclusions():
+inline InterfaceMultiInclusions<DIM>::InterfaceMultiInclusions() :
     InterfaceMultiInclusions(Pre_InterfaceMultiInclusions<DIM>()) {}
 
 template<unsigned short DIM>
@@ -73,8 +73,7 @@ inline MultiInclusions<DIM> InterfaceMultiInclusions<DIM>::buildSimple() {
         sphInc.setLength(this->getL());
         sphInc.setSpheres(this->getSpheres());
         multiInclusions.setInclusions(sphInc);
-    }
-    else if (this->typeCrystal == TypeCrystal::Laguerre
+    } else if (this->typeCrystal == TypeCrystal::Laguerre
         or this->typeCrystal == TypeCrystal::Voronoi) {
         if (this->typeCrystal == TypeCrystal::Voronoi) {
             for (auto& s : this->theSpheres) { // all the spheres shoud have radius 1
@@ -84,8 +83,7 @@ inline MultiInclusions<DIM> InterfaceMultiInclusions<DIM>::buildSimple() {
         LaguerreTess <DIM> laguerreTess(this->getL(), this->getSpheres());
         laguerreTess.setAspRatio(this->aspratio);
         multiInclusions.setInclusions(laguerreTess);
-    }
-    else {
+    } else {
         cerr << __PRETTY_FUNCTION__ << endl;
         throw runtime_error("Undefined behavior");
     }
@@ -95,7 +93,7 @@ inline MultiInclusions<DIM> InterfaceMultiInclusions<DIM>::buildSimple() {
 //! InterfacePolyCrystal<DIM>
 
 template<unsigned short DIM>
-inline InterfaceStructure<DIM>::InterfaceStructure():
+inline InterfaceStructure<DIM>::InterfaceStructure() :
     Colorize(),
     mainInclusions(), secdInclusions(), innerPhase{ DEFAULT_INNERPHASE },
     erosionPhase{ DEFAULT_EROSIONPHASE }, erosionInclusionsPhase{ DEFAULT_EROSIONINCLUSIONSPHASE }, erosionWidth{ 0. } {}
@@ -217,7 +215,7 @@ template<unsigned short DIM>
 inline vector<smallShape::LayerInstructions> InterfaceStructure<DIM>::buildLayerInstructions(PhaseType erosionPhase_) const {
     vector<smallShape::LayerInstructions> instructions{};
     for (size_t i = 0; i < mainInclusions.getAllIdentifiers().size(); i++) {
-        instructions.push_back(smallShape::LayerInstructions{ i, erosionPhase_, erosionWidth });
+        instructions.push_back(smallShape::LayerInstructions{ static_cast<Identifier>(i), erosionPhase_, erosionWidth });
     }
     return instructions;
 }
@@ -258,14 +256,11 @@ inline std::function<PhaseType(PhaseType, PhaseType)> InterfaceStructure<DIM>::f
     std::function<PhaseType(PhaseType, PhaseType)> func = [defaultInnerPh, defaultErosionPh, innerPh, erosionPh, erosionInclusionPh](PhaseType phi1, PhaseType phi2) {
         if (phi1 == defaultInnerPh) {
             return innerPh;
-        }
-        else if (phi1 == defaultErosionPh and phi2 == 0) {
+        } else if (phi1 == defaultErosionPh and phi2 == 0) {
             return erosionPh;
-        }
-        else if (phi1 == defaultErosionPh and phi2 == 1) {
+        } else if (phi1 == defaultErosionPh and phi2 == 1) {
             return erosionInclusionPh;
-        }
-        else {
+        } else {
             cerr << "###############" << endl;
             cerr << __PRETTY_FUNCTION__ << endl;
             cerr << "First phase  : " << phi1 << endl;
@@ -273,7 +268,7 @@ inline std::function<PhaseType(PhaseType, PhaseType)> InterfaceStructure<DIM>::f
             cerr << "###############" << endl;
             throw runtime_error("Unexpected phases");
         }
-    };
+        };
     return func;
 }
 

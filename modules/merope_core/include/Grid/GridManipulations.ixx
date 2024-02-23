@@ -37,19 +37,16 @@ CartesianGrid<DIM, VOXEL_TYPE> gridAuxi::combineGridMask(const CartesianGrid<DIM
 
 template<class VOXEL_TYPE>
 VOXEL_TYPE gridAuxi::combineVoxelMask(const VOXEL_TYPE& phf1, const VOXEL_TYPE& phf2, const VOXEL_TYPE& mask) {
-    static_assert(std::is_same<VOXEL_TYPE, vox::OutputFormat<VoxelRule::Average>>::value
-        or std::is_arithmetic<VOXEL_TYPE>::value);
+    static_assert(is_Voxel_TYPE_Frac<VOXEL_TYPE> or std::is_arithmetic<VOXEL_TYPE>::value);
     //
-    if constexpr (std::is_same<VOXEL_TYPE, vox::OutputFormat<VoxelRule::Average>>::value) { // case of PhaseFracVol
+    if constexpr (is_Voxel_TYPE_Frac<VOXEL_TYPE>) { // case of PhaseFracVol
         array<double, 2> proportions = vox::gridAuxi::translateMask(mask);
         if (proportions[1] < geomTools::EPSILON) {
             return phf1;
-        }
-        else if (proportions[0] < geomTools::EPSILON) {
+        } else if (proportions[0] < geomTools::EPSILON) {
             return phf2;
-        }
-        else {
-            VoxelPhaseFrac result{};
+        } else {
+            VOXEL_TYPE result{};
             for (auto phf : phf1) {
                 phf.fracVol *= proportions[0];
                 result.push_back(phf);
@@ -60,12 +57,10 @@ VOXEL_TYPE gridAuxi::combineVoxelMask(const VOXEL_TYPE& phf1, const VOXEL_TYPE& 
             }
             return result;
         }
-    }
-    else if constexpr (std::is_arithmetic<VOXEL_TYPE>::value) { // case of numeric type
+    } else if constexpr (std::is_arithmetic<VOXEL_TYPE>::value) { // case of numeric type
         if (mask > 0) {
             return phf2;
-        }
-        else {
+        } else {
             return phf1;
         }
     }
@@ -73,21 +68,22 @@ VOXEL_TYPE gridAuxi::combineVoxelMask(const VOXEL_TYPE& phf1, const VOXEL_TYPE& 
 
 template<class VOXEL_TYPE, class FUNCTION>
 VOXEL_TYPE gridAuxi::combineVoxelFunc(const VOXEL_TYPE& voxphf1, const VOXEL_TYPE& voxphf2, const FUNCTION& func) {
-    static_assert(std::is_same<VOXEL_TYPE, vox::OutputFormat<VoxelRule::Average>>::value
+    static_assert(is_Voxel_TYPE_Frac<VOXEL_TYPE>
         or std::is_arithmetic<VOXEL_TYPE>::value);
     //
-    if constexpr (std::is_same<VOXEL_TYPE, vox::OutputFormat<VoxelRule::Average>>::value) { // case of PhaseFracVol
-        VoxelPhaseFrac result{};
+    if constexpr (is_Voxel_TYPE_Frac<VOXEL_TYPE>) { // case of PhaseFracVol
+        VOXEL_TYPE result{};
         for (const auto& pf1 : voxphf1) {
             for (const auto& pf2 : voxphf2) {
-                result.push_back(
-                    SinglePhaseFrac(func(pf1.phase, pf2.phase), pf1.fracVol * pf2.fracVol));
+                auto pf3 = pf1;
+                pf3.phase = func(pf1.phase, pf2.phase);
+                pf3.fracVol = pf1.fracVol * pf2.fracVol;
+                result.push_back(pf3);
             }
         }
         result.merge();
         return result;
-    }
-    else if constexpr (std::is_arithmetic<VOXEL_TYPE>::value) { // case of numeric type
+    } else if constexpr (std::is_arithmetic<VOXEL_TYPE>::value) { // case of numeric type
         return func(voxphf1, voxphf2);
     }
 }

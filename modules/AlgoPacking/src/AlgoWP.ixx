@@ -34,8 +34,7 @@ inline void algoWP_aux::IntersectedSpheres<DIM>::add(size_t index1,
     size_t index2) {
     if (index1 < index2) {
         listOfPairs.push_back(algoWP_aux::Pair(index1, index2));
-    }
-    else {
+    } else {
         listOfPairs.push_back(algoWP_aux::Pair(index2, index1));
     }
 }
@@ -60,24 +59,38 @@ inline void algoWP_aux::IntersectedSpheres<DIM>::buildLists() {
 template<unsigned short DIM>
 inline void algoWP_aux::IntersectedSpheres<DIM>::updatePositions() {
     //! \fixme : not really equivalent to the other version!
+    vector<Point<DIM>> displacements(listOfPairs.size());
+    // compute displacements
 #pragma omp parallel for
-    for (const auto& pair : listOfPairs) {
+    for (size_t l = 0; l < listOfPairs.size(); l++) {
+        const auto& pair = listOfPairs[l];
         size_t i = pair[0];
         size_t j = pair[1];
         if (i < j) {
-            Sphere <DIM>& sph1 = motherGrid->placedSpheres[i];
-            Sphere <DIM>& sph2 = motherGrid->placedSpheres[j];
+            const Sphere <DIM>& sph1 = motherGrid->placedSpheres[i];
+            const Sphere <DIM>& sph2 = motherGrid->placedSpheres[j];
             const auto& geomVector = bigShape->geomVector(sph1.center,
                 sph2.center);
             double distance = sqrt(bigShape->normeCarre(geomVector));
             double factor = h_multiplier * 2 * algoWP_aux::deltaij(sph1, sph2, distance)
                 / distance;
+            displacements[l] = factor * geomVector;
+        }
+    }
+    // apply displacements
+#pragma omp parallel for
+    for (size_t l = 0; l < listOfPairs.size(); l++) {
+        const auto& pair = listOfPairs[l];
+        size_t i = pair[0];
+        size_t j = pair[1];
+        if (i < j) {
+            Sphere <DIM>& sph1 = motherGrid->placedSpheres[i];
+            Sphere <DIM>& sph2 = motherGrid->placedSpheres[j];
             for (auto k = 0; k < DIM; k++) {
-                double displacement_k = factor * geomVector[k];
 #pragma omp atomic
-                sph1.center[k] -= displacement_k;
+                sph1.center[k] -= displacements[l][k];
 #pragma omp atomic
-                sph2.center[k] += displacement_k;
+                sph2.center[k] += displacements[l][k];
             }
         }
     }
@@ -173,7 +186,7 @@ inline vector<size_t> WPGrid<DIM>::getNearSpheres(
 template<unsigned short DIM>
 inline WPGrid<DIM>::WPGrid(DiscPoint<DIM> sizes_,
     AmbiantSpace::BigShape<DIM>* bigShape_, double voxelLength_,
-    double minRadius_, double maxRadius_):
+    double minRadius_, double maxRadius_) :
     algoRSA_aux::MotherGrid<DIM>(sizes_, bigShape_, voxelLength_,
         minRadius_, maxRadius_), activatedVoxels{ } {
     //\fixme : maybe shrink should decrease when reaching the desired radius?
@@ -273,11 +286,9 @@ template<unsigned short NUM_METHOD_OVERLAP_>
 inline void WPGrid<DIM>::moveOverlappingSpheres() {
     if constexpr (NUM_METHOD_OVERLAP_ == 1) {
         return moveOverlappingSpheres_1();
-    }
-    else if constexpr (NUM_METHOD_OVERLAP_ == 2) {
+    } else if constexpr (NUM_METHOD_OVERLAP_ == 2) {
         return moveOverlappingSpheres_2();
-    }
-    else {
+    } else {
         throw invalid_argument(__PRETTY_FUNCTION__);
     }
 }
@@ -306,7 +317,6 @@ inline void WPGrid<DIM>::moveOverlappingSpheres_1() {
             this->discCoordinate_withoutModulo(newSphere.center));
         activatedVoxels[i] = arrivalVoxel;
         updateSphereIndex(indexSphere, departureVoxel, arrivalVoxel);
-
     }
 }
 
@@ -331,7 +341,6 @@ inline void WPGrid<DIM>::moveOverlappingSpheres_2() {
 
 template<unsigned short DIM>
 inline map<string, string> algoWP_aux::AlgoWP_Template<DIM>::proceed(unsigned short method) {
-
     initialize(method);
     double Delta_RenormVolumeFraction = (1 - pow(RADIUS_MULT, DIM))
         / NUMBER_OF_STEPS;
@@ -344,11 +353,6 @@ inline map<string, string> algoWP_aux::AlgoWP_Template<DIM>::proceed(unsigned sh
         RenormVolumeFraction = RenormVolumeFraction_next;
         grid.get()->shrink(shrinkFactor);
         grid.get()->removeOverlap();
-        /*		if(AlgoWP<DIM>::VERBOSE){
-         string nameFile = "Step" + to_string(i) + ".dump";
-         setSpheres();
-         this->printDump(nameFile);
-         }*/
     }
     printFinalMessage();
     return map<string, string>{ { "Packed", "False" }};
@@ -357,7 +361,7 @@ inline map<string, string> algoWP_aux::AlgoWP_Template<DIM>::proceed(unsigned sh
 template<unsigned short DIM>
 inline algoWP_aux::AlgoWP_Template<DIM>::AlgoWP_Template(
     AmbiantSpace::BigShape<DIM>* bigShape_,
-    algoRSA_aux::RadiusGenerator<DIM>* radiusGen_, unsigned seed_):
+    algoRSA_aux::RadiusGenerator<DIM>* radiusGen_, unsigned seed_) :
     placedSpheres{ nullptr }, bigShape{ bigShape_ }, radiusGen{
             radiusGen_ }, seed{ seed_ } {
     DiscPoint <DIM> sizes;

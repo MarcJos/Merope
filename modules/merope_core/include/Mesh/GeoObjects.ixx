@@ -79,7 +79,11 @@ inline void mesh::geoObjects::removePeriodicRoots(const vector<Identifier>& sing
     for (auto id : singularThings) {
         const auto& thing = dictThings.at(id);
         if (thing.isPeriodic()) {
-            dictPerThings.at(thing.getPeriodicRoot()).removeLeafSingular(id);
+            auto id_periodic_root = thing.getPeriodicRoot();
+            dictPerThings.at(id_periodic_root).removeLeafSingular(id);
+            if (dictPerThings.at(id_periodic_root).isSingular()) {
+                dictPerThings.erase(id_periodic_root);
+            }
         }
     }
 }
@@ -118,11 +122,9 @@ inline geoObjects::AreSame geoObjects::areSame(const OBJ& obj1, const OBJ& obj2)
         Identifier x0 = obj1.leaves[0], x1 = obj1.leaves[1], y0 = obj2.leaves[0], y1 = obj2.leaves[1];
         if (x0 == y0 and x1 == y1) {
             return AreSame::Same;
-        }
-        else if (x0 == y1 and x1 == y0) {
+        } else if (x0 == y1 and x1 == y0) {
             return AreSame::Reverse;
-        }
-        else {
+        } else {
             return AreSame::Different;
         }
     }

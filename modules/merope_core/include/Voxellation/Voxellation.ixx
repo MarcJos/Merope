@@ -71,7 +71,7 @@ void Voxellation_data<DIM>::checkPureCoeffs() {
             throw runtime_error("One phase is negative!");
         }
         vector<double> defaultPureCoeffs(maxPhase + 1);
-        for (size_t i = 0; i < maxPhase + 1; i++) {
+        for (long i = 0; i < maxPhase + 1; i++) {
             defaultPureCoeffs[i] = i;
         }
         setPureCoeffs(defaultPureCoeffs);
@@ -146,7 +146,7 @@ inline GridField<DIM> Voxellation<DIM>::getField_Structure() {
         cerr << __PRETTY_FUNCTION__ << endl;
         throw runtime_error("The Center Voxel Rule cannot give rise to a field");
     }
-    auto phaseFracVol = getPhaseFracField<VoxelRule::Average>();
+    auto phaseFracVol = getPhaseFracField<OutputFormat<VoxelRule::Average>>(this->structure);
     return applyHomogRule(phaseFracVol);
 }
 
@@ -154,21 +154,32 @@ template<unsigned short DIM>
 inline GridField<DIM> Voxellation<DIM>::getField_FieldStructure() {
     if (not this->fieldStructure) {
         cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("PhaseFracField only makes sense for fieldStructure");
+        throw runtime_error("getField_FieldStructure only makes sense for fieldStructure");
     }
-    //
-    return VoxStructure<DIM, double, CartesianField<DIM>, double>(*(this->fieldStructure), *this)();
+    if (this->voxelRule == vox::VoxelRule::Center) {
+        return VoxStructure<DIM, double, CartesianField<DIM>, double>(*(this->fieldStructure), *this)();
+    } else {
+        auto phaseValueField = getPhaseFracField<vox::VoxelValueFrac>(this->fieldStructure);
+        return applyHomogRule(phaseValueField);
+    }
 }
 
 template<unsigned short DIM>
-template<VoxelRule VOXEL_RULE>
-inline CartesianGrid<DIM, OutputFormat<VOXEL_RULE>> Voxellation<DIM>::getPhaseFracField() {
-    if (not this->structure) {
+template<class VOXEL_FORMAT, class STRUCTURE>
+inline CartesianGrid<DIM, VOXEL_FORMAT> Voxellation<DIM>::getPhaseFracField(const STRUCTURE& structure_) {
+    if (not structure_) {
         cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("PhaseFracField only makes sense for structures");
+        throw runtime_error("PhaseFracField only makes sense for structures not empty");
     }
     //
-    return VoxStructure<DIM, vox::OutputFormat<VOXEL_RULE>, MultiInclusions<DIM>, PhaseType>(*(this->structure), *this)();
+    if constexpr (std::is_same<unique_ptr<const Structure<DIM>>, STRUCTURE>::value) {
+        return VoxStructure<DIM, VOXEL_FORMAT, MultiInclusions<DIM>, PhaseType>(*structure_, *this)();
+    } else if constexpr (std::is_same<unique_ptr<const FieldStructure<DIM>>, STRUCTURE>::value) {
+        return VoxStructure<DIM, VOXEL_FORMAT, CartesianField<DIM>, double>(*structure_, *this)();
+    } else {
+        cerr << __PRETTY_FUNCTION__ << endl;
+        throw runtime_error("Unexpected");
+    }
 }
 
 template<unsigned short DIM>
@@ -183,10 +194,10 @@ inline vector<vector<tuple<vox::VTK_PHASE, double>>> vox::Voxellation<DIM>::comp
     ////////
     auto VOXEL_RULE = this->voxelRule;
     if (VOXEL_RULE == vox::VoxelRule::Average) {
-        return convertGrid::fromCartesianToVector(getPhaseFracField<vox::VoxelRule::Average>());
+        return convertGrid::fromCartesianToVector(getPhaseFracField<OutputFormat<vox::VoxelRule::Average>>(this->structure));
     } else if (VOXEL_RULE == vox::VoxelRule::Center) {
         return convertGrid::fromCartesianToVector(convertGrid::fromPhaseToFracVol(
-            getPhaseFracField<vox::VoxelRule::Center>()));
+            getPhaseFracField<OutputFormat<vox::VoxelRule::Center>>(this->structure)));
     } else {
         cerr << __PRETTY_FUNCTION__ << endl;
         throw runtime_error("Unexpected");
@@ -196,15 +207,18 @@ inline vector<vector<tuple<vox::VTK_PHASE, double>>> vox::Voxellation<DIM>::comp
 template<unsigned short DIM>
 vox::CartesianGrid<DIM, vox::VTK_PHASE> Voxellation<DIM>::getPhaseGrid() {
     if (this->structure and this->voxelRule == vox::VoxelRule::Center) {
-        return getPhaseFracField<vox::VoxelRule::Center>();
+        return getPhaseFracField<OutputFormat<vox::VoxelRule::Center>>(this->structure);
     } else {
         return vox::convertGrid::fromFieldToPhase(this->getField(), this->coefficients);
     }
 }
 
 template<unsigned short DIM>
-GridField<DIM> Voxellation<DIM>::applyHomogRule(const CartesianGrid<DIM, VoxelPhaseFrac>& phaseFracVol) {
-    this->checkPureCoeffs();
+template<class VOXEL_TYPE>
+GridField<DIM> Voxellation<DIM>::applyHomogRule(const CartesianGrid<DIM, VOXEL_TYPE>& phaseFracVol) {
+    if (std::is_same<VOXEL_TYPE, VoxelPhaseFrac>::value) {
+        this->checkPureCoeffs();
+    }
     /////////////////
     if (this->homogRule == homogenization::Rule::Voigt) {
         return applyHomogRule_T<homogenization::Rule::Voigt>(phaseFracVol);
@@ -221,16 +235,34 @@ GridField<DIM> Voxellation<DIM>::applyHomogRule(const CartesianGrid<DIM, VoxelPh
 }
 
 template<unsigned short DIM>
-template<homogenization::Rule HOMOG_RULE>
-GridField<DIM> Voxellation<DIM>::applyHomogRule_T(const CartesianGrid<DIM, VoxelPhaseFrac>& phaseFracVol) {
-    auto copyPureCoeffs = this->pureCoeffs;
-    CartesianGrid<DIM, double> gridField = vox::convertGrid::localConvert<DIM, double, vox::VoxelPhaseFrac>(phaseFracVol,
-        [&copyPureCoeffs](const auto& phaseFracVolLoc) {
-            auto input = gridAuxi::getTabCoeff(phaseFracVolLoc, copyPureCoeffs);
-            return homogenization::homog<HOMOG_RULE>(input[0], input[1]);
-        }
-    );
-    return gridField;
+template<homogenization::Rule HOMOG_RULE, class VOXEL_TYPE>
+GridField<DIM> Voxellation<DIM>::applyHomogRule_T(const CartesianGrid<DIM, VOXEL_TYPE>& phaseFracVol) {
+    if constexpr (std::is_same<VOXEL_TYPE, VoxelPhaseFrac>::value) {
+        auto copyPureCoeffs = this->pureCoeffs;
+        CartesianGrid<DIM, double> gridField = vox::convertGrid::localConvert<DIM, double, vox::VoxelPhaseFrac>(phaseFracVol,
+            [&copyPureCoeffs](const auto& phaseFracVolLoc) {
+                auto input = gridAuxi::getTabCoeff(phaseFracVolLoc, copyPureCoeffs);
+                return homogenization::homog<HOMOG_RULE>(input[0], input[1]);
+            }
+        );
+        return gridField;
+    } else if constexpr (std::is_same<VOXEL_TYPE, vox::VoxelValueFrac>::value) {
+        CartesianGrid<DIM, double> gridField = vox::convertGrid::localConvert<DIM, double, vox::VoxelValueFrac>
+            (phaseFracVol,
+                [](const auto& valueFracVolLoc) {
+                    array<vector<double>, 2> input;
+                    for (size_t i = 0; i < valueFracVolLoc.size(); i++) {
+                        input[0].push_back(valueFracVolLoc[i].fracVol);
+                        input[1].push_back(valueFracVolLoc[i].phase);
+                    }
+                    return homogenization::homog<HOMOG_RULE>(input[0], input[1]);
+                }
+        );
+        return gridField;
+    } else {
+        cerr << __PRETTY_FUNCTION__ << endl;
+        throw runtime_error("Unexpected");
+    }
 }
 
 } // namespace vox

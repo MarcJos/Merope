@@ -29,10 +29,15 @@ public:
     //! adds another phasefrac, but maintaining minimal memory requirements
     void add(const auxi_SphereCollection::PhaseFrac<TYPE_PHASE>& pf) { this->push_back(pf); }
     //! merge phases that are present twice (adding the volume fractions)
-    void merge();
+    void merge(double merge_criterion = 1e-6);
     //! renormalizes the volume fractions to 100%, eventually add the matrixPhase
     //! \param matrixPhase : phase to be eventually added to get 1 volume fraction
-    void renormalize(const TYPE_PHASE& matrixPhase);
+    //! \param is_there_matrix : if true, there is a matrix
+    void renormalize(bool is_there_matrix = true, TYPE_PHASE matrixPhase = 0);
+private:
+    //! @brief renormalizes the volume fractions to 100%
+    //! by dividing all volume fractions by the given inverseTotalVolumeFraction
+    void renormalize_by_multiply(double inverseTotalVolumeFraction);
 };
 
 } // namespace gridAuxi

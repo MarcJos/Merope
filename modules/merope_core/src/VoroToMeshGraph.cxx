@@ -75,7 +75,7 @@ mesh::meshStructure::VoroMesh_UnStructureData<3> getRawMeshGraph(const voroInter
         }
         result.vecCurveLoop.push_back(mesh::geoObjects::CurveLoop(index_surf + 1, curveLoopLeaves));
         //
-        leaves = { index_surf + 1 };
+        leaves = { static_cast<Identifier>(index_surf + 1) };
         result.vecSurface.push_back(mesh::geoObjects::Surface(index_surf + 1, leaves));
         surfaceLoopLeaves.push_back(index_surf + 1);
         //

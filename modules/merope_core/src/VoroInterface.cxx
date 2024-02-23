@@ -23,26 +23,19 @@
 namespace merope {
 namespace voroInterface {
 
-void voroInterface_aux::buildTessellation(
-    const vector<Sphere<3>>& centerTessels, array<double, 3> L,
-    voro::container_poly*& voropp_container, array<bool, 3> periodicity) {
-    voro::pre_container_poly precont(0., L[0], 0., L[1], 0., L[2],
-        periodicity[0], periodicity[1], periodicity[2]);
-    // Place the centers
-    for (size_t i = 0; i < centerTessels.size(); i++) {
-        const auto& sphere = centerTessels[i];
-        precont.put(i, sphere.center[0], sphere.center[1], sphere.center[2],
-            sphere.radius);
-    }
-    // find the nx, ny, nz
-    int n_x, n_y, n_z;
-    precont.guess_optimal(n_x, n_y, n_z);
-    // Computes the tessellation
-    voropp_container = new voro::container_poly(0., L[0], 0., L[1], 0., L[2],
-        n_x, n_y, n_z, periodicity[0], periodicity[1], periodicity[2],
-        VOROPP_INIT_MEM);
-    precont.setup(*voropp_container);
-    voropp_container->compute_all_cells();
+template<>
+VoroInterface<3>::VoroInterface(array<double, 3> L,
+    const vector<Sphere<3>>& centerTessels) :
+    InsideTorus<3>(L),
+    PreparedVoroppContainer(centerTessels, L), virtualLength{ L } {
+}
+
+template<>
+VoroInterface<2>::VoroInterface(array<double, 2> L,
+    const vector<Sphere<2>>& centerTessels) :
+    InsideTorus<2>(L),
+    PreparedVoroppContainer(voroInterface_aux::extendDimension(centerTessels, voroInterface_aux::virtualLength<2>(L)), voroInterface_aux::virtualLength<2>(L))
+    , virtualLength{ voroInterface_aux::virtualLength<2>(L) } {
 }
 
 vector<Point<3> > voroInterface_aux::breakList(const vector<double>& v) {
@@ -59,6 +52,10 @@ vector<Point<3> > voroInterface_aux::breakList(const vector<double>& v) {
 }
 
 vector<HalfSpace<3>> voroInterface_aux::getFaces3D(voro::voronoicell_neighbor* cell) {
+    if (not cell) {
+        return vector<HalfSpace<3>>{};
+    }
+    //
     SingleCell singleCell(0, create_array<3>(0.), cell);
     auto numFaces = singleCell.faceNormal.size();
     // prepare the faces
@@ -77,6 +74,10 @@ vector<HalfSpace<3>> voroInterface_aux::getFaces3D(voro::voronoicell_neighbor* c
 
 vector<HalfSpace<2>> voroInterface_aux::getFaces2D(
     voro::voronoicell_neighbor* cell) {
+    if (not cell) {
+        return vector<HalfSpace<2>> {};
+    }
+    //
     vector<HalfSpace<3>> halfSpaces = getFaces3D(cell);
     vector<HalfSpace<2>> result{};
     for (const auto& hf : halfSpaces) {
@@ -88,8 +89,12 @@ vector<HalfSpace<2>> voroInterface_aux::getFaces2D(
     return result;
 }
 
-vector<Point<3> > voroInterface_aux::getRenormalizedVertices(
+vector<Point<3>> voroInterface_aux::getRenormalizedVertices(
     voro::voronoicell_neighbor* cell) {
+    if (not cell) {
+        return vector<Point<3>>{};
+    }
+    //
     vector<double> vecTransfer{ };
     vector<int> neigh;
     cell->neighbors(neigh);
@@ -98,6 +103,10 @@ vector<Point<3> > voroInterface_aux::getRenormalizedVertices(
 }
 
 vector<Point<3>> voroInterface_aux::getNormals(voro::voronoicell_neighbor* cell) {
+    if (not cell) {
+        return vector<Point<3>>{};
+    }
+    //
     vector<double> vecTransfer{ }; //used to get the information from voro++
     cell->normals(vecTransfer);
     return voroInterface_aux::breakList(vecTransfer);
@@ -107,7 +116,21 @@ Point<3> voroInterface_aux::extendDimension(const Point<2>& oldPoint, const arra
     return Point<3>{oldPoint[0], oldPoint[1], 0.5 * L[2]};
 }
 
-vector<Point<3> > voroInterface_aux::getVertices(voro::voronoicell_neighbor* cell, Point<3> center) {
+vector<Sphere<3>> voroInterface_aux::extendDimension(const vector<Sphere<2>>& oldSpheres, const array<double, 3>& L) {
+    vector<Sphere<3>> newSpheres(oldSpheres.size());
+    for (size_t i = 0; i < oldSpheres.size(); i++) {
+        newSpheres[i].phase = oldSpheres[i].phase;
+        newSpheres[i].radius = oldSpheres[i].radius;
+        newSpheres[i].center = extendDimension(oldSpheres[i].center, L);
+    }
+    return newSpheres;
+}
+
+vector<Point<3>> voroInterface_aux::getVertices(voro::voronoicell_neighbor* cell, const Point<3>& center) {
+    if (not cell) {
+        return vector<Point<3>>{};
+    }
+    //
     auto result = voroInterface_aux::getRenormalizedVertices(cell);
     for (auto& pt : result) {
         pt = pt + center;
@@ -130,6 +153,10 @@ int voroInterface_aux::findTessel(const Point<3>& pt,
 
 vector<vector<Identifier>> voroInterface_aux::getFacesToVertices(
     voro::voronoicell_neighbor* cell) {
+    if (not cell) {
+        return vector<vector<Identifier>>{};
+    }
+    //
     //! extract the information
     vector<int> face2vertices{};
     cell->face_vertices(face2vertices);
@@ -189,6 +216,10 @@ void SingleCell::correctNormals() {
 }
 
 vector<Identifier> voroInterface_aux::getNeighbors(voro::voronoicell_neighbor* cell) {
+    if (not cell) {
+        return vector<Identifier>{};
+    }
+    //
     vector<int> temp_result{};
     cell->neighbors(temp_result);
     vector<Identifier> result{};
@@ -204,6 +235,93 @@ SingleCell::SingleCell(Identifier identifier_, const Point<3>& center_,
     identifier{ identifier_ }, center(center_), vertices(vertices_), faceNormal(faceNormal_), faceVertices(faceVertices_),
     neighbors(neighbors_) {
     correctNormals(); // for avoiding 0 normals
+}
+
+vector<double> compute_volumes(const vector<Sphere<3>>& centerTessels,
+    const Point<3>& L) {
+    constexpr double precision_sum_volumes = 1e-6;
+    //
+    vector<double> volumes(centerTessels.size(), 0.);
+    //
+    auto evaluate_volume = [&](auto, auto index, voro::voronoicell_neighbor* c_pt) {
+        if (c_pt) {
+            volumes[index] = c_pt->volume();
+        }
+        };
+    PreparedVoroppContainer voroCont(centerTessels, L);
+    loop_on_voroppcontainer(voroCont.voropp_container, evaluate_volume);
+    // test output
+    if (abs(std::accumulate(volumes.begin(), volumes.end(), 0.) - auxi_function::productOf<double>(L))
+        / auxi_function::productOf<double>(L) > precision_sum_volumes) {
+        std::cerr << __PRETTY_FUNCTION__ << endl;
+        throw runtime_error("Unexpected : total volume not close to the sum of volumes.");
+    }
+    // test output
+    return volumes;
+}
+
+vector<Point<3>> compute_relative_centroids(const vector<Sphere<3>>& centerTessels,
+    const Point<3>& L) {
+    vector<Point<3>> centroidTessels(centerTessels.size());
+    //
+    auto evaluate_centroid = [&](auto, auto index, voro::voronoicell_neighbor* c_pt) {
+        auto& new_cent = centroidTessels[index];
+        if (c_pt) {
+            c_pt->centroid(new_cent[0], new_cent[1], new_cent[2]);
+        } else {
+            new_cent = centerTessels[index].center;
+        }
+        };
+    PreparedVoroppContainer voroCont(centerTessels, L);
+    loop_on_voroppcontainer(voroCont.voropp_container, evaluate_centroid);
+    return centroidTessels;
+}
+
+ListOfVoroppCells::ListOfVoroppCells(array<double, 3> L, const vector<Sphere<3>>& centerTessels)
+    : InsideTorus<3>(L), PreparedVoroppContainer(centerTessels, L),
+    vec_spheres{ centerTessels }, vec_cells{} {}
+
+ListOfVoroppCells::~ListOfVoroppCells() {
+    for (size_t i = 0; i < vec_cells.size(); i++) {
+        delete vec_cells[i];
+    }
+}
+
+void ListOfVoroppCells::build() {
+    vec_cells.resize(vec_spheres.size());
+    voro::c_loop_all vl(*voropp_container);
+    // Heavily inspired from voro::print_custom
+    int ijk, q;
+    voro::voronoicell_neighbor c;
+    if (vl.start()) do {
+        ijk = vl.ijk;
+        q = vl.q;
+        int index = voropp_container->id[ijk][q]; // index of the polyhedron
+        vec_cells[index] = new voro::voronoicell_neighbor{};
+        if (not voropp_container->compute_cell(*(vec_cells[index]), vl)) {
+            vec_cells[index] = nullptr;
+        }
+    } while (vl.inc());
+}
+
+PreparedVoroppContainer::PreparedVoroppContainer(const vector<Sphere<3>>& centerTessels, array<double, 3> L,
+    array<bool, 3> periodicity)
+    : voropp_container{ nullptr } {
+    voro::pre_container_poly precont(0., L[0], 0., L[1], 0., L[2],
+        periodicity[0], periodicity[1], periodicity[2]);
+    // Place the centers
+    for (size_t i = 0; i < centerTessels.size(); i++) {
+        const auto& sphere = centerTessels[i];
+        precont.put(i, sphere.center[0], sphere.center[1], sphere.center[2],
+            sphere.radius);
+    }
+    // find the nx, ny, nz
+    int n_x, n_y, n_z;
+    precont.guess_optimal(n_x, n_y, n_z);
+    // Computes the tessellation
+    voropp_container = new voro::container_poly(0., L[0], 0., L[1], 0., L[2],
+        n_x, n_y, n_z, periodicity[0], periodicity[1], periodicity[2], VOROPP_INIT_MEM);
+    precont.setup(*voropp_container);
 }
 
 } // namespace voroInterface

@@ -65,7 +65,7 @@ private:
     void randFunc(int seed);
     //! @see : constructor
     template<class COVARIANCE_TYPE>
-    void build(const Grid& grid, const COVARIANCE_TYPE& cs, bool IP, int seed,
+    void build(const Grid* grid, const COVARIANCE_TYPE& cs, bool IP, int seed,
         unsigned flags, bool showCovariance);
     //! put the Covariance in Fourier (only retaining the positive part)
     void prepareCovarianceInFourier();

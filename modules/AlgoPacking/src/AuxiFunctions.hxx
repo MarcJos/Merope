@@ -59,8 +59,24 @@ size_t erase_if(MAP& c, PREDICATE pred);
 
 template<size_t N, class A, class B>
 array<B, N> convertArray(array<A, N> array_);
+
+template<int Begin, int... I, typename Func>
+void for_constexpr(Func f, std::index_sequence<I...>);
+
+template<int Begin, int End, typename Func>
+void for_constexpr(Func f);
+
+//! @brief make the data in the vector circulate so that
+//! new_v[i+step] <- old_v[i]
+//! inplace modification
+//! @tparam VECTOR : array-type data
+//! @warning : inefficient (additional copy)
+template<class VECTOR>
+void circulate(VECTOR& vect, long step);
+
 } // namespace auxi_function
 } // namespace sac_de_billes
+
 
 #include "AuxiFunctions.ixx"
 

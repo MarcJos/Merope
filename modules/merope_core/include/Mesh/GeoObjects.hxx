@@ -163,6 +163,11 @@ class CurveLoop final : public GeoObject {
 public:
     //! constructor
     CurveLoop(Identifier identifier_, const vector<Identifier>& leaves_) : GeoObject(TypeObject::CurveLoop, identifier_, leaves_) {}
+    //! test whether the object is singular or not
+    bool isSingular() const override {
+        bugTest();
+        return (leaves.size() == 0) or (leaves.size() == 2 and leaves[0] == -leaves[1]);
+    }
 };
 
 
@@ -217,7 +222,9 @@ public:
     Point<DIM> translation;
 public:
     //! verify coherence
-    bool isCoherent() const override { return leaves.size() == 0 or leaves.size() == 2; }
+    bool isCoherent() const override { return leaves.size() == 2; }
+    //! test whether the object is singular or not
+    virtual bool isSingular()const override { return leaves.size() == 0; }
     //! swap the periodic surfaces
     void swapSurf();
 };

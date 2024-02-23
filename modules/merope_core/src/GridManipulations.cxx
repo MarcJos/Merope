@@ -39,6 +39,28 @@ array<double, 2> gridAuxi::translateMask(
     return result;
 }
 
+array<double, 2> gridAuxi::translateMask(const VoxelValueFrac& voxelMask) {
+    // test preconditions
+    double density_error = 1e-6;
+    if ((voxelMask.size() != 1) or (abs(voxelMask[0].fracVol - 1) > density_error)
+        or (voxelMask[0].phase < -density_error) or (voxelMask[0].phase - 1 > density_error)) {
+        cerr << std::boolalpha << endl;
+        cerr << (voxelMask.size() != 1) << endl;
+        cerr << (abs(voxelMask[0].fracVol - 1) > density_error) << endl;
+        cerr << (voxelMask[0].phase < 0) << endl;
+        cerr << (voxelMask[0].phase > 1) << endl;
+        cerr << "Voxel Mask phase " << voxelMask[0].phase << endl;
+        cerr << "Voxel Mask phase - 1 " << voxelMask[0].phase - 1 << endl;
+        cerr << "Voxel Mask fracVol " << voxelMask[0].fracVol << endl;
+        cerr << __PRETTY_FUNCTION__ << endl;
+        throw runtime_error("Unexpected. Mask should represent a density");
+    }
+
+    double phi = max(min(1., voxelMask[0].phase), 0.);
+    array<double, 2> result{ 1 - phi, phi };
+    return result;
+}
+
 } //namespace vox
 } // namespace merope
 

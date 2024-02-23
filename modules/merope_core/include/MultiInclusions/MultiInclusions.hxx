@@ -72,7 +72,10 @@ public:
         //! get all the centers of the inclusions
         vector<Point<DIM>> getAllCenters() const;
         //! set the matrix phase
-        void setMatrixPhase(PhaseType matrixPhase_) { this->matrixPhase = matrixPhase_; }
+        void setMatrixPhase(PhaseType matrixPhase_) {
+                matrixPresence = true;
+                this->matrixPhase = matrixPhase_;
+        }
         //! get inclusions
         template<class C>
         vector<C>& getInclusions();
@@ -87,6 +90,8 @@ public:
         const vector<smallShape::SpheroPolyhedronInc<DIM> >& getSpheroPolyhedrons() const { return spheroPolyhedrons; }
         //! getter
         PhaseType getMatrixPhase() const { return matrixPhase; }
+        //! is there a matrix ?
+        bool is_there_matrix() const { return matrixPresence; }
 
 private:
         //! stores the polyhedrons inclusions
@@ -97,6 +102,8 @@ private:
         vector<smallShape::EllipseInc<DIM>> ellipseInc;
         //! stores the ellipsoid inclusions
         vector<smallShape::SpheroPolyhedronInc<DIM>> spheroPolyhedrons;
+        //! is there a matrix ?
+        bool matrixPresence;
         //! Phase of the matrix
         PhaseType matrixPhase;
 private:

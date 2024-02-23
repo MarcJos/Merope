@@ -16,7 +16,7 @@ namespace sac_de_billes {
 template<unsigned short DIM>
 inline SpheroPolyhedron<DIM>::SpheroPolyhedron(
     Identifier phase_, const vector<Point<DIM> >& vertices,
-    const vector<vector<long> >& face_indices, double minkowskiRadius__): SpheroPolyhedron<DIM>() {
+    const vector<vector<long> >& face_indices, double minkowskiRadius__) : SpheroPolyhedron<DIM>() {
     this->phase = phase_;
     this->minkowskiRadius_ = minkowskiRadius__;
     //
@@ -46,10 +46,10 @@ inline SpheroPolyhedron<DIM>::SpheroPolyhedron(
         }
         //
         vector<vector<long>> local_face_indices(halfSize + 2); // face_indices local to the added polyhedron on the boundary
-        for (size_t j = 0; j < halfSize; j++) {
+        for (long j = 0; j < static_cast<long>(halfSize); j++) {
             local_face_indices[0].push_back(halfSize - 1 - j); // inverse rotation
             local_face_indices[1].push_back(halfSize + j);
-            local_face_indices[2 + j] = { j, j + 1, auxi_function::fast_modulo(halfSize + j + 1, 2 * halfSize) , halfSize + j };
+            local_face_indices[2 + j] = { j, j + 1, static_cast<long>(auxi_function::fast_modulo(halfSize + j + 1, 2 * halfSize)), static_cast<long>(halfSize + j) };
         }
         this->boundaryPolyhedrons.push_back(merope::facesFromVertices<DIM>(local_list_vertices, local_face_indices));
     }

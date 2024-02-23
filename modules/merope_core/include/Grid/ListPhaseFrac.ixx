@@ -13,16 +13,15 @@ namespace vox {
 namespace gridAuxi {
 
 template<class TYPE_PHASE>
-inline void ListPhaseFrac<TYPE_PHASE>::merge() {
+inline void ListPhaseFrac<TYPE_PHASE>::merge(double merge_criterion) {
     if (this->size() < 2) return; // size = 0, 1
     ///////////////////////////
     sort(this->begin(), this->end());
     size_t i_current = 0;
     for (size_t i_next = 1; i_next < this->size(); i_next++) {
-        if ((*this)[i_current].phase == (*this)[i_next].phase) {
+        if (((*this)[i_current].phase - (*this)[i_next].phase) < merge_criterion) {
             (*this)[i_current].fracVol += (*this)[i_next].fracVol;
-        }
-        else {
+        } else {
             i_current++;
             (*this)[i_current] = (*this)[i_next];
         }
@@ -31,11 +30,14 @@ inline void ListPhaseFrac<TYPE_PHASE>::merge() {
 }
 
 template<class TYPE_PHASE>
-inline void  ListPhaseFrac<TYPE_PHASE>::renormalize(const TYPE_PHASE& matrixPhase) {
+inline void  ListPhaseFrac<TYPE_PHASE>::renormalize(bool is_there_matrix, TYPE_PHASE matrixPhase) {
     if ((*this).size() == 0) {
-        (*this).push_back(
-            auxi_SphereCollection::PhaseFrac<TYPE_PHASE> { matrixPhase,
-            1. });
+        if (not(is_there_matrix)) {
+            throw runtime_error("Unexpected : no matrix phase has been set, and the voxel is empty");
+        } else {
+            (*this).push_back(
+                auxi_SphereCollection::PhaseFrac<TYPE_PHASE> { matrixPhase, 1. });
+        }
         return;
     }
     double totalVolumeFraction = 0.;
@@ -45,15 +47,19 @@ inline void  ListPhaseFrac<TYPE_PHASE>::renormalize(const TYPE_PHASE& matrixPhas
     if (abs(totalVolumeFraction - 1) < geomTools::EPSILON) { // totalVolumeFraction close to 1
         return;
     }
-    else if (totalVolumeFraction < 1) {  // totalVolumeFraction too small
+    double inverseTotalVolumeFraction = 1. / totalVolumeFraction;
+    if (not(is_there_matrix) or totalVolumeFraction > 1) {
+        renormalize_by_multiply(inverseTotalVolumeFraction);
+    } else { // totalVolumeFraction too small
         (*this).push_back(auxi_SphereCollection::PhaseFrac<TYPE_PHASE> { matrixPhase,
             1. - totalVolumeFraction});
     }
-    else { // totalVolumeFraction too large
-        double inverseTotalVolumeFraction = 1. / totalVolumeFraction;
-        for (auto& phfv : (*this)) {
-            phfv.fracVol *= inverseTotalVolumeFraction;
-        }
+}
+
+template<class TYPE_PHASE>
+inline void  ListPhaseFrac<TYPE_PHASE>::renormalize_by_multiply(double inverseTotalVolumeFraction) {
+    for (auto& phfv : (*this)) {
+        phfv.fracVol *= inverseTotalVolumeFraction;
     }
 }
 

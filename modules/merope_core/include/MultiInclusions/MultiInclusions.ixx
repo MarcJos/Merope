@@ -49,7 +49,7 @@ inline void MultiInclusions<DIM>::setInnerShapes(const C& inclusions) {
 
 template<unsigned short DIM>
 inline MultiInclusions<DIM>::MultiInclusions() :
-    InsideTorus<DIM>(), polyhedrons{ }, sphereInc{ }, ellipseInc{}, spheroPolyhedrons{}, matrixPhase{ 0 } {
+    InsideTorus<DIM>(), polyhedrons{ }, sphereInc{ }, ellipseInc{}, spheroPolyhedrons{}, matrixPresence{ false }, matrixPhase{ 0 } {
 }
 
 template<unsigned short DIM>
@@ -81,6 +81,7 @@ inline void MultiInclusions<DIM>::setInclusions(LaguerreTess<DIM> polyX) {
 template<unsigned short DIM>
 inline void MultiInclusions<DIM>::setInclusions(const PolyInclusions<DIM>& polyInc) {
     this->setLength(polyInc.getL());
+    this->setMatrixPhase(0);
     setInnerShapes(polyInc.getMicroInclusions());
 }
 
@@ -88,12 +89,14 @@ template<unsigned short DIM>
 inline void MultiInclusions<DIM>::setInclusions(
     const SphereInclusions<DIM>& sphereI) {
     this->setLength(sphereI.getL());
+    this->setMatrixPhase(0);
     this->setInclusions_T(sphereI.getSpheres());
 }
 
 template<unsigned short DIM>
 inline void MultiInclusions<DIM>::setInclusions(const EllipseInclusions<DIM>& ellipseI) {
     this->setLength(ellipseI.getL());
+    this->setMatrixPhase(0);
     this->setInclusions_T(ellipseI.getMicroInclusions());
 }
 
@@ -101,12 +104,14 @@ template<unsigned short DIM>
 inline void MultiInclusions<DIM>::setInclusions(
     const vector<smallShape::SpheroPolyhedronInc<DIM>>& spheroPolyhedrons_, Point<DIM> L) {
     this->setLength(L);
+    this->setMatrixPhase(0);
     setInnerShapes(spheroPolyhedrons_);
 }
 
 template<unsigned short DIM>
 inline void MultiInclusions<DIM>::setInclusions(const Rectangle<DIM>& rect) {
     this->setLength(rect.getL());
+    this->setMatrixPhase(0);
     vector < smallShape::ConvexPolyhedronInc<DIM>> thePolyhedrons = {
             smallShape::Rectangle<DIM>(1, create_array<DIM>(0.), rect.recL) };
     setInnerShapes(thePolyhedrons);
@@ -274,7 +279,7 @@ inline void merope::MultiInclusions<DIM>::applyOnAllInclusions(LAMBDA_FUNCTION f
 inline vector<Identifier> auxi_MultiInclusions::getAllIdentifiers(
     size_t NbOfSeeds) {
     vector < Identifier > result = { };
-    for (Identifier i = 0; i < NbOfSeeds; i++) {
+    for (size_t i = 0; i < NbOfSeeds; i++) {
         result.push_back(i);
     }
     return result;

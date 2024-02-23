@@ -16,7 +16,7 @@ namespace meshStructure {
 // GeoStructure<DIM>
 
 template<unsigned short DIM>
-inline VoroMesh_NotPeriodic<DIM>::VoroMesh_NotPeriodic(VoroMesh_UnStructureData<DIM> rawData):
+inline VoroMesh_NotPeriodic<DIM>::VoroMesh_NotPeriodic(VoroMesh_UnStructureData<DIM> rawData) :
     dictPoint{}, dictEdge{}, dictCurveLoop{}, dictSurface{}, dictSurfaceLoop{}, dictSolid{},
     torus(rawData.L) {
     translate(rawData.vecPoint, dictPoint);
@@ -45,7 +45,7 @@ inline bool VoroMesh_NotPeriodic<DIM>::isCoherent() const {
             string errorDisplay = string("Coherence Problem : ") + nameError;
             throw runtime_error(errorDisplay);
         }
-    };
+        };
     testCoherence_loc(dictSolid, dictSurfaceLoop, "DictSolid");
     testCoherence_loc(dictSurfaceLoop, dictSurface, "DictSurfaceLoop");
     testCoherence_loc(dictSurface, dictCurveLoop, "DictSurface");
@@ -58,13 +58,16 @@ inline bool VoroMesh_NotPeriodic<DIM>::isCoherent() const {
 // GeoPerStructure<DIM>
 
 template<unsigned short DIM>
-inline VoroMesh_Periodic<DIM>::VoroMesh_Periodic(VoroMesh_UnStructureData<DIM> rawData, double adim_epsilon_0, double adim_epsilon_1):
+inline VoroMesh_Periodic<DIM>::VoroMesh_Periodic(VoroMesh_UnStructureData<DIM> rawData, double adim_epsilon_0, double adim_epsilon_1) :
     VoroMesh_NotPeriodic<DIM>(rawData), dictPerPoint{}, dictPerSurface{},
     epsilon_0{ adim_epsilon_0 * *(min_element(rawData.L.begin(), rawData.L.begin())) },
     epsilon_1{ adim_epsilon_1 * *(min_element(rawData.L.begin(), rawData.L.begin())) }{
     translate(rawData.vecPerSurface, dictPerSurface);
     unifyPoints();
     buildPeriodicity(epsilon_1);
+    //! debug
+    this->isCoherent();
+    //!
     removeClosePoints();
     //! debug
     this->isCoherent();
@@ -77,8 +80,7 @@ inline bool VoroMesh_Periodic<DIM>::isStronglyCoherent() const {
         if ((surf.template get<TypeRelation::Root>().size() == 2 and not surf.isPeriodic())
             or (surf.template get<TypeRelation::Root>().size() == 1 and surf.isPeriodic())) {
             // OK
-        }
-        else {
+        } else {
             ofstream file("Errors.txt");
             this->print(file);
             cerr << "#############" << endl;
@@ -162,7 +164,7 @@ inline void VoroMesh_Periodic<DIM>::verifyPeriodicity() {
             cerr << __PRETTY_FUNCTION__ << endl;
             throw runtime_error("Unexpected");
         }
-    };
+        };
     for (auto& [i, pS] : this->dictPerSurface) {
         auto ix = this->getPoints_from_Surface(pS.leaves[0]);
         auto iy = this->getPoints_from_Surface(pS.leaves[1]);
@@ -187,8 +189,8 @@ inline void VoroMesh_Periodic<DIM>::removeClosePoints() {
     // 2) if not, deal with the others
     else if (listCouplePoint.size() != 0) {
         this->mergeAll(listCouplePoint);
-        this->removeAllSingular();
     }
+    this->removeAllSingular();
 }
 
 template<unsigned short DIM>
@@ -223,7 +225,7 @@ inline vector<Identifier> mesh::meshStructure::VoroMesh_Periodic<DIM>::getPoints
 
 template<unsigned short DIM>
 inline std::set<Identifier> VoroMesh_Periodic<DIM>::getSurfaces_from_Point(Identifier pt_id) const {
-    std::set<Identifier> result {};
+    std::set<Identifier> result{};
     for (Identifier edge_id : this->dictPoint.at(pt_id).template get<geoObjects::TypeRelation::Root>()) {
         for (Identifier cloop_id : this->dictEdge.at(edge_id).template get<geoObjects::TypeRelation::Root>()) {
             result.insert(*(this->dictCurveLoop.at(cloop_id).template get<geoObjects::TypeRelation::Root>().begin()));
@@ -275,7 +277,7 @@ inline Identifier VoroMesh_Periodic<DIM>::getMaxIndex() const {
             auto elem = std::max_element(dict.begin(), dict.end(), [](const auto& obj1, const auto& obj2) {return obj1.first < obj2.first;});
             result = max(elem->first, result);
         }
-    };
+        };
     getMax(this->dictPoint);
     getMax(this->dictEdge);
     getMax(this->dictCurveLoop);
@@ -286,7 +288,7 @@ inline Identifier VoroMesh_Periodic<DIM>::getMaxIndex() const {
 }
 
 template<unsigned short DIM>
-inline bool VoroMesh_Periodic<DIM>::comparePerSurface(Identifier surf_id1, Identifier surf_id2, Point<DIM>& translation) const {
+inline bool VoroMesh_Periodic<DIM>::comparePerSurface(Identifier surf_id1, Identifier surf_id2, const Point<DIM>& translation) const {
     // same surfaces are no perodic copies
     if (surf_id1 != surf_id2 and geomTools::normeCarre<DIM>(translation) > 0.5 * *(min_element(this->torus.L.begin(), this->torus.L.begin()))) {
         //
@@ -329,7 +331,7 @@ inline vector<SameThings<Identifier>> mesh::meshStructure::VoroMesh_Periodic<DIM
         auto id_perPoint1 = get<0>(samePt).getPeriodicRoot();
         auto id_perPoint2 = get<1>(samePt).getPeriodicRoot();
         return make_tuple(dictPP.at(id_perPoint1), dictPP.at(id_perPoint2), AreSame::Same);
-    };
+        };
     vector<SameThings<PerPoint>> samePerPoints{};
     std::transform(closePointDoublePer.begin(), closePointDoublePer.end(), std::back_inserter(samePerPoints), getPerPoints);
     return sameThings::auxi::replaceGraph(samePerPoints); // removes duplicates and order well
@@ -380,7 +382,7 @@ inline void mesh::meshStructure::VoroMesh_NotPeriodic<DIM>::print(std::ostream& 
             obj.second.print(f);
         }
         f << endl << endl;
-    };
+        };
     printAll(this->dictPoint);
     printAll(this->dictEdge);
     printAll(this->dictCurveLoop);
@@ -409,7 +411,7 @@ inline void mesh::meshStructure::VoroMesh_Periodic<DIM>::print(std::ostream& f) 
             obj.second.print(f);
         }
         f << endl << endl;
-    };
+        };
     printAll(this->dictPerPoint);
     printAll(this->dictPerSurface);
 }
@@ -475,19 +477,18 @@ VoroMesh_Periodic<DIM>::periodicTooClosePoint(double adimensionalDistance) const
             cerr << __PRETTY_FUNCTION__ << endl;
             throw runtime_error("Unexpected : two points are close but one is not periodic!");
         }
-        return pt1.isPeriodic() and pt2.isPeriodic() and pt1.getPeriodicRoot() != pt2.getPeriodicRoot();
-    };
+        return pt1.isPeriodic() and pt2.isPeriodic() and (pt1.getPeriodicRoot() != pt2.getPeriodicRoot());
+        };
     auto sameConcretePoints = [&dictPt](const auto& sameThing) {
         return make_tuple(dictPt.at(get<0>(sameThing)), dictPt.at(get<1>(sameThing)), get<2>(sameThing));
-    };
+        };
     //!
     auto closePoints = this->tooClosePoints(adimensionalDistance);
     vector<SameThings<GeoPoint<DIM>>> ptsNonPer{}, ptsDoublePer{};
     for (const auto& same_cp_id : closePoints) {
         if (areBothPeriodic(same_cp_id)) {
-            ptsNonPer.push_back(sameConcretePoints(same_cp_id));
-        }
-        else {
+            ptsDoublePer.push_back(sameConcretePoints(same_cp_id));
+        } else {
             ptsNonPer.push_back(sameConcretePoints(same_cp_id));
         }
     }
@@ -504,7 +505,7 @@ inline Identifier VoroMesh_UnStructureData<DIM>::getMaxIndex() const {
             auto elem = min_element(list.begin(), list.end(), [](const auto& e1, const auto& e2) {return e1.identifier > e2.identifier;});
             maxIndex = max(elem->identifier, maxIndex);
         }
-    };
+        };
     applyOnAllVectors(getMax);
     return maxIndex;
 }
@@ -515,7 +516,7 @@ inline void VoroMesh_UnStructureData<DIM>::shiftIndices(Identifier shift) {
         for (auto& elem : list) {
             elem.shiftIndices(shift);
         }
-    };
+        };
     applyOnAllVectors(shiftLoc);
 }
 
@@ -557,7 +558,7 @@ inline void VoroMesh_UnStructureData<DIM>::fromGeoPerStructure(
         for (const auto& item : list1) {
             list2.push_back(item.second);
         }
-    };
+        };
     copyInto(geoStructure.dictPoint, this->vecPoint);
     copyInto(geoStructure.dictEdge, this->vecEdge);
     copyInto(geoStructure.dictCurveLoop, this->vecCurveLoop);
@@ -581,7 +582,7 @@ template<unsigned short DIM>
 inline void VoroMesh_UnStructureData<DIM>::append(const VoroMesh_UnStructureData<DIM>& rawData) {
     auto append_aux = [](auto& vec1, const auto& vec2) {
         vec1.insert(vec1.end(), vec2.begin(), vec2.end());
-    };
+        };
     append_aux(this->vecPoint, rawData.vecPoint);
     append_aux(this->vecEdge, rawData.vecEdge);
     append_aux(this->vecCurveLoop, rawData.vecCurveLoop);

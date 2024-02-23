@@ -27,6 +27,9 @@ void test2();
 void test3();
 //! meshes a microstructure made of Laguerre cells
 void test4();
+//! meshes a microstructure made of Laguerre cells (buggy at the beginning)
+//! test for the special functions    setAdimMergeDistance0 // setAdimMergeDistance1(1.e-2);
+void test5();
 
 } // namespace testMesh
 } // namespace merope

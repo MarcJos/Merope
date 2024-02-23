@@ -152,13 +152,17 @@ void FFTScalarField::loopOnFrequencies(const FUNCTION& function) {
 }
 
 template<class COVARIANCE_TYPE>
-void FFTScalarField::build(const Grid& grid, const COVARIANCE_TYPE& cs,
-    bool IP, int seed, unsigned flags, bool showCovariance) {
+void FFTScalarField::build(const Grid* grid, const COVARIANCE_TYPE& cs,
+    bool IP, int seed, unsigned flags_, bool showCovariance) {
+    if (flags_ != FFTW_ESTIMATE) {
+        cerr << __PRETTY_FUNCTION__ << endl;
+        throw runtime_error("Unexpected");
+    }
     // Variables number
     nv = 1;
     alloc(IP);
     // Fill the grid with a covariance function
-    setCov(grid.getLx(), grid.getLy(), grid.getLz(), cs);
+    setCov(grid->getLx(), grid->getLy(), grid->getLz(), cs);
     forward();
     // Generate the random field
     if (showCovariance) {
