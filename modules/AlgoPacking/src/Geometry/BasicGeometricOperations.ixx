@@ -101,7 +101,7 @@ inline double geomTools::norme(const T& vec) {
     } else if constexpr (DIM == 3) {
         return hypot(vec[0], vec[1], vec[2]);
     } else {
-        throw runtime_error("Unexpected");
+	return sqrt(normeCarre<DIM>(vec));
     }
 }
 

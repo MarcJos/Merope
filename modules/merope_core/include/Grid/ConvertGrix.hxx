@@ -35,8 +35,8 @@ void apply_inplace(CartesianGrid<DIM, C2>& grid0, FUNCTION rule);
 
 //! \return a grid of volume fractions from a phase grid
 //! \param grid0 : grid to be converted
-template<unsigned short DIM>
-CartesianGrid<DIM, VoxelPhaseFrac> fromPhaseToFracVol(const CartesianGrid<DIM, VTK_PHASE>& grid0);
+template<unsigned short DIM, class PHASE_TYPE>
+CartesianGrid<DIM, gridAuxi::ListPhaseFrac<PHASE_TYPE>> fromPhaseToFracVol(const CartesianGrid<DIM, PHASE_TYPE>& grid0);
 
 //! \return a grid of volume fractions from a phase grid
 //! \param grid0 : grid to be converted

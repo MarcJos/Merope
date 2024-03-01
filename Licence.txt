@@ -111,3 +111,4 @@ Merope is an application dedicated to the construction and discretization of mic
 	- Pybind11, https://github.com/pybind/pybind11
 	- oneMKL, https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html#gs.jssgof
 	- Lapack https://netlib.org/lapack/
+	- Eigen https://eigen.tuxfamily.org/

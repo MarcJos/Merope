@@ -20,17 +20,12 @@ using VTK_PHASE = unsigned short;
 using SinglePhaseFrac = auxi_SphereCollection::PhaseFrac<VTK_PHASE>;
 //! representation of the content of a volume filled by different phases in different fractions
 using VoxelPhaseFrac = gridAuxi::ListPhaseFrac<VTK_PHASE>;
-
-template<class VOXEL_TYPE>
-VOXEL_TYPE makeVoxelData(VTK_PHASE phase, double volumeFraction = 1.) {
-    static_assert(is_same<VOXEL_TYPE, VTK_PHASE>::value or is_same<VOXEL_TYPE, VoxelPhaseFrac>::value);
-    if constexpr (std::is_same<VOXEL_TYPE, VTK_PHASE>::value) {
-        return phase;
-    }
-    else if constexpr (std::is_same<VOXEL_TYPE, VoxelPhaseFrac>::value) {
-        return VoxelPhaseFrac({ SinglePhaseFrac(phase,volumeFraction) });
-    }
-}
+//! representation of the content of a volume filled by different values in different fractions
+using VoxelValueFrac = gridAuxi::ListPhaseFrac<double>;
+//! whether is a list of PhaseFrac
+template<class POTENTIAL_VOX_TYPE_FRAC>
+constexpr bool is_Voxel_TYPE_Frac = (is_same<VoxelPhaseFrac, POTENTIAL_VOX_TYPE_FRAC>::value
+    or is_same<VoxelValueFrac, POTENTIAL_VOX_TYPE_FRAC>::value);
 
 } // namespace vox
 } // namespace merope

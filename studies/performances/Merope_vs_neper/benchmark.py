@@ -23,6 +23,8 @@ class resultTest:
     def __init__(self):
         timeList = []
         nbSpheres = 0
+        
+merope.setNbOfThreads(1)
 
 def testVoxel(L0, nVox0, nSpheres):
     # Medium dimensions

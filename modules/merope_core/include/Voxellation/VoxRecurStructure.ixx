@@ -29,7 +29,15 @@ inline CartesianGrid<DIM, VOXEL_TYPE> transformIntoGrid(
         return VoxSimpleMultiInclusions<DIM, GetVoxelRule<VOXEL_TYPE>()>(basicStruct, gridParameters)();
     }
     if constexpr (isField) {
-        return vox::VoxSimpleGauss<DIM>(basicStruct, gridParameters)();
+        auto field = vox::VoxSimpleGauss<DIM>(basicStruct, gridParameters)();
+        if constexpr (std::is_same<VOXEL_TYPE, double>::value) {
+            return field;
+        } else if constexpr (std::is_same<VOXEL_TYPE, vox::VoxelValueFrac>::value) {
+            return vox::convertGrid::fromPhaseToFracVol(field);
+        } else {
+            cerr << __PRETTY_FUNCTION__ << endl;
+            throw runtime_error("Unexpected");
+        }
     }
 }
 

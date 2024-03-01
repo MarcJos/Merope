@@ -150,6 +150,8 @@ Contain non-intersecting spheres inside the periodic cuboid.
 
 #### Laguerre Tessellation
 
+##### Define a Laguerre Tessellation
+
 Build a Laguerre tessellation from a list of spheres.
 A Laguerre tessellation is a collection of tessels $X_i$ covering the periodic cuboid, such that $x \in X_i$ if :
 ```math
@@ -179,6 +181,47 @@ Here, $c_i$ and $r_i$ can be seen as the center and radius of a sphere.
 **Remark** : Due to the use of `voro++`, more functionalities might be available upon request (orientation or area of the surfaces between crystals, Delaunay graph...).
 
 :warning: The ordering of the spheres is not preserved! Indeed, the spheres are sorted by phase.
+
+
+##### Optimizing the input an getting informations
+
+###### Optimizing the volume of each tessel
+
+*Before* building a Laguerre tessellation, it is possible to prescribe the volume of each tessel $|X_i|$ by only optimizing the radius $r_i$ of the tessels, letting their seeds $c_i$ fixed. Our implementation of such an optimized preprocessing follows [Kuhn & al, 2020](https://www.sciencedirect.com/science/article/pii/S0045782520303601), which uses a Barzilai-Borwein gradient-descent algorithm.
+
+It may lead to tessellations where all tessels have equal volumes, or where the is a clear gradient inside the structure.
+For example, in the Figure below, from left to right, we show the original Laguerre tessellation, and its modifications where all the tessels have equal volumes, and then where the central tessels are smaller than the others on the periphery.
+See [optimize_Laguerre_tess](/tests/microstructures/optimize_Laguerre_tess/optimize_Laguerre_tess.py).
+
+<div align="center">
+<img src="/doc/Pictures/Original.png" alt="drawing" width="250"/>
+<img src="/doc/Pictures/All_equal.png" alt="drawing" width="250"/>
+<img src="/doc/Pictures/Center_small.png" alt="drawing" width="250"/>
+</div>
+
+
+**Main methods** :
+- `algo = algo_fit_volumes_3D([L1, L2, L3], sphereList, desiredVolumes)` : Initialize the algorithm for optimizing the radius $r_i$ of each tessel $X_i$, such that its volume is finally equal to `desiredVolumes[i]`.
+- `algo.proceed(max_delta_Volume, max_iter, verbose)` : Launches the algorithm.
+  - `max_delta_Volume` : prescribed tolerance of the value of the volume of each tessel.
+  - `max_iter` : maximum number of iterations.
+  - `verbose` : if `True`, display information.
+- `getCenterTessels()` : after the algorithm has proceeded, return the optimized seeds for Laguerre tessellation.
+- `maxDeltaVolumes()` : return the maximal error between the prescribed and attained volumes after optimization.
+- `getCurrentVolumes()` : return the list of volumes of tessels.
+
+###### Building centroidal tessellations
+
+It is also possible to attempt to make the tessellation more centroidal. *Nevertheless, this feature is **not very statisfactory** because of the poor quality of the optimization and the slowness of the process.*
+We used [Kuhn & al, 2020](https://www.sciencedirect.com/science/article/pii/S0045782520303601) for the strategy, based on the Anderson acceleration of the Lloyd algorithm.
+
+**Main methods** :
+- `makeCentroidal([L1,L2,L3], sphereList, max_iter, stopping_criterion, use_acceleration, verbose)` : inplace modify the input `centerTessels` by moving the related centers so that the associated tessellation is more centroidal.
+  - `stopping_criterion` : the algorithm stops when the `l^2` norm of the centers move is smaller than it.
+  - `use_acceleration` : if `True`, enables the Anderson acceleration. Should be set `True`.
+  - `verbose` : if `True`, display information.
+
+
 
 #### Polyhedron inclusions and spheropolyhedron inclusions
 
@@ -288,11 +331,11 @@ graph TB
 ```mermaid
 graph TB
   subgraph " "
-  GaussianField-->CartesianField;
-  NumericalCovariance->CartesianField;
-  ScalarField-->CartesianField;
-  GridField-->CartesianField;
-  CartesianField--combine-->FieldStructure;
+    GaussianField-->CartesianField;
+    NumericalCovariance-->CartesianField;
+    ScalarField-->CartesianField;
+    GridField-->CartesianField;
+    CartesianField--combine-->FieldStructure;
   end
   FieldStructure--Voxelation-->vtk;
 ```

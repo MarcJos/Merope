@@ -38,7 +38,7 @@ FFTScalarField::FFTScalarField(const Grid& grid, const bool IP,
 }
 
 void FFTScalarField::prepareCovarianceInFourier() {
-	auto function = [&](bool fx, bool fy, bool fz,
+	auto function = [&](bool, bool, bool,
 		auto& rF) {
 			double Dk = max(0., rF[0]);
 			rF[0] = Dk;
@@ -81,21 +81,21 @@ void FFTScalarField::randFunc(int seed) {
 FFTScalarField::FFTScalarField(const Grid& grid, const gaussianField::CovSum& cs,
 	const bool IP, int seed, const unsigned flags_i) :
 	FFTField(grid, flags_i) {
-	build(grid, cs, IP, seed, flags_i, false);
+	build(&grid, cs, IP, seed, flags_i, false);
 }
 
 FFTScalarField::FFTScalarField(const Grid& grid,
 	const std::function<double(array<double, 3>)>& cs, bool IP, int seed,
 	bool showCovariance, unsigned flags_i) :
 	FFTField(grid, flags_i) {
-	build(grid, cs, IP, seed, flags_i, showCovariance);
+	build(&grid, cs, IP, seed, flags_i, showCovariance);
 }
 
 FFTScalarField::FFTScalarField(const Grid& grid,
 	const std::function<double(array<double, 2>)>& cs, bool IP, int seed,
 	bool showCovariance, unsigned flags_i) :
 	FFTField(grid, flags_i) {
-	build(grid, cs, IP, seed, flags_i, showCovariance);
+	build(&grid, cs, IP, seed, flags_i, showCovariance);
 }
 
 

@@ -36,10 +36,11 @@ inline CartesianGrid<DIM, C1> vox::convertGrid::localConvert(const CartesianGrid
     return auxi::localConvertCartesian<DIM, C1, C2, FUNCTION>(grid0, rule);
 }
 
-template<unsigned short DIM>
-CartesianGrid<DIM, VoxelPhaseFrac> vox::convertGrid::fromPhaseToFracVol(const CartesianGrid<DIM, VTK_PHASE>& grid0) {
-    return localConvert<DIM, VoxelPhaseFrac, VTK_PHASE>(grid0, [](const VTK_PHASE& phase) {
-        return (VoxelPhaseFrac({ SinglePhaseFrac(phase, 1.) }));
+template<unsigned short DIM, class PHASE_TYPE>
+CartesianGrid<DIM, gridAuxi::ListPhaseFrac<PHASE_TYPE>> vox::convertGrid::fromPhaseToFracVol(const CartesianGrid<DIM, PHASE_TYPE>& grid0) {
+    return localConvert<DIM, gridAuxi::ListPhaseFrac<PHASE_TYPE>, PHASE_TYPE>(grid0, [](const PHASE_TYPE& phase) {
+        return (gridAuxi::ListPhaseFrac<PHASE_TYPE>(
+            { auxi_SphereCollection::PhaseFrac<PHASE_TYPE>(phase, 1.) }));
         });
 }
 

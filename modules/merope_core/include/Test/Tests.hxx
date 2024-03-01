@@ -19,15 +19,18 @@ public:
     static void polyCrystal10();
     static void polyCrystal0();
     static void polyCrystal1();
+    static void polyCrystal_fit_volumes_3D(string fileVTK);
+    static void polyCrystal_fit_volumes_2D(string fileVTK);
     static void polyCrystal8();
     static void polyCrystal9();
     static void spheres1();
     static void extraction();
     static void testPerf0();
     static void testFields();
+    static void testFields2();
+    static void polyCrystalCentroidal(bool use_acceleration);
 };
 
 } // namespace merope
-
 
 #endif /* TESTS_HXX_ */

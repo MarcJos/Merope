@@ -20,24 +20,26 @@ NB productOf(const C& table) {
 
 template<class T1, class T2>
 T1 fast_modulo(T1 discCoord, T2 s) {
-    while (discCoord < 0) {
-        discCoord += s;
+    using signedT1 = std::make_signed_t<T1>;
+    signedT1 discCoord_ = static_cast<signedT1>(discCoord);
+    while (discCoord_ < 0) {
+        discCoord_ += s;
     }
-    while (discCoord >= s) {
-        discCoord -= s;
+    while (discCoord_ >= static_cast<std::make_signed_t<T2>>(s)) {
+        discCoord_ -= s;
     }
-    return discCoord;
+    return discCoord_;
 }
 
 template<unsigned short EXPONENT, class C>
 inline constexpr C puissance(const C& x) {
-    if constexpr (EXPONENT == 2) {
-        return x * x;
-    } else if constexpr (EXPONENT == 3) {
-        return x * x * x;
+    if constexpr (EXPONENT == 0) {
+        return 1;
+    } else if constexpr (EXPONENT == 1) {
+        return x;
     } else {
-        constexpr unsigned short new_expo = EXPONENT / 2;
-        return puissance<new_expo>(x) * puissance<EXPONENT - new_expo>(x);
+        constexpr unsigned short expo1 = EXPONENT / 2;
+        return puissance<expo1>(x) * puissance<EXPONENT - expo1>(x);
     }
 }
 
@@ -91,7 +93,7 @@ inline void writeVectorToString(const VECTOR& vect, std::ostream& f, std::string
 template<class MAP, typename PREDICATE>
 size_t erase_if(MAP& c, PREDICATE pred) {
     auto old_size = c.size();
-    for (auto i = c.begin(), last = c.end(); i != last; ) {
+    for (auto i = c.begin(); i != c.end(); ) {
         if (pred(*i)) {
             i = c.erase(i);
         } else {
@@ -109,6 +111,30 @@ array<B, N> convertArray(array<A, N> array_) {
     }
     return result;
 }
+
+template<int Begin, size_t... I, typename Func>
+void for_constexpr(Func f, std::index_sequence<I...>) {
+    (f(I + Begin), ...);
+}
+
+template<int Begin, int End, typename Func>
+void for_constexpr(Func f) {
+    for_constexpr<Begin>(f, std::make_index_sequence<End - Begin>{});
+}
+
+template<class VECTOR>
+void circulate(VECTOR& vect, long step) {
+    if (vect.size() == 0) {
+        return;
+    }
+    //
+    auto vect_copy = vect;
+    size_t vectSize = vect.size();
+    for (size_t i = 0; i < vectSize; i++) {
+        vect[auxi_function::fast_modulo(i + step, vectSize)] = vect_copy[i];
+    }
+}
+
 
 } // namespace auxi_function
 } // namespace sac_de_billes

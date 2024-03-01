@@ -142,7 +142,7 @@ protected:
 
     //!< assert that field is in spatial  representation, and exists
     inline void assertSpatial() const {
-        assert(isSpatial && std::string("FILE: ") + std::string(__FILE__) == "");
+        assert(isSpatial);
         assert(f);
     }
 

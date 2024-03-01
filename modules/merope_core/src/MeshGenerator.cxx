@@ -74,6 +74,7 @@ void MeshGenerator::writeLaguerreTess(std::ostream& f) const {
             }
         }
     }
+    voroMeshPer.isCoherent();
     //
     f.precision(17);
     gmsh_writer::auxi::writePreamble(f);
@@ -125,7 +126,7 @@ void MeshGenerator::writeSphericalInclusions(std::ostream& f) const {
     // write the spheres
     for (const auto& listSpheres : theSpheres_all) {
         for (long i = listSpheres.size() - 1; i >= 0; i--) {
-            if (i == listSpheres.size() - 1) { // no inner sphere
+            if (static_cast<size_t>(i) == listSpheres.size() - 1) { // no inner sphere
                 gmsh_writer::auxi::write_sphere(listSpheres[i], f);
             } else {
                 gmsh_writer::auxi::write_sphere(listSpheres[i], f, { listSpheres[i + 1].phase });

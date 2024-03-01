@@ -74,3 +74,7 @@ import combineGeometryAndField.combineGeometryAndField
 go_to_dir("../")
 
 
+go_to_dir("optimize_Laguerre_tess")
+import optimize_Laguerre_tess.optimize_Laguerre_tess
+go_to_dir("../")
+

@@ -17,7 +17,7 @@ namespace mesh {
 namespace geoObjects {
 
 void GeoObject::removeLeafSingular(Identifier id) {
-    auxi_function::erase_if(leaves, [&id](const auto& i) {return id == abs(i);});
+    auxi_function::erase_if(leaves, [&id](auto i) {return id == abs(i);});
 }
 
 void GeoObject::replaceLeaf(Identifier id_1, Identifier id_2, long sense) {

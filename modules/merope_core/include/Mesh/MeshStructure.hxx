@@ -165,7 +165,7 @@ private:
     //! the criterion is that they shall possess at least 3 points that are periodic copies
     //! \param surf_id1, surf_id2 : identifiers of the surface to compare
     //! \param translation : Expected translation in the Euclidean space to get surf_2 from sorf_1.
-    bool comparePerSurface(Identifier surf_id1, Identifier surf_id2, Point<DIM>& translation) const;
+    bool comparePerSurface(Identifier surf_id1, Identifier surf_id2, const Point<DIM>& translation) const;
 };
 
 //! translate a vector of GeoObjects into a map with identifier being its element

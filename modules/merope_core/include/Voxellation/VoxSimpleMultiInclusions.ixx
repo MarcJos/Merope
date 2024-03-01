@@ -13,9 +13,9 @@ namespace merope {
 namespace vox {
 
 template<unsigned short DIM, vox::VoxelRule VOXEL_RULE>
-inline VoxSimpleMultiInclusions<DIM, VOXEL_RULE>::VoxSimpleMultiInclusions(const MultiInclusions<DIM>& multiI, PreSubGrid<DIM> gridParameters_):
+inline VoxSimpleMultiInclusions<DIM, VOXEL_RULE>::VoxSimpleMultiInclusions(const MultiInclusions<DIM>& multiI, PreSubGrid<DIM> gridParameters_) :
     VoxGrid<DIM, vox::OutputFormat<VOXEL_RULE>>(gridParameters_),
-    multiInclusions{ &multiI }, matrixPhase{ multiI.getMatrixPhase() },
+    multiInclusions{ &multiI }, matrixPresence{ multiI.is_there_matrix() }, matrixPhase{ multiI.getMatrixPhase() },
     halfDiagVoxel{ gridParameters_.getHalfDiagVoxel() }{
     if constexpr (VOXEL_RULE == VoxelRule::Center) {
         this->getVoxGrid().fillAll(matrixPhase);
@@ -26,10 +26,11 @@ template<unsigned short DIM, vox::VoxelRule VOXEL_RULE>
 inline void VoxSimpleMultiInclusions<DIM, VOXEL_RULE>::postProcessGrid() {
     if constexpr (VOXEL_RULE == VoxelRule::Average) {
         const auto matrixPhase_copy = matrixPhase;
-        convertGrid::apply_inplace(this->getVoxGrid(), [matrixPhase_copy](auto& phfv) {
-            phfv.merge();
-            phfv.renormalize(matrixPhase_copy);
-            return;
+        const auto is_there_matrix_copy = matrixPresence;
+        convertGrid::apply_inplace(this->getVoxGrid(),
+            [is_there_matrix_copy, matrixPhase_copy](auto& phfv) {
+                phfv.merge();
+                phfv.renormalize(is_there_matrix_copy, matrixPhase_copy);
             });
     }
 }
@@ -78,8 +79,7 @@ inline void vox::VoxSimpleMultiInclusions<DIM, VOXEL_RULE>::execute(vox::auxi::S
     if constexpr (VOXEL_RULE == VoxelRule::Center) {
         if (sliceInstrunction.voxelType == vox::auxi::VoxelType::MonoPhase) {
             this->getVoxGrid().template fillSlice<long>(ijk, sliceInstrunction.limits, sliceInstrunction.phase);
-        }
-        else { // (sliceInstrunction.voxelType == vox::auxi::VoxelType::Composite)
+        } else { // (sliceInstrunction.voxelType == vox::auxi::VoxelType::Composite)
             for (ijk[DIM - 1] = sliceInstrunction.limits[0]; ijk[DIM - 1] < sliceInstrunction.limits[1]; ijk[DIM - 1]++) {
                 computeInclusionVoxel(inclusion, ijk);
             }
@@ -89,8 +89,7 @@ inline void vox::VoxSimpleMultiInclusions<DIM, VOXEL_RULE>::execute(vox::auxi::S
     if constexpr (VOXEL_RULE == VoxelRule::Average) {
         if (sliceInstrunction.voxelType == vox::auxi::VoxelType::MonoPhase) {
             this->getVoxGrid().template fillSlice<long>(ijk, sliceInstrunction.limits, VoxelPhaseFrac({ SinglePhaseFrac(sliceInstrunction.phase, 1.) }));
-        }
-        else { // (sliceInstrunction.voxelType == vox::auxi::VoxelType::Composite)
+        } else { // (sliceInstrunction.voxelType == vox::auxi::VoxelType::Composite)
             for (ijk[DIM - 1] = sliceInstrunction.limits[0]; ijk[DIM - 1] < sliceInstrunction.limits[1]; ijk[DIM - 1]++) {
                 computeInclusionVoxel(inclusion, ijk);
             }

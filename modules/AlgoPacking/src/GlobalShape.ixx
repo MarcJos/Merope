@@ -50,16 +50,7 @@ AmbiantSpace::Cube<DIM>::Cube(Point<DIM> L_) :
 
 template<unsigned short DIM>
 double AmbiantSpace::Cube<DIM>::volume() const {
-    if constexpr (DIM == 1) {
-        return this->L[0];
-    } else if constexpr (DIM == 2) {
-        return this->L[0] * this->L[1];
-    } else if constexpr (DIM == 3) {
-        return this->L[0] * this->L[1] * this->L[2];
-    } else {
-        throw invalid_argument(
-            "Cube<DIM>::volume() La dimension est 1, 2, ou 3");
-    }
+    return auxi_function::productOf<double>(this->L);
 }
 
 template<unsigned short DIM>

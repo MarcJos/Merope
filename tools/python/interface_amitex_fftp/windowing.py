@@ -26,7 +26,7 @@ def get_windowed_homogCoeff(percentage=0.5, vtkZone_fileName="Phases.vtk"):
             average_nabla_T[i][j] = get_windowed_average_gradiant(i+1, j+1, percentage, vtkZone_fileName)
             if (i==j):
                 average_nabla_T[i][j] += 1
-    homogCoeff = pure_homogCoeff * np.linalg.inv(average_nabla_T)
+    homogCoeff = np.matmul(pure_homogCoeff, np.linalg.inv(average_nabla_T))
     for i in range(0,10):
         print("*****************")
     print(pure_homogCoeff)

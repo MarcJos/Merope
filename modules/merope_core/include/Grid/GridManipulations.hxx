@@ -58,6 +58,11 @@ VOXEL_TYPE combineVoxelFunc(const VOXEL_TYPE& voxelData1, const VOXEL_TYPE& voxe
 //! \param voxelMask : data of the voxel in the mask
 //! \seed combineVoxelMask
 array<double, 2> translateMask(const VoxelPhaseFrac& voxelMask);
+//! \return the coefficient of the convex combination to be applied on phases densities
+//! \param voxelMask : data of the voxel in the mask, assumed to represent a density function
+//! \seed combineVoxelMask
+array<double, 2> translateMask(const VoxelValueFrac& voxelMask);
+
 
 } // namespace gridAuxi
 } // namespace vox

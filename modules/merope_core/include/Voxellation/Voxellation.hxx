@@ -112,8 +112,8 @@ public:
     void proceed(array<size_t, DIM> nbNodes);
 
     //! builds the array of phase concentrations
-    template<VoxelRule VOXEL_RULE>
-    vox::CartesianGrid<DIM, OutputFormat<VOXEL_RULE>> getPhaseFracField();
+    template<class VOXEL_FORMAT, class STRUCTURE>
+    vox::CartesianGrid<DIM, VOXEL_FORMAT> getPhaseFracField(const STRUCTURE& structure);
     // output
     //! print the output with composite voxels
     //! \param fileVTK : output file for the phase table (\see Grid)
@@ -129,10 +129,11 @@ public:
 
 private:
     //! sets all the voxels in the grid from phaseFracVol, with homogenization rule
-    vox::GridField<DIM> applyHomogRule(const vox::CartesianGrid<DIM, VoxelPhaseFrac>& phaseFracVol);
+    template<class VOXEL_TYPE>
+    vox::GridField<DIM> applyHomogRule(const vox::CartesianGrid<DIM, VOXEL_TYPE>& phaseFracVol);
     //! sets all the voxels in the grid from phaseFracVol, with homogenization rule
-    template<homogenization::Rule>
-    vox::GridField<DIM> applyHomogRule_T(const vox::CartesianGrid<DIM, VoxelPhaseFrac>& phaseFracVol);
+    template<homogenization::Rule, class VOXEL_TYPE>
+    vox::GridField<DIM> applyHomogRule_T(const vox::CartesianGrid<DIM, VOXEL_TYPE>& phaseFracVol);
     //! \see getField
     GridField<DIM> getField_Structure();
     //! \see getField

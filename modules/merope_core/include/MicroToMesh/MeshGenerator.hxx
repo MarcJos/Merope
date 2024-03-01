@@ -20,7 +20,7 @@ namespace generator {
 class MeshGenerator {
 public:
     //! constructor
-    MeshGenerator(): meshSize{ 0.05 }, meshOrder{ 1 },
+    MeshGenerator() : meshSize{ 0.05 }, meshOrder{ 1 },
         adimensionnalMergeDistance_0{ 1.e-5 },
         adimensionnalMergeDistance_1{ 1.e-5 },
         binaryOutput{ false },
