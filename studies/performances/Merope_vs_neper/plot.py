@@ -79,7 +79,7 @@ for j, nVoxRef in enumerate(reference_nVox):
             nbSph.append(nbSpheres[i])
             speedUpRatio.append(timeNeper[i]/timeMerope[i])
     plt.plot(nbSph, speedUpRatio, linestyle='-', lw=3, color=colors[j], label = "nVox = "+str(nVoxRef)+"^3", marker='d', markersize=pointsize)
-
+    print(speedUpRatio)
 
 plt.xlabel('Nb Of spheres', fontsize=axislabelsize)
 plt.ylabel('Speed-up ratio', fontsize=axislabelsize)

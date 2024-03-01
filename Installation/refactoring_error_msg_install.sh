@@ -6,4 +6,5 @@ sed -i '/^--/d' erreurs.txt
 sed -i '/voro/,+2 d' erreurs.txt
 sed -i '/completeMaterialPropertiesList/d' erreurs.txt
 sed -i '/^\[/d' erreurs.txt
-
+sed -i '/Eigen/d' erreurs.txt
+sed -i '/LTRANS/d' erreurs.txt

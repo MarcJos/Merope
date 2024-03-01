@@ -12,6 +12,8 @@ To compute the coefficient in each voxel, a combination of two rules is used :
 - `VoxelRule` : either `Average` the phase w.r.t. the volume fractions of each phase on each voxel, or only evaluate the phase in the `Center` of the voxel.
 - `HomogenizationRule` : `Voigt` (arithmetic average), `Reuss` (harmonic average), `Largest`, `Smallest`, to average the coefficient in case of `VoxelRule.Average`.
 
+:warning: The user has to be caution when appealing to `VoxelRule.Average` in combination with complex microstructures. In particular, the boolean operations usually lead to approximating the volume fractions of each phase. For example, the following is **not recommended** : define a new `Structure` by `Structure_3D(structure_3D_1, structure_3D_2, mask)` with `mask=structure_3D_2`. Indeed, assume that `structure_3D_1` has only phase 0, and that the `structure_3D_2` has only phases 1 and 0. Then the volume fraction of phase 1 inside a voxel will be approximated as the square of its actual value, which is not accurate for all intermediate values.  
+
 Then, the voxelation is segmented in phases according to the (scalar) values of the coefficient field.
 The associated coefficient values are printed in a separated .txt file.
 Hence, the voxelation comes with a list of coefficients associated to phases (`materialId` field of the .vtk file).

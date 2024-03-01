@@ -17,6 +17,9 @@ rm -rf pybind11
 git clone $MEROPE_PYBIND_REPO pybind11
 cd ../../
 cp -r merope_core/Interface_python/pybind11 AlgoPacking/Interface_python/
+git clone $EIGEN_REPO local_eigen
+cp -r local_eigen/Eigen .
+rm -rf local_eigen
 
 if [[ "${HOSTNAME}" == *"pleiades"* ]]
 then
@@ -38,8 +41,8 @@ else
         echo "------------------------------------------------------------------------------"
     done
 fi
-rm voro-plus-plus/CMakeLists.txt
-rm voro-plus-plus/src/CMakeLists.txt
-cp cmake/for_voropp/voropp_1.cmake voro-plus-plus/CMakeLists.txt
-cp cmake/for_voropp/voropp_2.cmake voro-plus-plus/src/CMakeLists.txt
+rm $VOROPP_NAME_DIR/CMakeLists.txt
+rm $VOROPP_NAME_DIR/src/CMakeLists.txt
+cp cmake/for_voropp/voropp_1.cmake $VOROPP_NAME_DIR/CMakeLists.txt
+cp cmake/for_voropp/voropp_2.cmake $VOROPP_NAME_DIR/src/CMakeLists.txt
 

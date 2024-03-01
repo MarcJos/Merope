@@ -112,6 +112,7 @@ Mérope est une application dédiée à la construction et à la discrétisation
 	-	Pybind11, https://github.com/pybind/pybind11
 	-	oneMKL, https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html#gs.jssgof
 	-	Lapack https://netlib.org/lapack/
+	-   Eigen https://eigen.tuxfamily.org/
 
 
 

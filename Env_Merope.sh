@@ -33,7 +33,8 @@ then
     version=$release/$processor
     ### use TMFFT
     export LD_LIBRARY_PATH=/soft/pleiades/testing/BUILDS/PLEIADES-trunk/PREREQUIS/$version/BOOST/lib:$LD_LIBRARY_PATH
-    TMFFT_INSTALL=/soft/pleiades/testing/BUILDS/TMFFT-master/$version
+##    TMFFT_INSTALL=/soft/pleiades/testing/BUILDS/TMFFT-master/$version
+    TMFFT_INSTALL=/soft/pleiades/testing/BUILDS/TMFFT-trunk/$version
 
     export PYTHONPATH=$TMFFT_INSTALL/lib/python3.7m/site-packages:$PYTHONPATH
     export LD_LIBRARY_PATH=$TMFFT_INSTALL/lib:$LD_LIBRARY_PATH
