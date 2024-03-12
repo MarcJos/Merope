@@ -297,9 +297,16 @@ inline void create_functions_depending_on_dimension(py::module_& merope, std::st
         .def(py::init<std::function<double(Point<DIM>)>>())
         ;
 
+#ifdef USE_OPENMP_FOR_FFT
+    static constexpr bool USE_OPENMP_FOR_FFT_LOC = true;
+#else
+    static constexpr bool USE_OPENMP_FOR_FFT_LOC = false;
+#endif
+
     auto my_string_GaussianField = "GaussianField" + DIM_S;
     py::class_<gaussianField::SimpleGaussianField<DIM>>(gaussianField, my_string_GaussianField.c_str())
-        .def(py::init<std::function<double(Point<DIM>)>, std::function<double(double)>>())
+        .def(py::init(static_cast<gaussianField::SimpleGaussianField<DIM>(*)(std::function<double(Point<DIM>)>, std::function<double(double)>)>(&gaussianField::SimpleGaussianField<DIM>::template create<USE_OPENMP_FOR_FFT_LOC>)))
+	.def(py::init<gaussianField::Interf_FuncPointer, gaussianField::Interf_FuncPointer>())
         .def("setNonlinearTransform", &gaussianField::SimpleGaussianField<DIM>::template setNonlinearTransform<gaussianField::StepDis>)
         .def_readwrite("seed", &gaussianField::SimpleGaussianField<DIM>::seed)
         ;
@@ -426,6 +433,12 @@ void createModule_merope(py::module_& merope) {
     //! fonctions
     merope.def("setNbOfThreads", merope::setNbOfThreads);
     merope.def("makeCentroidal_3D", merope::optimizeLaguerreTess::makeCentroidal<3, 3>);
+
+    py::class_<gaussianField::Interf_FuncPointer>(gaussianField, "Interf_FuncPointer")
+    .def(py::init<std::size_t, bool>())
+	;
+
+
 }
 
 PYBIND11_MODULE(Merope, merope_) {
