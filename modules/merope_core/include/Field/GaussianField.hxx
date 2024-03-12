@@ -20,6 +20,12 @@ class Grid;
 
 namespace gaussianField {
 
+struct Interf_FuncPointer{
+    Interf_FuncPointer(size_t address_, bool):address{address_}{}
+
+    const size_t address;
+};
+
 template<unsigned short DIM>
 class CovarianceField;
 
@@ -31,12 +37,29 @@ public:
     SimpleGaussianField(std::function<double(Point<DIM>)> covariance_,
         std::function<double(double)> nonlinearFunction_) :
         covariance(covariance_), nonlinearFunction(nonlinearFunction_), seed{ 0 } {}
+    SimpleGaussianField(void * cov, void * nonlin):
+	SimpleGaussianField(reinterpret_cast<double(*)(double*)>(cov), reinterpret_cast<double(*)(double)>(nonlin)){}
+    SimpleGaussianField(double(*cov)(double*), double(*nonlin)(double)):
+	covariance([cov](Point<DIM> x){return cov(x.data());}), nonlinearFunction(nonlin), seed{ 0 } {}
+    SimpleGaussianField(Interf_FuncPointer i1, Interf_FuncPointer i2): SimpleGaussianField(reinterpret_cast<void*>(i1.address), reinterpret_cast<void*>(i2.address)) {}
     //! covariance function
     std::function<double(Point<DIM>)> covariance;
     //! nonlinear function
     std::function<double(double)> nonlinearFunction;
     //! seed for the standard white noise
     int seed;
+
+public:
+    template<bool use_openmp_for_fft>
+    static SimpleGaussianField create(std::function<double(Point<DIM>)> covariance_,
+        std::function<double(double)> nonlinearFunction_){
+	if constexpr (use_openmp_for_fft){
+	    throw runtime_error("You shall compile with another option for using this function. See USE_OPENMP_FOR_FFT");
+	} else {
+	    return SimpleGaussianField(covariance_, nonlinearFunction_);
+	}
+    }
+
 
 
 public:

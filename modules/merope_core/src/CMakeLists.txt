@@ -30,7 +30,9 @@ install(TARGETS VTKinout DESTINATION lib)
 add_library(FFTGrid OpenmpWrapper.cxx FFTField.cxx FFTScalarField.cxx Geostat.cxx CovSum.cxx GaussianField.cxx)
 ###########
 ### Add MKL
-	###	target_link_libraries(FFTGrid PUBLIC OpenMP::OpenMP_CXX) -> bad interaction with python lambdas in the gaussian functions
+	#ifdef USE_OPENMP_FOR_FFT
+	    target_link_libraries(FFTGrid PUBLIC OpenMP::OpenMP_CXX) ### -> bad interaction with python lambdas in the gaussian functions
+	#endif
 	target_link_libraries(FFTGrid PUBLIC -Wl,--start-group ${MKL_ROOT_LIB}/libmkl_intel_ilp64.a ${MKL_ROOT_LIB}/libmkl_intel_thread.a ${MKL_ROOT_LIB}/libmkl_core.a -Wl,--end-group -lomp5 -lpthread -lm -ldl)
 	target_compile_options(FFTGrid PUBLIC -DMKL_ILP64  -m64)
 	target_include_directories(FFTGrid PRIVATE "${MKL_INCLUDE_DIRS}")
