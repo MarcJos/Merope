@@ -297,11 +297,6 @@ inline void create_functions_depending_on_dimension(py::module_& merope, std::st
         .def(py::init<std::function<double(Point<DIM>)>>())
         ;
 
-    auto my_String_Interf_FuncPointer = "Interf_FuncPointer" + DIM_S;
-    py::class_<gaussianField::Interf_FuncPointer>(gaussianField, my_String_Interf_FuncPointer.c_str())
-    .def(py::init<std::size_t, bool>())
-	;
-
 #ifdef USE_OPENMP_FOR_FFT
     static constexpr bool USE_OPENMP_FOR_FFT_LOC = true;
 #else
@@ -438,6 +433,12 @@ void createModule_merope(py::module_& merope) {
     //! fonctions
     merope.def("setNbOfThreads", merope::setNbOfThreads);
     merope.def("makeCentroidal_3D", merope::optimizeLaguerreTess::makeCentroidal<3, 3>);
+
+    py::class_<gaussianField::Interf_FuncPointer>(gaussianField, "Interf_FuncPointer")
+    .def(py::init<std::size_t, bool>())
+	;
+
+
 }
 
 PYBIND11_MODULE(Merope, merope_) {

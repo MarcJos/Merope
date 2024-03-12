@@ -12,29 +12,10 @@ def pb(nb_proc):
     my_time = time.time()
     merope.setNbOfThreads(nb_proc) 
     
-    k = 2.0
     
-     
-    f = lambda x: exp(-(x[0]**2+x[1]**2+x[2]**2)*k)
-    signature = types.float64(types.CPointer(types.float64)) # double(double*)
-    f_cfunc = cfunc(signature, nopython=True)(f) # errors if python objects cannot be resolved to numba types
-    
-    
-    x = np.array([1.0,2.0,3.0])
-    x_data_ptr = x.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
-    print((f_cfunc.ctypes(x_data_ptr), f([1.0,2.0,3.0])))
-    
-    print(f"&f = 0x{f_cfunc.address:016x}")
-    
-    # pass to C(++) conceptually like this:
-    
-    # double (*f)(double*) = f_cfunc.address 
-    
-    
-    
-    n3D = 256
+    n3D = 64
     L = [10, 10, 10]
-    
+
     def printField(field, L, n3D, name_vtk):
       cartesianField = merope.CartesianField_3D(field, L)
       structureG = merope.FieldStructure_3D(cartesianField)
@@ -50,16 +31,12 @@ def pb(nb_proc):
     
       nonLin = lambda x : lambda_multiplication *  exp(-x**2)
       signature_nl = types.float64(types.float64) # double(double)
-      c_nl = cfunc(signature_nl, nopython=True)(nonLin)
+      c_nln = cfunc(signature_nl, nopython=True)(nonLin)
+
+      pt_adress_cov = merope.gaussianField.Interf_FuncPointer(c_cov.address, True)
+      pt_adress_nln = merope.gaussianField.Interf_FuncPointer(c_nln.address, True)
     
-      print(type(ctypes.c_void_p(c_nl.address)))
-    
-      capsule_1 = c_cov.address
-      capsule_2 = c_nl.address
-      print(type(capsule_1))
-      print(type(capsule_2))
-    
-      gaussianne = merope.gaussianField.GaussianField_3D(capsule_1, capsule_2)
+      gaussianne = merope.gaussianField.GaussianField_3D(pt_adress_cov, pt_adress_nln)
       gaussianne.seed = seed
       
       ### print the desired covariance
