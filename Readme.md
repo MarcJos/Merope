@@ -179,6 +179,10 @@ FE solvers and FFT solvers can be used in order to solve **mechanics** and **the
 - **Post-processing** :
   - [Post-processing facilities](doc/Post_processing.md)
 
+# Credit
+If you are using Mérope, please consider citing it, for example:
+- by mentionning its repository [https://github.com/MarcJos/Merope](https://github.com/MarcJos/Merope),
+- by citing the [https://hal.science/hal-04486524v1](related paper).
 
 # Miscellaneous
 
