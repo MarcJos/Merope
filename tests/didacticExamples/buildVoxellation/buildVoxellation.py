@@ -14,7 +14,6 @@
 # Import Merope & tmfft
 import sac_de_billes
 import merope
-import tmfft as tmfft
 import archi_merope as arch
 
 # Dimensions of the box
