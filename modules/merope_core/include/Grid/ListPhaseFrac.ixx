@@ -19,7 +19,7 @@ inline void ListPhaseFrac<TYPE_PHASE>::merge(double merge_criterion) {
     sort(this->begin(), this->end());
     size_t i_current = 0;
     for (size_t i_next = 1; i_next < this->size(); i_next++) {
-        if (((*this)[i_current].phase - (*this)[i_next].phase) < merge_criterion) {
+        if (std::abs((*this)[i_current].phase - (*this)[i_next].phase) < merge_criterion) {
             (*this)[i_current].fracVol += (*this)[i_next].fracVol;
         } else {
             i_current++;
