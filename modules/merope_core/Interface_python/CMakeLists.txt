@@ -1,4 +1,4 @@
-add_subdirectory(pybind11)
+#add_subdirectory(pybind11)
 
 # clean name
 pybind11_add_module(merope Interface.cxx ../../AlgoPacking/Interface_python/Interface_AlgoPacking.cxx)
