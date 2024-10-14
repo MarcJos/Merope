@@ -1,6 +1,6 @@
 //! Copyright : see license.txt
 //!
-//! \brief Scalar FFT fields with FFTW
+//! \briefScalar FFT fields with FFTW
 //!
 
 
@@ -75,7 +75,7 @@ void FFTScalarField::randFunc(int seed) {
 			}
 			i_courant++;
 		};
-	this->loopOnFrequencies(function);
+	this->loopOnFrequencies(function, false);
 }
 
 FFTScalarField::FFTScalarField(const Grid& grid, const gaussianField::CovSum& cs,
@@ -141,4 +141,4 @@ void FFTScalarField::toVTKCELL(VTKstream& fvtk, const char* const cname) const {
 	fvtk << endl;
 }
 
-} // namespace merope
+}  // namespace merope

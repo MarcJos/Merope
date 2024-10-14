@@ -44,12 +44,12 @@ bool DictPointer::EnrichGraph() {
                 bool elem2_notContainedIn_relatedElements = find_if(relatedElements.begin(), relatedElements.end(), [elem2](const auto& e) {
                     return get<0>(e) == get<0>(elem2);
                     }) == relatedElements.end();
-                    if (elem2_notContainedIn_relatedElements) {
-                        auto newId = get<0>(elem2);
-                        auto newAreSame = static_cast<AreSame>(get<1>(elem) * get<1>(elem2));
-                        relatedElements.push_back(make_tuple(newId, newAreSame));
-                        hasChanged = true;
-                    }
+                if (elem2_notContainedIn_relatedElements) {
+                    auto newId = get<0>(elem2);
+                    auto newAreSame = static_cast<AreSame>(get<1>(elem) * get<1>(elem2));
+                    relatedElements.push_back(make_tuple(newId, newAreSame));
+                    hasChanged = true;
+                }
             }
         }
     }
@@ -58,7 +58,7 @@ bool DictPointer::EnrichGraph() {
 
 vector<mesh::sameThings::SameThings<IdentifierSort> > DictPointer::getOrdered() {
     this->Initialize();
-    while (this->EnrichGraph()) {} // fixme : should work if done only once
+    while (this->EnrichGraph()) {}  // fixme : should work if done only once
     return getResult();
 }
 
@@ -76,10 +76,10 @@ vector<SameThings<IdentifierSort>> DictPointer::getResult() const {
     return vecSameThing;
 }
 
-} // namespace auxi
-} // namespace sameThings
-} // namespace mesh
-} // namespace merope
+}  // namespace auxi
+}  // namespace sameThings
+}  // namespace mesh
+}  // namespace merope
 
 
 

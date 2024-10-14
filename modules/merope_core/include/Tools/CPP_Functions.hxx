@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief Purely informatic function for doing some C++ manipulations
+//! \briefPurely informatic function for doing some C++ manipulations
 //
-#ifndef TOOLS_CPP_FUNCTIONS_HXX_
-#define TOOLS_CPP_FUNCTIONS_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -31,12 +30,12 @@ double print_time_execution(FUNCTION f, NAMEFUNCTION nameFunction, vector<int> l
     for (auto nbProc : liste_omp_nb_threads) {
         omp_set_num_threads(nbProc);
 #pragma omp parallel
-        { // begin parallel section
+        {  // begin parallel section
 #pragma omp master
             {
                 cerr << " Number of threads " << omp_get_num_threads() << " ";
             }
-        } // end parallel section
+        }  // end parallel section
         auto  t_0 = std::chrono::steady_clock::now();
         f();
         std::chrono::duration<double> elapsed_seconds = std::chrono::steady_clock::now() - t_0;
@@ -58,8 +57,8 @@ void verify(bool test, STRING __pretty_function__, std::string message) {
 #define VERIFIE_SI(test, message) cppFunctions::verify(test, __PRETTY_FUNCTION__, message)
 // French name to avoid problems
 
-} // namespace cppFunctions
-} // namespace merope
+}  // namespace cppFunctions
+}  // namespace merope
 
 
-#endif /* TOOLS_CPP_FUNCTIONS_HXX_ */
+

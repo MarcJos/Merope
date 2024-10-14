@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GEOMTOOLS1_IXX_
-#define GEOMTOOLS1_IXX_
+#pragma once
 
 namespace sac_de_billes {
 
@@ -42,7 +41,7 @@ template<unsigned short DIM, class SOLID>
 inline double geomTools::distanceTo(const SOLID& solid,
     const Point<DIM>& vector_from_center_to_point) {
     // CASE 1 : halspaces
-    if constexpr (is_same<SOLID, std::vector<HalfSpace<DIM>>>::value) {
+    if constexpr (is_same_v<SOLID, std::vector<HalfSpace<DIM>>>) {
         double distance = -0.5 * numeric_limits<double>::max();;
         double currentDistance = 0;
         for (const auto& hspace : solid) {
@@ -52,15 +51,15 @@ inline double geomTools::distanceTo(const SOLID& solid,
         return distance;
     }
     // CASE 2 : polyhedron
-    else if constexpr (is_same<SOLID, ConvexPolyhedron<DIM>>::value) {
+    else if constexpr (is_same_v<SOLID, ConvexPolyhedron<DIM>>) {
         return distanceTo<DIM>(solid.faces, vector_from_center_to_point);
     }
     // CASE 3 : sphere
-    else if constexpr (is_same<SOLID, Sphere<DIM>>::value) {
+    else if constexpr (is_same_v<SOLID, Sphere<DIM>>) {
         return geomTools::norme<DIM>(vector_from_center_to_point) - solid.radius;
     }
     // CASE 4 : ellipse
-    else if constexpr (is_same<SOLID, Ellipse<DIM>>::value) {
+    else if constexpr (is_same_v<SOLID, Ellipse<DIM>>) {
         // should be modified by Leo
         cerr << __PRETTY_FUNCTION__ << endl;
         throw runtime_error("Unexpected");
@@ -132,6 +131,6 @@ inline void linearTransform::proceed(Ellipse<DIM>& ellipse,
 }
 
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* GEOMTOOLS_IXX_ */
+

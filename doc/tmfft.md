@@ -2,7 +2,7 @@
 # Examples
 
 - thermal conductivity
-    - thermal conductivity with composite voxels [Thermal_tmfft.py.in](/tests/didacticExamples/buildVoxellation/Thermal_tmfft.py)
+    - thermal conductivity with composite voxels [Thermal_tmfft.py.in](/tests/microstructures/buildVoxellation/Thermal_tmfft.py)
 
 - mechanics
     - isotropic elasticity [homogLamines3D.py](https://www-git-cad.intra.cea.fr/DEC/pleiades/merope/merope_nucleaire/-/blob/master/tests/3_tests_analytical/Lamines3D/homogLamines3D.py.in), [elas_isotrope.py](https://www-git-cad.intra.cea.fr/DEC/pleiades/merope/merope_nucleaire/-/blob/master/tests/2_tests_mechanicalBehaviour/elas_iso/elas_isotrope.py.in)

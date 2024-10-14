@@ -116,6 +116,6 @@ void makeCentroidal__2(const Point<DIM>& L, vector<Sphere<DIM>>& centerTessels,
     }
 }
 
-} // namespace optimizeLaguerreTess
+}  // namespace optimizeLaguerreTess
 
-} // namespace merope
+}  // namespace merope

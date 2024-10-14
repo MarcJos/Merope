@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief C++ easy interface for outer calls
+//! \briefC++ easy interface for outer calls
 //
-#ifndef INTERFACE_HXX_
-#define INTERFACE_HXX_
+#pragma once
 
 #include "StdHeaders.hxx"
 
@@ -22,7 +21,7 @@ namespace algoSpheres {
 
 //! At the end, param algo points to the desired algorithm
 template<unsigned short DIM>
-unique_ptr<AlgoPacking<DIM>> newAlgo(const algoSpheres::TypeAlgo &typeAlgo);
+unique_ptr<AlgoPacking<DIM>> newAlgo(const algoSpheres::TypeAlgo& typeAlgo);
 
 //! \return a random distribution of spheres inside a prescribed shape
 //!	\param typeAlgo : chooses the algorithm, RSA, WP or Bool
@@ -33,7 +32,7 @@ unique_ptr<AlgoPacking<DIM>> newAlgo(const algoSpheres::TypeAlgo &typeAlgo);
 //! \param tabPhases [optional] : phases relative to the desiredRPhi. If use {}, default phase = 0
 //! \param mindist : repulsion distance of sphere, default=0. Inactive in case of bool
 template<unsigned short DIM>
-vector<Sphere<DIM>> throwSpheres(const algoSpheres::TypeAlgo &typeAlgo,
+vector<Sphere<DIM>> throwSpheres(const algoSpheres::TypeAlgo& typeAlgo,
         AmbiantSpace::NameShape nameShape, Point<DIM> L, unsigned seed,
         vector<array<double, 2>> desiredRPhi, vector<PhaseType> tabPhases = { },
         double mindist = 0);
@@ -47,7 +46,7 @@ vector<Sphere<DIM>> throwSpheres(const algoSpheres::TypeAlgo &typeAlgo,
 //! \param tabPhases [optional] : phases relative to the tabRadii. If use {}, default phase = 0
 //! \param mindist : repulsion distance of sphere, default=0. Inactive in case of bool
 template<unsigned short DIM>
-vector<Sphere<DIM>> throwSpheres(const algoSpheres::TypeAlgo &typeAlgo,
+vector<Sphere<DIM>> throwSpheres(const algoSpheres::TypeAlgo& typeAlgo,
         AmbiantSpace::NameShape nameShape, Point<DIM> L, unsigned seed,
         vector<double> tabRadii, vector<PhaseType> tabPhases = { },
         double mindist = 0);
@@ -91,8 +90,8 @@ vector<double> fromCumHisto(algoSpheres::TypeAlgo typeAlgo,
         vector<array<double, 2>> desiredRCumPhi, const char *const outFrac =
                 nullptr);
 */
-} // namespace algoSpheres
-} // namespace sac_de_billes
+}  // namespace algoSpheres
+}  // namespace sac_de_billes
 
 #include "Interface.ixx"
-#endif /* INTERFACE_HXX_ */
+

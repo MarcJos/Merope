@@ -40,3 +40,44 @@ def multiplyFile(coeffVal_inputFileName, factor_value, prefix=None):
             for inputLine in inputFile:
                 outputFile.write(str(factor_value * float(inputLine)) + "\n")
     return coeffVal_oututFileName
+
+
+def check_lines_equal(file1, file2, start_line, end_line):
+    """
+    Check if the lines from start_line to end_line in file1 and file2 are equal.
+
+    Parameters:
+    file1 (str): Path to the first file.
+    file2 (str): Path to the second file.
+    start_line (int): Starting line number (1-based index).
+    end_line (int): Ending line number (1-based index).
+
+    Returns:
+    bool: True if the lines are equal, False otherwise.
+    """
+    try:
+        with open(file1, 'r') as f1, open(file2, 'r') as f2:
+            lines1 = f1.readlines()
+            lines2 = f2.readlines()
+
+            # Ensure the files have enough lines
+            if len(lines1) < end_line or len(lines2) < end_line:
+                print("One or both files do not have enough lines.")
+                return False
+
+            # Extract the specified lines
+            lines1_subset = lines1[start_line - 1:end_line]
+            lines2_subset = lines2[start_line - 1:end_line]
+
+            # Check if the lines are equal
+            return lines1_subset == lines2_subset
+    except FileNotFoundError:
+        print("One or both files not found.")
+        return False
+
+def check_lines_equal_error(file1, file2, start_line, end_line):
+    res = check_lines_equal(file1, file2, start_line, end_line)
+    if res:
+        print("Comparison success : " + file1 + " / " + file2)
+    else:
+        raise Exception("Different files : " + file1 + " / " + file2)

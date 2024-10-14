@@ -31,7 +31,10 @@ See [test_performance.py](/studies/performances/Merope_vs_RollPy/test_performanc
 We compare Mérope and Neper when reconstructing a voxelation of a Laguerre tessellation, varying :
 - the number nVox of voxels,
 - the number nbSpheres of seeds (=of tessels).
-We observe that, using Mérope instead of Neper, we may gain a factor from 1 to 100 in terms of time. (Typically more than 10.) However, Neper supports parallel computing, which is not the case yet with Mérope.
+We observe that, using Mérope instead of Neper, we may gain a factor from 2 to 25 in terms of time. (Typically more than 10.) However, Neper supports parallel computing, which has not been activated here.
+(Computations have been performed on a CPU Intel Xeon Platinum 8268, comparing Neper 4.8.1-1 and Mérope 1.1.2, both compiled with g++ 12.1.0.)
+
+
 
 See [Calc_benchmark.py](/studies/performances/Merope_vs_neper/Calc_benchmark.py). (1 processor for Neper.)
 

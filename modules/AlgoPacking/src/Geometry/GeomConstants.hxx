@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef ALGOPACKING_SRC_GEOMETRY_GEOMCONSTANTS_HXX_
-#define ALGOPACKING_SRC_GEOMETRY_GEOMCONSTANTS_HXX_
+#pragma once
 
 namespace sac_de_billes {
 using namespace std;
@@ -16,12 +15,12 @@ constexpr double m_PI = M_PI;
 # endif
 
 namespace geomTools {
-//! \brief geometrical functions
+//! \briefgeometrical functions
 //! for comparing and absorbing errors in float operations
 constexpr double EPSILON = 1e-6;
 constexpr double EPSILON_S = 1e-10;
-} // namespace geomTools
-} // namespace sac_de_billes
+}  // namespace geomTools
+}  // namespace sac_de_billes
 
 
-#endif /* ALGOPACKING_SRC_GEOMETRY_GEOMCONSTANTS_HXX_ */
+

@@ -5,10 +5,10 @@
 #pragma once
 
 
+#include <math.h>
 #include <iostream>
 #include <numeric>
 #include <vector>
-#include <math.h>
 
 #include "../../Eigen/Dense"
 
@@ -70,9 +70,8 @@ private:
 };
 
 
-} // namespace  Anderson
+}  // namespace  Anderson
 
-} // namespace optimization
-
+}  // namespace optimization
 
 #include "Anderson.ixx"

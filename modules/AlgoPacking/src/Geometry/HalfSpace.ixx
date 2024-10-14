@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef ALGOPACKING_SRC_GEOMETRY_HALFSPACE_IXX_
-#define ALGOPACKING_SRC_GEOMETRY_HALFSPACE_IXX_
+#pragma once
 
 #include "../Geometry/GeomTools_1.hxx"
 
@@ -12,7 +11,7 @@ namespace sac_de_billes {
 ///HalfSpace<DIM>
 
 template<unsigned short DIM>
-HalfSpace<DIM>::HalfSpace(Point<DIM> vec__, double c__):
+HalfSpace<DIM>::HalfSpace(Point<DIM> vec__, double c__) :
     c_{ c__ }, vec_{ vec__ } {}
 
 template<unsigned short DIM>
@@ -41,6 +40,6 @@ inline string HalfSpace<DIM>::toString() {
     return result;
 }
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* ALGOPACKING_SRC_GEOMETRY_HALFSPACE_IXX_ */
+

@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MEROPE_CORE_SRC_FFTW3_FFTSCALARFIELD_IXX_
-#define MEROPE_CORE_SRC_FFTW3_FFTSCALARFIELD_IXX_
+#pragma once
 
 #include <string>
 #include <iostream>
@@ -41,7 +40,7 @@ void FFTScalarField::setCov(const double Lx, const double Ly, const double Lz,
     }
     char Dnz = nzb - nz;
 #pragma omp parallel
-    { // begin parallel section
+    {  // begin parallel section
 #pragma omp for schedule(static)
         for (size_t i = 0; i < nx; ++i) {
             rfloat* vi = f + i * ny * nzb;
@@ -62,7 +61,7 @@ void FFTScalarField::setCov(const double Lx, const double Ly, const double Lz,
                         hz = dz * k;
                     else
                         hz = ((int)k - (int)nz) * dz;
-                    if constexpr (std::is_same<C, gaussianField::CovSum>::value) {
+                    if constexpr (std::is_same_v<C, gaussianField::CovSum>) {
                         switch (d) {
                         case 1:
                             *vi = cs.cov(hz);
@@ -74,9 +73,9 @@ void FFTScalarField::setCov(const double Lx, const double Ly, const double Lz,
                             *vi = cs.cov(hx, hy, hz);
                             break;
                         }
-                    } else if constexpr (std::is_same<C, std::function<double(std::array<double, 3>)>>::value) {
+                    } else if constexpr (std::is_same_v<C, std::function<double(std::array<double, 3>)>>) {
                         *vi = cs(std::array<double, 3>{hx, hy, hz});
-                    } else if constexpr (std::is_same<C, std::function<double(std::array<double, 2>)>>::value) {
+                    } else if constexpr (std::is_same_v<C, std::function<double(std::array<double, 2>)>>) {
                         *vi = cs(std::array<double, 2>{hy, hz});
                     } else {
                         cerr << __PRETTY_FUNCTION__ << endl;
@@ -87,63 +86,44 @@ void FFTScalarField::setCov(const double Lx, const double Ly, const double Lz,
                 vi += Dnz;
             }
         }
-    } // end parallel section
+    }  // end parallel section
 }
 
 
 template<class FUNCTION>
-void FFTScalarField::loopOnFrequencies(const FUNCTION& function) {
+void FFTScalarField::loopOnFrequencies(const FUNCTION& function, bool use_omp) {
     checkSpectral("loopOnFrequencies");
     size_t nx, ny;
     getDim(nx, ny);
-#pragma omp parallel default(shared)
+#pragma omp parallel if(use_omp) default(shared)
     {
         // Limits and indexes for loops
-        int i2, j2, ncx, ncy, ncx2, ncy2;
-        unsigned i, j, ncz, ncz2;
+        auto get_nc = [](size_t nx_) {
+            size_t ncx = nx_ / 2 + 1;
+            size_t ncx2 = (nx_ % 2) ? ncx : ncx - 1;
+            return tuple<size_t, size_t>(ncx, ncx2);
+            };
+        auto get_f = [](auto i_, auto ncx2_) {
+            return (i_ != ncx2_ && i_);
+            };
         // Dimension 1,2 and 3 constants
-        ncx = nx / 2 + 1;
-        if (nx % 2) {
-            ncx2 = ncx;
-        } else {
-            ncx2 = ncx - 1;
-        }
+        auto [ncx, ncx2] = get_nc(nx);
+        auto [ncy, ncy2] = get_nc(ny);
+        auto [ncz, ncz2] = get_nc(nz);
 
-        ncy = ny / 2 + 1;
-        if (ny % 2) {
-            ncy2 = ncy;
-        } else {
-            ncy2 = ncy - 1;
-        }
-
-        ncz = nz / 2 + 1;
-        if (nz % 2) {
-            ncz2 = ncz;
-        } else {
-            ncz2 = ncz - 1;
-        }
-#pragma omp for collapse(2)
+#pragma omp if(use_omp) for collapse(2)
         // Loop on x frequencies
-        for (i = 0; i < nx; ++i) {
+        for (size_t i = 0; i < nx; ++i) {
             // Loop on y frequencies
-            for (j = 0; j < ny; ++j) {
+            for (size_t j = 0; j < ny; ++j) {
+                bool fx = get_f(i, ncx2);
+                auto fy = get_f(j, ncy2);
 
                 cfloat* pF = &F[(i * ny + j) * ncz];
-                i2 = i;
-                if (i >= (unsigned)ncx) {
-                    i2 = i - nx;
-                }
-                bool fx = (i2 != ncx2 && i2);
-                j2 = j;
-                if (j >= (unsigned)ncy) {
-                    j2 = j - ny;
-                }
-                bool fy = (j2 != ncy2 && j2);
-
                 // Loop on z frequencies
-                for (unsigned k = 0; k < ncz; ++k) {
+                for (size_t k = 0; k < ncz; ++k) {
                     cfloat& rF = pF[k];
-                    bool fz = (k != ncz2 && k);
+                    bool fz = get_f(k, ncz2);
                     function(fx, fy, fz, rF);
                 }
             }
@@ -173,6 +153,6 @@ void FFTScalarField::build(const Grid* grid, const COVARIANCE_TYPE& cs,
     backward();
 }
 
-} // namespace merope
+}  // namespace merope
 
-#endif /* MEROPE_CORE_SRC_FFTW3_FFTSCALARFIELD_IXX_ */
+

@@ -27,7 +27,7 @@ install(TARGETS GeneOrientations DESTINATION lib)
 add_library(VTKinout VTKStream.cxx VTKRead.cxx TIFFRead.cxx)
 install(TARGETS VTKinout DESTINATION lib)
 
-add_library(FFTGrid OpenmpWrapper.cxx FFTField.cxx FFTScalarField.cxx Geostat.cxx CovSum.cxx GaussianField.cxx)
+add_library(FFTGrid FFTField.cxx FFTScalarField.cxx Geostat.cxx CovSum.cxx GaussianField.cxx)
 ###########
 ### Add MKL
 	if(DEFINED MEROPE_USE_OPENMP_FOR_FFT)
@@ -41,7 +41,7 @@ add_library(FFTGrid OpenmpWrapper.cxx FFTField.cxx FFTScalarField.cxx Geostat.cx
 ##########
 install(TARGETS FFTGrid DESTINATION lib)
 
-add_library(Grid Grid_VER.cxx Grid.cxx CartesianGrid.cxx GridManipulations.cxx SetNbOfThreads.cxx)
+add_library(Grid Grid_VER.cxx Grid.cxx CartesianGrid.cxx GridManipulations.cxx)
 target_link_libraries(Grid PUBLIC RSAalgolib VTKinout GeomVER Physics)
 target_link_libraries(Grid PUBLIC OpenMP::OpenMP_CXX)
 target_link_libraries(Grid PRIVATE FFTGrid)
@@ -76,6 +76,15 @@ install(TARGETS Performance DESTINATION bin)
 add_executable(Performance_1 Z_Performance_1.cxx)
 target_link_libraries(Performance_1 PUBLIC tests)
 install(TARGETS Performance_1 DESTINATION bin)
+
+
+add_executable(Z_texture Z_texture.cxx)
+target_link_libraries(Z_texture PUBLIC tests)
+install(TARGETS Z_texture DESTINATION bin)
+
+add_executable(Z_Test_debug Z_Test_debug.cxx)
+target_link_libraries(Z_Test_debug PUBLIC tests)
+install(TARGETS Z_Test_debug DESTINATION bin)
 
 ## See Makefile.am in previous versions -> is no C++
 ## add_executable(ntfa_evp3d_castem ntfa_evp3d_castem.f)

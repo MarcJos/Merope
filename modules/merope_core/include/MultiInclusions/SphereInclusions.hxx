@@ -2,8 +2,7 @@
 //!
 //! \brief
 
-#ifndef SPHEREINCLUSIONS_HXX_
-#define SPHEREINCLUSIONS_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -19,19 +18,19 @@
 namespace merope {
 
 template<unsigned short DIM>
-class SphereInclusions: public SphereSeeds<DIM> {
-    //! \brief Class for modelling spherical inclusions inside a matrix
+class SphereInclusions final : public SphereSeeds<DIM> {
+    //! \briefClass for modelling spherical inclusions inside a matrix
     //! 0 is the matrix phase
     //! 1->N are the inclusion phases
 public:
     // default constructor
-    SphereInclusions():
+    SphereInclusions() :
         SphereSeeds<DIM>() {}
 
     //! return the covariances of spheres
-    void covX(const unsigned nx, std::ostream& fout) const; //!< Theoretical covariance (X direction)
-    void covY(const unsigned ny, std::ostream& fout) const; //!< Theoretical covariance (Y direction)
-    void covZ(const unsigned nz, std::ostream& fout) const; //!< Theoretical covariance (Z direction)
+    void covX(const unsigned nx, std::ostream& fout) const;  //!< Theoretical covariance (X direction)
+    void covY(const unsigned ny, std::ostream& fout) const;  //!< Theoretical covariance (Y direction)
+    void covZ(const unsigned nz, std::ostream& fout) const;  //!< Theoretical covariance (Z direction)
     //! Getter on number of phases in the geometry.
     inline unsigned long getNumberOfPhases() const {
         return 1 + this->theSpheres.getNbPhases();
@@ -46,8 +45,8 @@ private:
 
 };
 
-} // namespace merope
+}  // namespace merope
 
 
 #include "../MultiInclusions/SphereInclusions.ixx"
-#endif /* SPHEREINCLUSIONS_HXX_ */
+

@@ -16,11 +16,16 @@ def plot_tessellation(L, centers, fileVTK):
     lag = merope.LaguerreTess_3D(  L, centers)
     mi = merope.MultiInclusions_3D()
     mi.setInclusions(lag)
-    voxellation = merope.Voxellation_3D(mi)
+    structure = merope.Structure_3D(mi)
+
     nbVox = [256 for l in L]
-    voxellation.proceed(nbVox)
-    fileCoeff = "Coeffs.txt"
-    voxellation.printFile(fileVTK, fileCoeff)
+    gridParameters = merope.vox.create_grid_parameters_N_L_3D(nbVox, L)
+    grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Average)
+    coefficients = [i for i in range(max(structure.getAllPhases()))]
+    grid.apply_homogRule(merope.HomogenizationRule.Voigt, coefficients)
+
+    my_printer = merope.vox.vtk_printer_3D()
+    my_printer.printVTK(grid, fileVTK)
 
 def normeSquare(x, L):
     res = 0

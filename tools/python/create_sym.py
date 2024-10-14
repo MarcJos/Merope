@@ -54,7 +54,7 @@ def prepareGeometry(direction_i, boundaryConditions, vtkFileName, coeffVal_input
     ###
     signFlux = turn_sign_into_material(signFlux) # change signs to materials
     print_dilation(nbVox, L, signFlux, materialId_fileName)
-    merope.symmetrize(vtkFileName, zones_fileName, nbSym)
+    merope.vox.symmetrize(vtkFileName, zones_fileName, nbSym)
 
 
 def verifyDimensions(direction_i, boundaryConditions, vtkSP_input):

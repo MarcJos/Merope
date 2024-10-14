@@ -1,6 +1,6 @@
 //! Copyright : see license.txt
 //!
-//! \brief defines a VTK stream format
+//! \briefdefines a VTK stream format
 //!
 
 
@@ -83,5 +83,5 @@ void VTKstream::setPOINT(const unsigned n) {
     }
 }
 
-} // namespace merope
+}  // namespace merope
 

@@ -45,5 +45,5 @@ void test_Anderson() {//
     print_loc(h_w);
 }
 
-} // namespace  tests
-} // namespace  optimization
+}  // namespace  tests
+}  // namespace  optimization

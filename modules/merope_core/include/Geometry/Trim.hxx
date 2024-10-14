@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MEROPE_CORE_SRC_GEOMETRY_TRIM_HXX_
-#define MEROPE_CORE_SRC_GEOMETRY_TRIM_HXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 
@@ -17,8 +16,12 @@ namespace geomTools {
 template<unsigned short DIM, class SOLID>
 SOLID trim(const SOLID& solid, double layerWidth);
 
-} // namespace geomTools
-} // namespace sac_de_billes
+//! return a solid obtained by enlarging by from the initial solid
+template<unsigned short DIM, class SOLID>
+SOLID enlarge(const SOLID& solid, double layerWidth);
+
+}  // namespace geomTools
+}  // namespace sac_de_billes
 #include "../Geometry/Trim.ixx"
 
-#endif /* MEROPE_CORE_SRC_GEOMETRY_TRIM_HXX_ */
+

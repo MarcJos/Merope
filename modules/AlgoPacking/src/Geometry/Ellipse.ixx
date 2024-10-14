@@ -3,8 +3,7 @@
 //!
 //! \brief
 //
-#ifndef ELLIPSE_IXX_
-#define ELLIPSE_IXX_
+#pragma once
 
 namespace sac_de_billes {
 
@@ -79,6 +78,6 @@ array<Point<DIM>, DIM> ellipseAux::defaultAxes() {
     return result;
 }
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* ELLIPSE_IXX_ */
+

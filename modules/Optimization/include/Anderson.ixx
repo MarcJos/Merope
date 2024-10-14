@@ -203,5 +203,5 @@ void algorithm<NB_ITER, VECTOR, FIXED_POINT>::show_message(std::ostream& os) con
     os << "############\n";
 }
 
-} // namespace Anderson
-} // namespace optimization
+}  // namespace Anderson
+}  // namespace optimization

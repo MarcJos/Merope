@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 2 classes for implementing voxel representation
+//! \brief2 classes for implementing voxel representation
 //
-#ifndef VOXEL_HXX_
-#define VOXEL_HXX_
+#pragma once
 
 #include "StdHeaders.hxx"
 
@@ -38,7 +37,7 @@ public:
     //! refreshes the status (covered or not) of the Voxel wrt the sphere that is added
     void updateCovered(const Sphere<DIM>& sphere, double minRadius);
     //!	\return whether it is totally covered by the sphere or not
-    //bool isInSphere(const Sphere<DIM>& sphere, double minRadius) const;
+    // bool isInSphere(const Sphere<DIM>& sphere, double minRadius) const;
     bool isInSphere(const Sphere<DIM>& sphere, const double& minRadius,
         const vector<array<unsigned short, DIM>>& pathForCorner =
         path::TabCorner<DIM>::get().getTab()) const;
@@ -94,7 +93,7 @@ public:
     MotherVoxel(const DiscPoint<DIM>& discreteCoordinates_, double length_,
         MotherGrid<DIM>* motherGrid_);
     //! Gets the sphere through spheresInside, to placedSpheres
-    inline Sphere<DIM> getSphere(int i) const;
+    inline Sphere<DIM> getSphere(auto i) const;
     //! Can it feel influence of spheres through the boundary of the periodic cube? -> initializes the variable isClose2Boundary
     //! Checking if the cube cointaining any close voxel, in which a sphere can intersect a sphere of the original voxel is indeed in the BigShape
     bool isItClose2Boundary(AmbiantSpace::BigShape<DIM>* bigShape);
@@ -127,8 +126,9 @@ private:
     array<bool, SIZE> tabUnCovered;
     //! Number of uncovered subvoxels in the table tabNewVoxels
     size_t NbUncoveredVoxels;
+
 public:
-    VoxelSubdivision(const Voxel<DIM>* voxel) :
+    explicit VoxelSubdivision(const Voxel<DIM>* voxel) :
         fatherVoxel(voxel), minRadius(voxel->motherGrid->minRadius), midPoint(
             voxel->center()), tabNewVoxels{ }, tabUnCovered{ }, NbUncoveredVoxels(
                 SIZE), closeSpheres{ }, closeSpheresRelativePos{ } {
@@ -151,26 +151,27 @@ public:
     //! tests whether the j-th subcube is covered by a sphere seen at relativePosition
     template<unsigned short NUM_METHOD, unsigned short NB_NGHB = 0>
     bool testSphere(const Sphere<DIM>& sphere, const size_t j,
-        const int relativePosition = 0);
+        const size_t relativePosition = 0);
+
 private:
     vector<Sphere<DIM>> closeSpheres;
     vector<int> closeSpheresRelativePos;
     //! Initialize the properties
     void initialize();
     //! Set that the jth subvoxel is covered.
-    void setFalse(int j);
+    void setFalse(size_t j);
     //! checks whether the sphere covers the jth subvoxel.
     //! in case yes, it updates the subdivision
-    bool checkSphere(const int& j, const Sphere<DIM>& sphere,
+    bool checkSphere(size_t j, const Sphere<DIM>& sphere,
         const vector<array<short unsigned, DIM>>& pathForCorner);
     //! auxiliary function for checkCoveredVoxel_2
     template<unsigned short NB_NGHB>
     void testSubVoxels();
 };
 
-} // namespace algoRSA_aux
-} // namespace sac_de_billes
+}  // namespace algoRSA_aux
+}  // namespace sac_de_billes
 
 #include "Voxel.ixx"
 
-#endif /* VOXEL_HXX_ */
+

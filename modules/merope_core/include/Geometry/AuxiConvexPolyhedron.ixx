@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MEROPE_CORE_SRC_GEOMETRY_AUXICONVEXPOLYHEDRON_IXX_
-#define MEROPE_CORE_SRC_GEOMETRY_AUXICONVEXPOLYHEDRON_IXX_
+#pragma once
 
 namespace merope {
 template<unsigned short DIM>
@@ -39,8 +38,7 @@ inline vector<HalfSpace<DIM> > facesFromVertices(
             Point<DIM> vec1 = renormalized_vertices[face_index[1]] - renormalized_vertices[face_index[0]];
             Point<DIM> vec2 = renormalized_vertices[face_index[2]] - renormalized_vertices[face_index[1]];
             normal = geomTools::prodVec<DIM>(vec1, vec2);
-        }
-        else {
+        } else {
             Point<DIM> vec1 = renormalized_vertices[face_index[1]] - renormalized_vertices[face_index[0]];
             normal = { vec1[1], -vec1[0] };
         }
@@ -53,8 +51,8 @@ inline vector<HalfSpace<DIM> > facesFromVertices(
     }
     return faces;
 }
-} // namespace merope
+}  // namespace merope
 
 
 
-#endif /* MEROPE_CORE_SRC_GEOMETRY_AUXICONVEXPOLYHEDRON_IXX_ */
+

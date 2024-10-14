@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef ALGOPACKING_SRC_GEOMETRY_BASICGEOMETRICOPERATIONS_HXX_
-#define ALGOPACKING_SRC_GEOMETRY_BASICGEOMETRICOPERATIONS_HXX_
+#pragma once
 
 #include "../StdHeaders.hxx"
 
@@ -14,7 +13,7 @@
 namespace sac_de_billes {
 using namespace std;
 namespace geomTools {
-//! \brief geometrical functions
+//! \briefgeometrical functions
 
 // PROJECTIONS
 //! retains only the first coordinates of the oldPoint
@@ -42,29 +41,29 @@ template<unsigned short DIM, class C1, class C2>
 Point<DIM> odot(const C1& v1, const C2& v2);
 //! @return 2D determinant of 2 points
 //! @param pt0, pt1 : ordered 2 2D points
-double determinant(Point<2> pt0, Point<2> pt1);
+double determinant(const Point<2>& pt0, const Point<2>& pt1);
 
 // NORM AND DISTANCE OPERATIONS
 //! \return the squared norm of a vector
-template<unsigned short DIM, class T, typename std::enable_if<is_Point<T, DIM>, bool>::type = true >
+template<unsigned short DIM, class T, typename std::enable_if_t<is_Point<T, DIM>, bool> = true >
 double normeCarre(const T& v);
 //! \return the norm of a vector
-template<unsigned short DIM, class T, typename std::enable_if<is_Point<T, DIM>, bool>::type = true >
+template<unsigned short DIM, class T, typename std::enable_if_t<is_Point<T, DIM>, bool> = true >
 double norme(const T& v);
 //! \return the squared distance between 2 vectors (in the euclidean space)
-template<unsigned short DIM, class T, typename std::enable_if<is_Point<T, DIM>, bool>::type = true >
+template<unsigned short DIM, class T, typename std::enable_if_t<is_Point<T, DIM>, bool> = true >
 double distanceCarre(const T& v1, const T& v2);
 //! renormalizes a vector and returns its previous norm
 template<unsigned short DIM>
 double renormalize(Point<DIM>& v);
 //! \return whether 2 vectors are equal, up to machine error
 //! uses relative comparison
-template<unsigned short DIM, class T, typename std::enable_if<is_Point<T, DIM>, bool>::type = true >
+template<unsigned short DIM, class T, typename std::enable_if_t<is_Point<T, DIM>, bool> = true >
 bool areEqual(const T& v1, const T& v2, double epsilon = geomTools::EPSILON);
 
-} // namespace geomTools
-} //namespace sac_de_billes
+}  // namespace geomTools
+}  // namespace sac_de_billes
 
 #include "../Geometry/BasicGeometricOperations.ixx"
 
-#endif /* ALGOPACKING_SRC_GEOMETRY_BASICGEOMETRICOPERATIONS_HXX_ */
+

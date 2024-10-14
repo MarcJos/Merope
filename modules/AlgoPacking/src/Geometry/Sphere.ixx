@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef SPHERE_IXX_
-#define SPHERE_IXX_
+#pragma once
 
 #include "../AmbiantSpace.hxx"
 
@@ -47,7 +46,7 @@ inline double sphereTools::volumeSphere(const double& R) {
     /*
     various tests for the formula of the volume of the sphere
     */
-    static_assert((DIM != 1) or abs(mult - 1) < 1e-10);
+    static_assert((DIM != 1) or abs(mult - 2) < 1e-10);
     static_assert((DIM != 2) or abs(mult - m_PI) < 1e-10);
     static_assert((DIM != 3) or abs(mult - (4. / 3.) * m_PI) < 1e-10);
     static_assert((DIM != 4) or abs(mult - 0.5 * m_PI * m_PI) < 1e-10);
@@ -157,7 +156,7 @@ bool sphereTools::fromLine(istream& fileStream, size_t phase, Sphere<DIM>& spher
         while (ss >> oneData) {
             data.push_back(oneData);
         }
-        if (data.size() == 0) { // there should be a void line
+        if (data.size() == 0) {  // there should be a void line
             return fromLine(fileStream, phase, sphere);
         }
         for (size_t i = 0; i < DIM; i++) {
@@ -171,6 +170,6 @@ bool sphereTools::fromLine(istream& fileStream, size_t phase, Sphere<DIM>& spher
     }
 }
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* SPHERE_IXX_ */
+

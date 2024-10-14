@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
 
-#ifndef MICROTYPE_HXX_
-#define MICROTYPE_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -18,7 +17,7 @@ namespace merope {
 
 class MicroType {
 public:
-    MicroType(): typeCrystal{ TypeCrystal::Voronoi } {};
+    MicroType() : typeCrystal{ TypeCrystal::Voronoi } {};
     //! type of crystal
     TypeCrystal typeCrystal;
 
@@ -30,7 +29,7 @@ public:
 
 class Colorize {
 public:
-    Colorize(): colorization{ ColorMaterialID::Poly } {};
+    Colorize() : colorization{ ColorMaterialID::Poly } {};
     //! Says how to set MaterialId
     ColorMaterialID colorization;
     //!
@@ -39,7 +38,7 @@ public:
     }
 };
 
-class MicroType_Ext: public Colorize, public MicroType {
+class MicroType_Ext : public Colorize, public MicroType {
 public:
     using MicroType::setTypeCrystal;
     using Colorize::setColorization;
@@ -52,7 +51,7 @@ public:
     }
 };
 
-} // namespace merope
+}  // namespace merope
 
 
-#endif /* MICROTYPE_HXX_ */
+

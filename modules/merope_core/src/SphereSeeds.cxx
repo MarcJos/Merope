@@ -40,5 +40,5 @@ void readKeyword(const std::string keyword, ifstream& f) {
     }
 }
 
-} // namespace merope
+}  // namespace merope
 

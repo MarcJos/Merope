@@ -8,8 +8,9 @@
 # Non-regression tests
 
 import os
+import subprocess
 
-os.system("./../../../INSTALL-DIR/bin/Main_pour_test")
-os.system("./../../../INSTALL-DIR/bin/Performance")
-os.system("./../../../INSTALL-DIR/bin/Performance_1")
-
+subprocess.run(["./../../../INSTALL-DIR/bin/Z_texture"], check=True)
+subprocess.run(["./../../../INSTALL-DIR/bin/Main_pour_test"], check=True)
+subprocess.run(["./../../../INSTALL-DIR/bin/Performance"], check=True)
+subprocess.run(["./../../../INSTALL-DIR/bin/Performance_1"], check=True)

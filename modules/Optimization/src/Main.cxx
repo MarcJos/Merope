@@ -2,12 +2,6 @@
 //!
 //! \brief
 
-#include <iostream>
-#include <numeric>
-#include <vector>
-#include <math.h>
-#include "../include/BarzilaiBorwein.hxx"
-#include "../include/Anderson.hxx"
 #include "../include/Tests.hxx"
 
 using namespace std;

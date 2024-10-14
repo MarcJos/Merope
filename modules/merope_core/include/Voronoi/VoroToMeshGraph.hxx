@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MESH_VOROTRANSLATER_HXX_
-#define MESH_VOROTRANSLATER_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -45,9 +44,9 @@ mesh::meshStructure::VoroMesh_UnStructureData<3> getRawMeshGraph(const Point<3>&
 //! fixme
 mesh::meshStructure::VoroMesh_UnStructureData<3> getRawMeshGraph(const voroInterface::SingleCell& singleCell);
 
-} // namespace voroTranslater
-} // namespace microToMesh
-} // namespace merope
+}  // namespace voroTranslater
+}  // namespace microToMesh
+}  // namespace merope
 
 
-#endif /* MESH_VOROTRANSLATER_HXX_ */
+

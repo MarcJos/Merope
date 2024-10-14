@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef TESTS_HXX_
-#define TESTS_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -29,8 +28,9 @@ public:
     static void testFields();
     static void testFields2();
     static void polyCrystalCentroidal(bool use_acceleration);
+    static void outputLaminate();
 };
 
-} // namespace merope
+}  // namespace merope
 
-#endif /* TESTS_HXX_ */
+

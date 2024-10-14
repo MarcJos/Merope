@@ -45,12 +45,12 @@ def execution(nb_proc):
     print(time.time() - tic0)
     tic0 = time.time()
     
-    grid = merope.Voxellation_3D(mIncl)
-    grid.setVoxelRule(merope.VoxelRule.Average)
-    grid.setHomogRule(merope.HomogenizationRule.Voigt)
-    grid.proceed(nVox)
-    grid.printFile("Zone_Voigt.vtk","Coeffs_Voigt.txt")
-    
+    structure = merope.Structure_3D(mIncl)
+    gridParameters = merope.vox.create_grid_parameters_N_L_3D(nVox, L)
+    grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Average)
+    coefficients = [1. * i for i in mIncl.getAllPhases()]
+    grid.apply_homogRule(merope.HomogenizationRule.Voigt, coefficients)
+        
     final_time = time.time() - tic0
    
     print("##############")

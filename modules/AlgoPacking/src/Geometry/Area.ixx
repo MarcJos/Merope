@@ -2,8 +2,7 @@
 //!
 //! \brief
 
-#ifndef GEOMETRY_AREA_IXX
-#define GEOMETRY_AREA_IXX
+#pragma once
 
 #include "GeomTools_1.hxx"
 
@@ -20,9 +19,9 @@ double triangle(Point<DIM> pt0, Point<DIM> pt1, Point<DIM> pt2) {
     return sqrt(p * (p - a) * (p - b) * (p - c));
 }
 
-} // namespace area
-} // namespace geomTools
-} // namespace  sac_de_billes
+}  // namespace area
+}  // namespace geomTools
+}  // namespace  sac_de_billes
 
-#endif // GEOMETRY_AREA_IXX
+
 

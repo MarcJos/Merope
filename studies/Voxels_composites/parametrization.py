@@ -13,7 +13,7 @@ import merope
 
 
 NList = [2**i for i in range(4,11)]
-voxelRuleList = [merope.VoxelRule.Center, merope.VoxelRule.Average]
+voxelRuleList = [merope.vox.VoxelRule.Center, merope.vox.VoxelRule.Average]
 voxelRuleNames = ["Center", "Average"]
 
 HGRule = merope.HomogenizationRule

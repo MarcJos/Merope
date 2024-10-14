@@ -1,32 +1,96 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MEROPE_CORE_SRC_GEOMETRY_TRIM_IXX_
-#define MEROPE_CORE_SRC_GEOMETRY_TRIM_IXX_
+#pragma once
 
 
 template<unsigned short DIM, class SOLID>
 inline SOLID sac_de_billes::geomTools::trim(const SOLID& solid,
     double layerWidth) {
+    static_assert(is_same_v<SOLID, Sphere<DIM>> or is_same_v<SOLID, ConvexPolyhedron<DIM>>
+        or is_same_v<SOLID, Cylinder<3>> or is_same_v<SOLID, SpheroPolyhedron<DIM>>
+        or is_same_v<SOLID, Ellipse<DIM>>);
     // case 1 : sphere
-    if constexpr (std::is_same<SOLID, Sphere<DIM>>::value) {
-        return Sphere<DIM>(solid.center, solid.radius - layerWidth, 0);
+    if constexpr (is_same_v<SOLID, Sphere<DIM>>) {
+        return Sphere<DIM>(solid.center, solid.radius - layerWidth, solid.phase);
     }
-    //
-    else if constexpr (std::is_same<SOLID, ConvexPolyhedron<DIM>>::value) {
+    // case 2 : convex polyhedron
+    else if constexpr (is_same_v<SOLID, ConvexPolyhedron<DIM>>) {
         vector<HalfSpace<DIM>> faces = solid.faces;
         for (auto& hs : faces) {
             hs.c() -= layerWidth;
         }
         return ConvexPolyhedron<DIM>(solid.center, faces);
     }
-    //
-    else {
-        cerr << __PRETTY_FUNCTION__ << endl;
+    // case 3 : cylinder
+    else if constexpr (is_same_v<SOLID, Cylinder<3>>) {
+        auto res = solid;
+        res.radius -= layerWidth;
+        auto vec = get<1>(res.axis) - get<0>(res.axis);
+        geomTools::renormalize<DIM>(vec);
+        get<0>(res.axis) += layerWidth * vec;
+        get<1>(res.axis) -= layerWidth * vec;
+        return res;
+    }
+    // case 4 : spheroPolyhedron
+    else if constexpr (is_same_v<SOLID, SpheroPolyhedron<DIM>>) {
+        double minkowski_radius = solid.getMinkowskiRadius();
+        if (layerWidth < minkowski_radius) {
+            throw runtime_error("Correct internal spheropolyhedron should be computed");
+        } else {
+            throw runtime_error("");
+            /* Correct answer : but incorrect type
+            vector<HalfSpace<DIM>> faces = solid.getInnerPolyhedron();
+            for (auto& hs : faces) {
+                hs.c() -= layerWidth - minkowski_radius;
+            }
+            return ConvexPolyhedron<DIM>(solid.center, faces);
+            */
+        }
+    }
+    // case 5 : ellipse
+    else if constexpr (is_same_v<SOLID, Ellipse<DIM>>) {
         throw runtime_error("Not programmed yet");
     }
 }
 
 
-#endif /* MEROPE_CORE_SRC_GEOMETRY_TRIM_IXX_ */
+template<unsigned short DIM, class SOLID>
+SOLID sac_de_billes::geomTools::enlarge(const SOLID& solid, double layerWidth) {
+    static_assert(is_same_v<SOLID, Sphere<DIM>> or is_same_v<SOLID, ConvexPolyhedron<DIM>>
+        or is_same_v<SOLID, Cylinder<3>> or is_same_v<SOLID, SpheroPolyhedron<DIM>>
+        or is_same_v<SOLID, Ellipse<DIM>>);
+    // case 1 : sphere
+    if constexpr (is_same_v<SOLID, Sphere<DIM>>) {
+        return Sphere<DIM>(solid.center, solid.radius + layerWidth, solid.phase);
+    }
+    // case 2 : convex polyhedron
+    else if constexpr (is_same_v<SOLID, ConvexPolyhedron<DIM>>) {
+        vector<HalfSpace<DIM>> faces = solid.faces;
+        for (auto& hs : faces) {
+            hs.c() += layerWidth;
+        }
+        return ConvexPolyhedron<DIM>(solid.center, faces);
+    }
+    // case 3 : cylinder
+    else if constexpr (is_same_v<SOLID, Cylinder<3>>) {
+        auto res = solid;
+        res.radius += layerWidth;
+        auto vec = get<1>(res.axis) - get<0>(res.axis);
+        geomTools::renormalize<DIM>(vec);
+        get<0>(res.axis) -= layerWidth * vec;
+        get<1>(res.axis) += layerWidth * vec;
+        return res;
+    }
+    // case 4 : spheroPolyhedron
+    else if constexpr (is_same_v<SOLID, SpheroPolyhedron<DIM>>) {
+        throw runtime_error("Not programmed yet");
+    }
+    // case 5 : ellipse
+    else if constexpr (is_same_v<SOLID, Ellipse<DIM>>) {
+        throw runtime_error("Not programmed yet");
+    }
+}
+
+

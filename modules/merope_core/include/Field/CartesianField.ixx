@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MEROPE_CORE_SRC_FIELD_CARTESIANFIELD_IXX_
-#define MEROPE_CORE_SRC_FIELD_CARTESIANFIELD_IXX_
+#pragma once
 
 
 
@@ -86,6 +85,6 @@ inline const vox::GridField<DIM>& CartesianField<DIM>::getDiscretizedField() con
     return std::get<vox::GridField<DIM>>(localField);
 }
 
-} // namespace merope
+}  // namespace merope
 
-#endif /* MEROPE_CORE_SRC_FIELD_CARTESIANFIELD_IXX_ */
+

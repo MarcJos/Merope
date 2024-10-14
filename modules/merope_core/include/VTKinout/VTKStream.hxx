@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief Defines a VTK stream format
+//! \briefDefines a VTK stream format
 //
 
-#ifndef _VTKSTREAM_HXX
-#define _VTKSTREAM_HXX 1
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -46,6 +45,17 @@ public:
                 const unsigned nz, const double dx, const double dy,
                 const double dz);
 
+        template<unsigned short DIM>
+        void STRUCTURED_POINTS(const array<size_t, DIM>& n, const array<double, DIM>& dx) {
+                if constexpr (DIM == 3) {
+                        STRUCTURED_POINTS(n[0], n[1], n[2], dx[0], dx[1], dx[2]);
+                } else if constexpr (DIM == 2) {
+                        STRUCTURED_POINTS(n[0], n[1], dx[0], dx[1]);
+                } else {
+                        cerr << __PRETTY_FUNCTION__ << endl; throw std::invalid_argument("DIM");
+                }
+        }
+
         //! Set writing mode as "CELL_DATA n"
         //! \param n : writing mode
         void setCELL(const unsigned n);
@@ -61,7 +71,7 @@ public:
         //! @brief : write vector data
         //! @param vectorData : vector of data
         //! @param n : vector containing number of voxels in each 3 dimensions
-        template<class VECTOR_DATA, class ARRAY_DIM>
+        template<class PHASE_OUT, class VECTOR_DATA, class ARRAY_DIM>
         void writeVector(const VECTOR_DATA& vectorData, ARRAY_DIM n);
 
 private:
@@ -70,9 +80,9 @@ private:
         void headerBIN(const char* comment = NULL);
 };
 
-} // namespace merope
+}  // namespace merope
 
 
 #include "../VTKinout/VTKStream.ixx"
-#endif // _VTKSTREAM_HXX
+
 

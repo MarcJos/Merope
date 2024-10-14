@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MESH_MESHSTRUCTURE_IXX_
-#define MESH_MESHSTRUCTURE_IXX_
+#pragma once
 
 
 #include "../MeropeNamespace.hxx"
@@ -16,9 +15,14 @@ namespace meshStructure {
 // GeoStructure<DIM>
 
 template<unsigned short DIM>
-inline VoroMesh_NotPeriodic<DIM>::VoroMesh_NotPeriodic(VoroMesh_UnStructureData<DIM> rawData) :
+VoroMesh_NotPeriodic<DIM>::VoroMesh_NotPeriodic(const VoroMesh_UnStructureData<DIM>& rawData) :
     dictPoint{}, dictEdge{}, dictCurveLoop{}, dictSurface{}, dictSurfaceLoop{}, dictSolid{},
     torus(rawData.L) {
+    this->add_raw_mesh_data(rawData);
+}
+
+template<unsigned short DIM>
+void VoroMesh_NotPeriodic<DIM>::add_raw_mesh_data(const VoroMesh_UnStructureData<DIM>& rawData) {
     translate(rawData.vecPoint, dictPoint);
     translate(rawData.vecEdge, dictEdge);
     translate(rawData.vecCurveLoop, dictCurveLoop);
@@ -150,7 +154,7 @@ inline void VoroMesh_Periodic<DIM>::buildPeriodicity(double epsilon_1_) {
 template<unsigned short DIM>
 inline void VoroMesh_Periodic<DIM>::verifyPeriodicity() {
     auto L = this->torus.L;
-    auto goodOrdering = [&L](auto& pS) { // necessary to correct the mesh generation. Forces the first component of the translation to be negative
+    auto goodOrdering = [&L](auto& pS) {  // necessary to correct the mesh generation. Forces the first component of the translation to be negative
         size_t index = 0;
         for (; index < 3; index++) {
             if (abs(pS.translation[index]) > 0.5 * L[index]) {
@@ -275,7 +279,7 @@ inline Identifier VoroMesh_Periodic<DIM>::getMaxIndex() const {
     auto getMax = [&result](const auto& dict) {
         if (dict.size() > 0) {
             auto elem = std::max_element(dict.begin(), dict.end(), [](const auto& obj1, const auto& obj2) {return obj1.first < obj2.first;});
-            result = max(elem->first, result);
+            if (elem != dict.end()) result = max(elem->first, result);
         }
         };
     getMax(this->dictPoint);
@@ -334,7 +338,7 @@ inline vector<SameThings<Identifier>> mesh::meshStructure::VoroMesh_Periodic<DIM
         };
     vector<SameThings<PerPoint>> samePerPoints{};
     std::transform(closePointDoublePer.begin(), closePointDoublePer.end(), std::back_inserter(samePerPoints), getPerPoints);
-    return sameThings::auxi::replaceGraph(samePerPoints); // removes duplicates and order well
+    return sameThings::auxi::replaceGraph(samePerPoints);  // removes duplicates and order well
 }
 
 template<unsigned short DIM>
@@ -447,7 +451,7 @@ inline void VoroMesh_Periodic<DIM>::mergeAll(
     auto listSameSurfaces = sameThings::getReplacementList(this->dictSurface);
     // ugly
     for (auto& sSurf : listSameSurfaces) {
-        if (this->dictSurface.at(get<1>(sSurf)).leaves.at(0) < 0) { //  avoid negative surfaces
+        if (this->dictSurface.at(get<1>(sSurf)).leaves.at(0) < 0) {  //  avoid negative surfaces
             swap(get<0>(sSurf), get<1>(sSurf));
         }
     }
@@ -607,11 +611,9 @@ inline void updatePeriodicMerge(vector<SameThings<Identifier>> vecThings_id, con
 
 template<class VEC, class DICT>
 inline void translate(const VEC& vec, DICT& dict) {
-    dict = {};
-    set<Identifier> indexes{};
     for (const auto& elem : vec) {
         // verify coherence
-        if (indexes.find(elem.identifier) != indexes.end()) {
+        if (dict.find(elem.identifier) != dict.end()) {
             cerr << __PRETTY_FUNCTION__ << endl;
             cerr << geoObjects::getName(elem.name) << endl;
             cerr << elem.identifier << endl;
@@ -623,7 +625,6 @@ inline void translate(const VEC& vec, DICT& dict) {
             cerr << elem.identifier << endl;
             throw runtime_error("Cannot insert element with nonpositive identifier");
         }
-        indexes.insert(elem.identifier);
         //
         dict.insert(make_pair(elem.identifier, elem));
     }
@@ -661,8 +662,8 @@ void restrictTo_RootLeaves_withoutRootConnection(DICT_LEAF& dictThings, const DI
 }
 
 
-} // namespace meshStructure
-} // namespace mesh
-} // namespace merope
+}  // namespace meshStructure
+}  // namespace mesh
+}  // namespace merope
 
-#endif /* MESH_MESHSTRUCTURE_IXX_ */
+

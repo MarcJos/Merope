@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GRID_CONVEXGRID_IXX_
-#define GRID_CONVEXGRID_IXX_
+#pragma once
 
 #include "../MeropeNamespace.hxx"
 
@@ -16,7 +15,7 @@ namespace vox {
 
 template<unsigned short DIM>
 inline auxi::ConvexGrid<DIM>::ConvexGrid(const array<array<long, 2>, DIM>& gridLimits_,
-    const array<double, DIM>& dx_):
+    const array<double, DIM>& dx_) :
     dx{ dx_ }, halfDiagonal{ 0 },
     gridLimits{ gridLimits_ }, gridSize{},
     allFirstIndices{ getAllIndices_multi<DIM, DIM - 1, long>(gridLimits_) },
@@ -30,81 +29,95 @@ inline auxi::ConvexGrid<DIM>::ConvexGrid(const array<array<long, 2>, DIM>& gridL
     assert(allFirstIndices.size() == sliceInstructions.size());
 }
 
-
-
-template<unsigned short DIM>
-inline geomTools::Intersection_LineConvex vox::auxi::auxi_convexGrid::getLimitEllipse(
-    array<double, 2>& dbLocalLimits, const Ellipse<DIM>& sphere,
+template<unsigned short DIM, class Inclusion>
+geomTools::Intersection_LineConvex vox::auxi::auxi_convexGrid::getLimits_innerFunction(array<double, 2>& dbLocalLimits, const Inclusion& inclusion,
     const Point<DIM - 1>& x1x2, double distance) {
-    //
-    cerr << __PRETTY_FUNCTION__ << endl;
-    throw runtime_error("Should be programmed");
-}
-
-
-template<unsigned short DIM>
-inline geomTools::Intersection_LineConvex vox::auxi::auxi_convexGrid::getLimitSphere(
-    array<double, 2>& newLimits, const Sphere<DIM>& sphere, const Point<DIM - 1>& x1x2, double distance) {
-    double heightWrtCenter = auxi_function::puissance<2>(sphere.radius + distance) - geomTools::normeCarre<DIM - 1>(x1x2);
-    // first case : empty intersection
-    if (heightWrtCenter < 0) {
-        return geomTools::Intersection_LineConvex::Empty;
+    ////
+    ////
+    if constexpr (std::is_same_v<Inclusion, Sphere<DIM>>) {
+        if (distance + inclusion.radius < 0) {
+            return geomTools::Intersection_LineConvex::Empty;
+        }
+        double heightWrtCenter = auxi_function::puissance<2>(inclusion.radius + distance) - geomTools::normeCarre<DIM - 1>(x1x2);
+        // first case : empty intersection
+        if (heightWrtCenter < 0) {
+            return geomTools::Intersection_LineConvex::Empty;
+        }
+        // second case : a segment
+        heightWrtCenter = sqrt(heightWrtCenter);
+        dbLocalLimits[0] = inclusion.center[DIM - 1] - heightWrtCenter;
+        dbLocalLimits[1] = inclusion.center[DIM - 1] + heightWrtCenter;
+        return geomTools::Intersection_LineConvex::Segment;
     }
-    // second case : a segment
-    heightWrtCenter = sqrt(heightWrtCenter);
-    newLimits[0] = sphere.center[DIM - 1] - heightWrtCenter;
-    newLimits[1] = sphere.center[DIM - 1] + heightWrtCenter;
-    return geomTools::Intersection_LineConvex::Segment;
-}
-
-template<unsigned short DIM>
-inline geomTools::Intersection_LineConvex vox::auxi::auxi_convexGrid::getLimitPolyhedron(
-    array<double, 2>& dbLocalLimits, const ConvexPolyhedron<DIM>& polyhedron,
-    const Point<DIM - 1>& x1x2, double distance) {
-    double newLimit;
-    dbLocalLimits = { -(0.5 * numeric_limits<double>::max()), 0.5 * numeric_limits<double>::max() };
-    for (const auto& halfSpace : polyhedron.faces) {
-        geomTools::Intersection_LineConvex typeIntersection = geomTools::computeIntersection(halfSpace, x1x2, newLimit, distance); // beware, 0 = center of polyhedron
+    ////
+    ////
+    else if constexpr (std::is_same_v<Inclusion, ConvexPolyhedron<DIM>>) {
+        double newLimit;
+        dbLocalLimits = { -(0.5 * numeric_limits<double>::max()), 0.5 * numeric_limits<double>::max() };
+        for (const auto& halfSpace : inclusion.faces) {
+            geomTools::Intersection_LineConvex typeIntersection = geomTools::computeIntersection(halfSpace, x1x2, newLimit, distance);  // beware, 0 = center of inclusion
+            //
+            if (typeIntersection == geomTools::Intersection_LineConvex::Minus) {
+                dbLocalLimits[1] = min(dbLocalLimits[1], newLimit);
+            } else if (typeIntersection == geomTools::Intersection_LineConvex::Plus) {
+                dbLocalLimits[0] = max(dbLocalLimits[0], newLimit);
+            } else if (typeIntersection == geomTools::Intersection_LineConvex::Empty) {
+                return geomTools::Intersection_LineConvex::Empty;
+            }
+            // to avoid further tests
+            if (dbLocalLimits[0] >= dbLocalLimits[1]) {
+                return geomTools::Intersection_LineConvex::Empty;
+            }
+        }
         //
-        if (typeIntersection == geomTools::Intersection_LineConvex::Minus) {
-            dbLocalLimits[1] = min(dbLocalLimits[1], newLimit);
-        }
-        else if (typeIntersection == geomTools::Intersection_LineConvex::Plus) {
-            dbLocalLimits[0] = max(dbLocalLimits[0], newLimit);
-        }
-        else if (typeIntersection == geomTools::Intersection_LineConvex::Empty) {
-            return geomTools::Intersection_LineConvex::Empty;
-        }
-        // to avoid further tests
-        if (dbLocalLimits[0] >= dbLocalLimits[1]) {
-            return geomTools::Intersection_LineConvex::Empty;
+        dbLocalLimits[0] += inclusion.center[DIM - 1];
+        dbLocalLimits[1] += inclusion.center[DIM - 1];
+        return geomTools::Intersection_LineConvex::Segment;
+    }
+    ////
+    ////
+    else if constexpr (std::is_same_v<Inclusion, SpheroPolyhedron<DIM>>) {
+        if (distance < 0) {
+            return getLimits_innerFunction<DIM>(dbLocalLimits, ConvexPolyhedron<DIM>(inclusion.getCenter(), inclusion.getInnerPolyhedron()), x1x2, distance);
+        } else if (distance > 0) {
+            return getLimits_innerFunction<DIM>(dbLocalLimits, ConvexPolyhedron<DIM>(inclusion.getCenter(), inclusion.getOuterPolyhedron()), x1x2, distance);
+        } else {
+            cerr << __PRETTY_FUNCTION__ << endl;
+            throw runtime_error("Exact intersection is not known!");
         }
     }
-    //
-    dbLocalLimits[0] += polyhedron.center[DIM - 1];
-    dbLocalLimits[1] += polyhedron.center[DIM - 1];
-    return geomTools::Intersection_LineConvex::Segment;
-}
-
-template<unsigned short DIM>
-inline geomTools::Intersection_LineConvex merope::vox::auxi::auxi_convexGrid::getLimitSpheroPolyhedron(
-    array<double, 2>& newLimits,
-    const SpheroPolyhedron<DIM>& spheroPolyhedron,
-    const Point<DIM - 1>& x1x2, double distance) {
-    if (distance <= 0) {
-        return getLimitPolyhedron(newLimits, ConvexPolyhedron<DIM>(spheroPolyhedron.getCenter(), spheroPolyhedron.getInnerPolyhedron()), x1x2, distance);
+    ////
+    ////
+    else if constexpr (DIM == 3 and std::is_same_v<Inclusion, Cylinder<3>>) {
+        // WARNING : very inefficient
+        Sphere<DIM> sphere(inclusion.axis.middle(), 0., 0);
+        if (distance < 0) {
+            sphere.radius = std::min(inclusion.radius, 0.5 * geomTools::norme<DIM>(inclusion.axis[1] - inclusion.axis[0]));
+            // sphere inside the cylinder
+        } else if (distance > 0) {
+            sphere.radius = sqrt(geomTools::normeCarre<DIM>(inclusion.axis[1] - inclusion.axis[0]) + inclusion.radius * inclusion.radius);
+            // cylinder inside the sphere
+        } else {
+            cerr << __PRETTY_FUNCTION__ << endl;
+            throw runtime_error("Exact intersection is not known!");
+        }
+        return getLimits_innerFunction<DIM>(dbLocalLimits, sphere, x1x2, distance);
     }
+    ////
+    ////
     else {
-        return getLimitPolyhedron(newLimits, ConvexPolyhedron<DIM>(spheroPolyhedron.getCenter(), spheroPolyhedron.getOuterPolyhedron()), x1x2, distance);
+        cerr << __PRETTY_FUNCTION__ << endl;
+        throw runtime_error("Should be programmed");
     }
 }
 
 
 template<unsigned short DIM, class C>
 inline bool vox::auxi::auxi_convexGrid::getLimits(const C& smallShape, const array<double, DIM>& center, const DiscPoint<DIM>& ij,
-    const array<double, DIM>& dx, array<long, 2>& localLimits, const array<array<long, 2>, DIM>& gridLimits, double distance, VoxelType voxelType) {
-    static_assert(std::is_same<C, sac_de_billes::ConvexPolyhedron<DIM>>::value or std::is_same<C, Sphere<DIM>>::value
-        or std::is_same<C, Ellipse<DIM>>::value or std::is_same<C, SpheroPolyhedron<DIM>>::value);
+    const array<double, DIM>& dx,
+    array<long, 2>& localLimits, const array<array<long, 2>, DIM>& gridLimits,
+    double distance, VoxelType voxelType) {
+    static_assert(smallShape::IsInc_Inner<DIM, C>);
     //
     double drift = -0.5 * dx[DIM - 1];
     array<double, DIM - 1> x1x2{};
@@ -113,25 +126,8 @@ inline bool vox::auxi::auxi_convexGrid::getLimits(const C& smallShape, const arr
     }
     //
     array<double, 2> dbLocalLimits;
-    if constexpr (std::is_same<C, ConvexPolyhedron<DIM>>::value) {
-        if (auxi_convexGrid::getLimitPolyhedron<DIM>(dbLocalLimits, smallShape, x1x2, distance) != geomTools::Intersection_LineConvex::Segment) {
-            return false;
-        }
-    }
-    else if constexpr (std::is_same<C, Sphere<DIM>>::value) {
-        if (auxi_convexGrid::getLimitSphere<DIM>(dbLocalLimits, smallShape, x1x2, distance) != geomTools::Intersection_LineConvex::Segment) {
-            return false;
-        }
-    }
-    else if constexpr (std::is_same<C, Ellipse<DIM>>::value) {
-        if (auxi_convexGrid::getLimitEllipse<DIM>(dbLocalLimits, smallShape, x1x2, distance) != geomTools::Intersection_LineConvex::Segment) {
-            return false;
-        }
-    }
-    else if constexpr (std::is_same<C, SpheroPolyhedron<DIM>>::value) {
-        if (auxi_convexGrid::getLimitSpheroPolyhedron<DIM>(dbLocalLimits, smallShape, x1x2, distance) != geomTools::Intersection_LineConvex::Segment) {
-            return false;
-        }
+    if (getLimits_innerFunction<DIM, C>(dbLocalLimits, smallShape, x1x2, distance) != geomTools::Intersection_LineConvex::Segment) {
+        return false;
     }
     //
     localLimits[0] = auxi_convexGrid::convertExtremitySegment(dbLocalLimits[0], drift, dx[DIM - 1]);
@@ -150,8 +146,7 @@ inline void vox::auxi::auxi_convexGrid::verifySliceInstruction(vector<vox::auxi:
     bool problem = false;
     if (sliceInstruction.size() == 0) {
         return;
-    }
-    else {
+    } else {
         stable_sort(sliceInstruction.begin(), sliceInstruction.end(), [](auto& si1, auto& si2) {
             return si1.limits[0] < si2.limits[0];
             });
@@ -180,14 +175,13 @@ inline void auxi::ConvexGrid<DIM>::layerSlice(const C& singlePolyhedron, bool& f
     array<long, 2> limitCurrentInclusion{};
     if (auxi_convexGrid::getLimits<DIM>(singlePolyhedron, center, ij, dx, limitCurrentInclusion, gridLimits, distanceToSurface * halfDiagonal, voxelType)) {
         array<long, 2> limitOfSlice;
-        if (firstPhaseNOTFound) { // First inclusion. Here, the whole segment has to be a slice.
+        if (firstPhaseNOTFound) {  // First inclusion. Here, the whole segment has to be a slice.
             limitOfSlice = limitCurrentInclusion;
             sliceInstructions[index] = { SliceInstruction<long>(limitOfSlice, voxelType, phase) };
             firstPhaseNOTFound = false;
             // update limitFomerInclusion
             limitFormerInclusion = limitCurrentInclusion;
-        }
-        else { // Other inclusions. Here, we have to add two slices. | slice1 | ... | slice2 |
+        } else {  // Other inclusions. Here, we have to add two slices. | slice1 | ... | slice2 |
             limitOfSlice[0] = limitCurrentInclusion[0];
             limitOfSlice[1] = limitFormerInclusion[0];
             if (limitOfSlice[0] < limitOfSlice[1]) sliceInstructions[index].push_back(SliceInstruction<long>(limitOfSlice, voxelType, phase));
@@ -204,7 +198,7 @@ inline void auxi::ConvexGrid<DIM>::layerSlice(const C& singlePolyhedron, bool& f
 template<unsigned short DIM>
 template<VoxelRule voxelRule, class C>
 inline void auxi::ConvexGrid<DIM>::compute(const C& smallShape) {
-    static_assert(voxelRule == VoxelRule::Center or voxelRule == VoxelRule::Average);
+    static_assert(voxelRule == VoxelRule::Center or voxelRule == VoxelRule::Average or voxelRule == VoxelRule::Laminate);
     //
     const auto& innerFaces = smallShape.getInnerInclusions();
     size_t indexMax = getAllFirstIndices().size();
@@ -215,18 +209,15 @@ inline void auxi::ConvexGrid<DIM>::compute(const C& smallShape) {
         bool firstPhaseNOTFound = true;
         for (long iPhase = innerFaces.size() - 1; iPhase >= 0; iPhase--) {
             const auto& singlePolyhedron = innerFaces[iPhase];
-            /// first case : Center
-            if constexpr (voxelRule == VoxelRule::Center) {
+            /// first case : Center and exact intersection known
+            if constexpr (voxelRule == VoxelRule::Center
+                and (is_same_v<C, ConvexPolyhedron<DIM>> or is_same_v<C, Sphere<DIM>>)
+                ) {
                 layerSlice(singlePolyhedron, firstPhaseNOTFound, smallShape.center, 0., limitFormerInclusion, index,
                     VoxelType::MonoPhase, smallShape.getPhaseForVoxellation(iPhase));
-                // warning : not nice
-                if constexpr (std::is_same<C, smallShape::SpheroPolyhedronInc<DIM>>::value) {
-                    layerSlice(singlePolyhedron, firstPhaseNOTFound, smallShape.center, 1., limitFormerInclusion, index,
-                        VoxelType::Composite, smallShape.getPhaseForVoxellation(iPhase));
-                }
-                // second case : Average
             }
-            else if constexpr (voxelRule == VoxelRule::Average) {
+            // second case : Average or exact intersection not known
+            else {
                 layerSlice(singlePolyhedron, firstPhaseNOTFound, smallShape.center, -1., limitFormerInclusion, index,
                     VoxelType::MonoPhase, smallShape.getPhaseForVoxellation(iPhase));
                 layerSlice(singlePolyhedron, firstPhaseNOTFound, smallShape.center, 1., limitFormerInclusion, index,
@@ -237,8 +228,8 @@ inline void auxi::ConvexGrid<DIM>::compute(const C& smallShape) {
     }
 }
 
-} // namespace vox
-} // namespace merope
+}  // namespace vox
+}  // namespace merope
 
 
-#endif /* GRID_CONVEXGRID_IXX_ */
+

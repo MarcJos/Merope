@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GRID_GRIDTYPES_HXX_
-#define GRID_GRIDTYPES_HXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 
@@ -23,7 +22,7 @@ namespace vox {
 //! Cartesian grids
 //! grid for phase field
 template<unsigned short DIM>
-using GridPhaseFrac = CartesianGrid<DIM, VoxelPhaseFrac>;
+using GridPhaseFrac = CartesianGrid<DIM, composite::Iso<PhaseType>>;
 
 //! grid containing a single field
 template<unsigned short DIM>
@@ -31,9 +30,9 @@ using GridField = CartesianGrid<DIM, double>;
 
 //! grid containing phases
 template<unsigned short DIM>
-using GridPhase = CartesianGrid<DIM, VTK_PHASE>;
+using GridPhase = CartesianGrid<DIM, PhaseType>;
 
-} // namespace vox
-} // namespace merope
+}  // namespace vox
+}  // namespace merope
 
-#endif /* GRID_GRIDTYPES_HXX_ */
+

@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.4...3.18)
 project(cmake_example)
 
-add_subdirectory(pybind11)
-
 # clean way
 pybind11_add_module(sac_de_billes Interface_AlgoPacking.cxx)
 target_link_libraries(sac_de_billes PRIVATE RSAalgolib)

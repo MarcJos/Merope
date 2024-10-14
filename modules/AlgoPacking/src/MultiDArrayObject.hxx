@@ -2,8 +2,7 @@
 //!
 //! \brief
 
-#ifndef MULTIDARRAYOBJECT_HXX
-#define MULTIDARRAYOBJECT_HXX
+#pragma once
 
 #include "StdHeaders.hxx"
 #include "Geometry/GeomTypes.hxx"
@@ -41,7 +40,7 @@ public:
     template<class INDEX_TYPE>
     void fillCuboid(const array<array<INDEX_TYPE, 2>, DIM>& limits, const VOXEL_TYPE& data);
     //! using the classical operator []
-    using vector<VOXEL_TYPE>::operator [];
+    using vector<VOXEL_TYPE>::operator[];
     //! using the operator with entire indices (ijk is assumed to be within the grid). Beware, expensive!
     VOXEL_TYPE& operator[](const array<size_t, DIM>& ijk);
     //! using the operator with entire indices (ijk is assumed to be within the grid). Beware, expensive!
@@ -55,7 +54,7 @@ public:
 
 private:
     //! tests wheter an array is a subarray
-    static constexpr bool isSubArray = is_same<ARRAY_DIMENSION, vox::SubArrayDimensions<DIM>>::value;
+    static constexpr bool isSubArray = is_same_v<ARRAY_DIMENSION, vox::SubArrayDimensions<DIM>>;
     //! return the linear index on the subGrid, assuming that ijk is is inside the grid
     //! \param ijk : discrete point to be projected onto the periodic grid
     size_t get_linear_index(const array<size_t, DIM>& ijk) const;
@@ -116,12 +115,12 @@ void loopOnIndex(const array<array<size_t, 2>, DIM>& limits, const array<size_t,
 //! fixme : slice in the last direction
 template<unsigned short DIM, class FUNCTION>
 void loopOnIndexSlice(array<size_t, DIM> ijk, const array<size_t, 2>& limits, const array<size_t, DIM>& nbNodes, const FUNCTION& f);
-} // namespace auxi
+}  // namespace auxi
 
-} // namespace vox
+}  // namespace vox
 
-} // namespace merope
+}  // namespace merope
 
 #include "MultiDArrayObject.ixx"
 
-#endif // MULTIDARRAYOBJECT_HXX
+

@@ -1,51 +1,28 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GRID_INCLUSIONANDVOXEL_IXX_
-#define GRID_INCLUSIONANDVOXEL_IXX_
+#pragma once
 
 #include "../MeropeNamespace.hxx"
+#include "../Geometry/GeomTools.hxx"
 
 
 namespace merope {
 
 template<class VOXEL_TYPE>
 inline void vox::inclusionAndVoxel::fillVoxel(VOXEL_TYPE& voxelData, const VOXEL_TYPE& phases2Include) {
-    static_assert(std::is_same<VOXEL_TYPE, VTK_PHASE>::value or std::is_same<VOXEL_TYPE, vox::VoxelPhaseFrac>::value);
+    static_assert(std::is_same_v<VOXEL_TYPE, PhaseType>
+        or vox::composite::is_Iso<VOXEL_TYPE>
+        or vox::composite::is_AnIso<VOXEL_TYPE>);
     //
-    if constexpr (std::is_same<VOXEL_TYPE, VTK_PHASE>::value) {
+    if constexpr (vox::composite::is_Pure<VOXEL_TYPE>) {
         voxelData = phases2Include;
-    }
-    else if constexpr (std::is_same<VOXEL_TYPE, vox::VoxelPhaseFrac>::value) {
+    } else if constexpr (vox::composite::is_Iso<VOXEL_TYPE> or vox::composite::is_AnIso<VOXEL_TYPE>) {
         for (const auto& phfv : phases2Include) {
             voxelData.push_back(phfv);
         }
     }
-}
-
-template<unsigned short DIM, class INCLUSION, class VOXEL_TYPE>
-inline bool vox::inclusionAndVoxel::onlyOnePhaseInsideVoxel(const INCLUSION& microInclusion,
-    const Point<DIM>& centerVoxel, const double& halfDiagVoxel,
-    VOXEL_TYPE& phases2Include) {
-    //
-    for (size_t indexLayer = 0; indexLayer < microInclusion.getNbOfLayers(); indexLayer++) {
-        if (microInclusion.guaranteeInside(centerVoxel - microInclusion.center, halfDiagVoxel, indexLayer)) {
-            if (indexLayer == microInclusion.getNbOfLayers() - 1 or microInclusion.guaranteeOutside(centerVoxel - microInclusion.center, halfDiagVoxel, indexLayer)) {
-                if constexpr (std::is_same<VOXEL_TYPE, vox::VoxelPhaseFrac>::value) {
-                    vox::inclusionAndVoxel::fillVoxel<VOXEL_TYPE>(phases2Include, VoxelPhaseFrac{ SinglePhaseFrac(microInclusion.getPhaseForVoxellation(indexLayer), 1.) });
-                }
-                else if constexpr (std::is_same<VOXEL_TYPE, vox::VTK_PHASE>::value) {
-                    vox::inclusionAndVoxel::fillVoxel<VOXEL_TYPE>(phases2Include, microInclusion.getPhaseForVoxellation(indexLayer));
-                }
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-    }
-    return false;
 }
 
 template<unsigned short DIM, class INCLUSION, class VOXEL_TYPE>
@@ -64,68 +41,71 @@ bool vox::inclusionAndVoxel::fillVoxel(
 template<unsigned short DIM, class INCLUSION, class VOXEL_TYPE>
 inline bool vox::inclusionAndVoxel::phasesInsideVoxel(
     const INCLUSION& microInclusion, const DiscPoint<DIM>& indexVoxel, const Point<DIM>& dx, const double& halfDiagVoxel, VOXEL_TYPE& phases2Include) {
-    if constexpr (std::is_same<VOXEL_TYPE, vox::VTK_PHASE>::value) {
+    if constexpr (std::is_same_v<VOXEL_TYPE, vox::PhaseType>) {
         Point<DIM> centerVoxel = vox::auxi::center <DIM>(indexVoxel, dx);
         auto layerIndex = microInclusion.whichLayer(centerVoxel);
         if (layerIndex >= 0) {
             phases2Include = microInclusion.getPhaseForVoxellation(layerIndex);
             return true;
         }
-    }
-    else if constexpr (std::is_same<VOXEL_TYPE, vox::VoxelPhaseFrac>::value) {
+    } else if constexpr (composite::is_Iso<VOXEL_TYPE> or composite::is_AnIso<VOXEL_TYPE>) {
         Point<DIM> centerPoly_to_origVoxel = vox::auxi::origin <DIM>(indexVoxel, dx) - microInclusion.center;
         phases2Include = inclusionAndVoxel::computeAllFracVol<DIM, INCLUSION, VOXEL_TYPE>(microInclusion, centerPoly_to_origVoxel, dx, halfDiagVoxel);
         return true;
     }
-    return false; // no intersection
+    return false;  // no intersection
 }
 
 
 template<unsigned short DIM, class INCLUSION, class VOXEL_TYPE>
 inline VOXEL_TYPE vox::inclusionAndVoxel::computeAllFracVol(
     const INCLUSION& inclusion, const Point<DIM>& centerPoly_to_origVoxel, const Point<DIM>& dx, const double& halfDiagVoxel) {
-    static_assert(std::is_same<VOXEL_TYPE, vox::VoxelPhaseFrac>::value);
-    static_assert(std::is_same<INCLUSION, smallShape::ConvexPolyhedronInc<DIM>>::value or std::is_same<INCLUSION, smallShape::SphereInc<DIM>>::value
-        or std::is_same<INCLUSION, smallShape::EllipseInc<DIM>>::value or std::is_same<INCLUSION, smallShape::SpheroPolyhedronInc<DIM>>::value);
+    static_assert(composite::is_Iso<VOXEL_TYPE> or composite::is_AnIso<VOXEL_TYPE>);
+    static_assert(smallShape::IsInc<DIM, INCLUSION>);
 
     VOXEL_TYPE phases2Include{ };
-    if constexpr (std::is_same<INCLUSION, smallShape::ConvexPolyhedronInc<DIM>>::value) {
+    Point<DIM> vector_intersection{};
+
+    auto insert_volfrac = [&](size_t layer_i, double volFrac) {
+        if (volFrac < geomTools::EPSILON) {
+            return false;
+        } else {
+            if constexpr (composite::is_Iso<VOXEL_TYPE>) {
+                phases2Include.push_back(typename VOXEL_TYPE::PHASE_FRAC(inclusion.getPhaseForVoxellation(layer_i), volFrac));
+            } else if constexpr (composite::is_AnIso<VOXEL_TYPE>) {
+                phases2Include.push_back(typename VOXEL_TYPE::PHASE_FRAC(inclusion.getPhaseForVoxellation(layer_i), volFrac, -vector_intersection));
+            }
+            return true;
+        }
+        };
+
+    if constexpr (
+        std::is_same_v<INCLUSION, smallShape::ConvexPolyhedronInc<DIM>>
+        or std::is_same_v<INCLUSION, smallShape::SpheroPolyhedronInc<DIM>>
+        or (DIM == 3 and std::is_same_v<INCLUSION, smallShape::CylinderInc<3>>)) {
         const auto& innerInclusions = inclusion.getInnerInclusions();
         for (size_t layer_i = 0; layer_i < innerInclusions.size(); layer_i++) {
-            double volFrac = geomTools::fracVolIntersection<DIM>(innerInclusions[layer_i].faces, centerPoly_to_origVoxel, dx);
-            if (volFrac < geomTools::EPSILON) {
+            double volFrac = geomTools::fracVolIntersection<DIM>(innerInclusions[layer_i], centerPoly_to_origVoxel, dx, vector_intersection);
+            if (not insert_volfrac(layer_i, volFrac)) {
                 break;
             }
-            phases2Include.push_back(SinglePhaseFrac(inclusion.getPhaseForVoxellation(layer_i), volFrac));
         }
-    }
-    else if constexpr (std::is_same<INCLUSION, smallShape::SpheroPolyhedronInc<DIM>>::value) {
-        const auto& innerInclusions = inclusion.getInnerInclusions();
-        for (size_t layer_i = 0; layer_i < innerInclusions.size(); layer_i++) {
-            double volFrac = geomTools::fracVolIntersection<DIM>(innerInclusions[layer_i], centerPoly_to_origVoxel, dx);
-            if (volFrac < geomTools::EPSILON) {
-                break;
-            }
-            phases2Include.push_back(SinglePhaseFrac(inclusion.getPhaseForVoxellation(layer_i), volFrac));
-        }
-    }
-    else if constexpr (std::is_same<INCLUSION, smallShape::SphereInc<DIM>>::value) {
-        if (not inclusion.guaranteeOutside(centerPoly_to_origVoxel, 2 * halfDiagVoxel)) { // otherwise, sure that the voxel does not intersect the sphere
-            Point<DIM> normal = centerPoly_to_origVoxel + 0.5 * dx; // computed wrt to the center of the voxel
+    } else if constexpr (std::is_same_v<INCLUSION, smallShape::SphereInc<DIM>>) {
+        if (not inclusion.guaranteeOutside(centerPoly_to_origVoxel, 2 * halfDiagVoxel)) {  // otherwise, sure that the voxel does not intersect the sphere
+            Point<DIM> normal = centerPoly_to_origVoxel + 0.5 * dx;  // computed wrt to the center of the voxel
             geomTools::renormalize<DIM>(normal);
             HalfSpace<DIM> tangentPlane(normal, inclusion.getInnerInclusions()[0].radius);
             for (size_t layer_i = 0; layer_i < inclusion.getNbOfLayers();
                 layer_i++) {
                 tangentPlane.c() = inclusion.getInnerInclusions()[layer_i].radius;
+                vector_intersection = tangentPlane.vec();
                 double volFrac = geomTools::fracVolIntersection<DIM>(tangentPlane, centerPoly_to_origVoxel, dx);
-                if (volFrac < geomTools::EPSILON) {
+                if (not insert_volfrac(layer_i, volFrac)) {
                     break;
                 }
-                phases2Include.push_back(SinglePhaseFrac(inclusion.getPhaseForVoxellation(layer_i), volFrac));
             }
         }
-    }
-    else if constexpr (std::is_same<INCLUSION, smallShape::EllipseInc<DIM>>::value) {
+    } else if constexpr (std::is_same_v<INCLUSION, smallShape::EllipseInc<DIM>>) {
         cerr << __PRETTY_FUNCTION__ << endl;
         throw runtime_error("To be programmed");
     }
@@ -136,7 +116,7 @@ inline VOXEL_TYPE vox::inclusionAndVoxel::computeAllFracVol(
     return phases2Include;
 }
 
-} // namespace merope
+}  // namespace merope
 
 
-#endif /* GRID_INCLUSIONANDVOXEL_IXX_ */
+

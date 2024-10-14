@@ -2,8 +2,7 @@
 //!
 //! \brief
 
-#ifndef ARRAYDIMENSIONS_HXX
-#define ARRAYDIMENSIONS_HXX
+#pragma once
 
 #include "StdHeaders.hxx"
 #include "Geometry/GeomTypes.hxx"
@@ -21,7 +20,7 @@ template<unsigned short DIM>
 class ArrayDimensions {
 public:
     //! constructor
-    ArrayDimensions(array<size_t, DIM> nbNodes_) : nbNodes(nbNodes_) {}
+    explicit ArrayDimensions(array<size_t, DIM> nbNodes_) : nbNodes(nbNodes_) {}
     //! setter
     void setNbNodes(array<size_t, DIM> nbNodes_) { nbNodes = nbNodes_; }
     //! getter
@@ -41,12 +40,12 @@ template<unsigned short DIM>
 class SubArrayDimensions {
 public:
     //! @brief  constructor
-    //! @param nbNodes_ 
-    SubArrayDimensions(array<size_t, DIM> nbNodes_);
+    //! @param nbNodes_
+    explicit SubArrayDimensions(array<size_t, DIM> nbNodes_);
     /// @brief constructor
-    /// @param nbNodes_ 
-    /// @param nMin_ 
-    /// @param nMax_ 
+    /// @param nbNodes_
+    /// @param nMin_
+    /// @param nMax_
     SubArrayDimensions(array<size_t, DIM> nbNodes_, array<size_t, DIM> nMin_, array<size_t, DIM> nMax_);
     //! test whether everything is coherent
     bool testCoherent() const;
@@ -68,11 +67,13 @@ public:
     void setSubGridIndices(array<size_t, DIM> nMin_, array<size_t, DIM> nMax_);
     //! getter
     const array<size_t, DIM>& getNbNodes() const { return nbNodes; }
+
 private:
     //! \return whether the grid covers the whole torus or not
     bool computeCoverTorus() const;
     //! \return the size of the subgrid
     void setNodeSubGrid();
+
 private:
     //! number of voxels in each direction
     array<size_t, DIM> nbNodes;
@@ -86,9 +87,8 @@ private:
     array<size_t, DIM> nbNodeSubgrid;
 };
 
-} // namespace vox
-} // namespace merope
+}  // namespace vox
+}  // namespace merope
 
 #include "ArrayDimensions.ixx"
 
-#endif // ARRAYDIMENSIONS_HXX

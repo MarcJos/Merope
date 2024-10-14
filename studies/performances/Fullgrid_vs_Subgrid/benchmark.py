@@ -56,9 +56,15 @@ def testVoxel(L0, nVox0, nSpheres):
     multiInclusionsCell.addLayer(multiInclusionsCell.getAllIdentifiers(), 1, 1.0)
 
     ### Crystal voxellation
-    grid = merope.Voxellation_3D(multiInclusionsCell)
-    grid.setPureCoeffs([i for i in multiInclusionsCell.getAllIdentifiers()])
-    grid.proceed(nVox)
+    structure_temp = merope.Structure_3D(multiInclusionsCell)
+
+    gridParameters = merope.vox.create_grid_parameters_N_L_3D(nVox, L)
+    grid = merope.vox.GridRepresentation_3D(structure_temp, gridParameters, merope.vox.VoxelRule.Center)
+    coefficients = [i for i in multiInclusionsCell.getAllIdentifiers()]
+    grid.apply_coefficients(coefficients)
+
+    my_printer = merope.vox.vtk_printer_3D()
+    my_printer.printVTK_segmented(grid, "Zone.vtk","Coeffs.txt")
     tic = time.time() - tic0
     timeList.append(tic)
     print("t0 = ", tic)
@@ -82,12 +88,19 @@ def testVoxel(L0, nVox0, nSpheres):
     multiInclusionsCell.addLayer(multiInclusionsCell.getAllIdentifiers(), 1, 1.0)
 
     ### Crystal voxellation
-    grid = merope.Voxellation_3D(multiInclusionsCell)
-    grid.setPureCoeffs([i for i in multiInclusionsCell.getAllIdentifiers()])
     nVoxMin = [0, 0, 0]
-    nVoxMax = [nVox0, nVox0, 1] # Z slice
-    #nVoxMax = [1, nVox0, nVox0] # X slice
-    grid.proceed(nVox, nVoxMin, nVoxMax)
+    #nVoxMax = [nVox0, nVox0, 1] # Z slice
+    nVoxMax = [1, nVox0, nVox0] # X slice
+
+    structure_temp = merope.Structure_3D(multiInclusionsCell)
+    gridParameters = merope.vox.create_grid_parameters_N_L_3D(nVox, nVoxMin, nVoxMax, L)
+    grid = merope.vox.GridRepresentation_3D(structure_temp, gridParameters, merope.vox.VoxelRule.Center)
+    coefficients = [i for i in multiInclusionsCell.getAllIdentifiers()]
+    grid.apply_coefficients(coefficients)
+
+    my_printer = merope.vox.vtk_printer_3D()
+    my_printer.printVTK_segmented(grid, "Zone.vtk","Coeffs.txt")
+
     tic = time.time() - tic0
     print("t1 = ", tic)
     timeList.append(tic)

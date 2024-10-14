@@ -4,6 +4,7 @@
 <img src="doc/Pictures/MultiImages.png" alt="drawing" width="1000"/>
 </div>
 
+[[_TOC_]]
 
 :warning: The use of Mérope is subjected to a licence, available [in French](Licence_FR.txt) and [in English](Licence.txt).
 
@@ -42,7 +43,7 @@ graph TB
   Mesh_Conf--gmsh-->Mesh;
   Mesh--Cast3M, Manta-->simEF;
 
-```
+`$
 
 **Remark :** The above scheme is the objective ; some parts are not achieved yet.
 
@@ -66,7 +67,7 @@ graph TB
   Voxelation-->DEM(DEM/Rockable);
   SdB-->DEM;
   SdB--Ribaudequin-->Gaz(Gas relocation);
-```
+`$
 # OS and language
 
 Mérope is implemented in C++ (and uses features of C++17). 
@@ -105,7 +106,7 @@ In case this is not satisfied, the functions $\rho_i$ are corrected by the follo
 - if $\sum_i \rho_i(x)=C>1$ then we renormalize $\rho_i \rightsquigarrow \rho_i/C$.
 
 For turning this representation into a .vtk file amenable to computation with `tmfft` or `amitex_fftp`, we basically evaluate the functions $\rho_i$, by means of various strategies.
-In our perspective, combining microstructures amounts to defining rules to combine phase fields representations $\mathcal{M}_0, \mathcal{M}_1, ...$ into another phase field representation $\mathcal{M}$.
+In our perspective, combining microstructures amounts to defining rules to combine phase fields representations $\mathcal{M}_0, \mathcal{M}_1, \cdots $ into another phase field representation $\mathcal{M}$.
 
 ### Specific microstructures
 
@@ -119,7 +120,7 @@ There are two main families of microstructures implemented in Mérope (see [Micr
 - the second one is based on real scalar **fields**. These may be deterministic or stochastic (anamorphosed gaussian fields).  
 
 Microstructures simulated by Merope share the following features :
-- They are **2D** as well as **3D** (By changing the postfix `_3D` by 		`_2D` in each Python class, the user may change the dimension).
+- They are **2D** as well as **3D** (By changing the postfix `_3D` by `_2D` in each Python class, the user may change the dimension).
 - They are **periodic** in all directions, and defined inside a periodic cuboidal cell (=*torus* for mathematicians).
 - They can be combined **recursively** (as long as it makes sense) by means of Boolean operations. This allows for a large variety of microstructures.  
 
@@ -179,17 +180,20 @@ FE solvers and FFT solvers can be used in order to solve **mechanics** and **the
 - **Post-processing** :
   - [Post-processing facilities](doc/Post_processing.md)
 
+
 # Credit
 If you are using Mérope, please consider citing it, for example:
-- by citing the [Mérope: A microstructure generator for simulation of heterogeneous materials, Marc Josien, 2024](https://doi.org/10.1016/j.jocs.2024.102359),
+- by citing [Mérope: A microstructure generator for simulation of heterogeneous materials, Marc Josien, 2024](https://doi.org/10.1016/j.jocs.2024.102359),
 - by mentionning its repository [https://github.com/MarcJos/Merope](https://github.com/MarcJos/Merope).
+Also, if you are at the CEA, you may consult here the list of current and past developpers of VER and Mérope [here](https://www-git-cad.intra.cea.fr/DEC/pleiades/merope/merope_nucleaire/-/blob/master/doc/Contributors.md).
 
 # Miscellaneous
 
 - [Known or expected bugs](doc/Bugs.md)
 - [Performances](doc/Performances.md)
-- [Credit](https://www-git-cad.intra.cea.fr/DEC/pleiades/merope/merope_nucleaire/-/blob/master/doc/Contributors.md)
 - [Development guidelines](doc/Development.md)
+
+
 
 # To-do list
 

@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MESH_GMSHWRITER_HXX_
-#define MESH_GMSHWRITER_HXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 
@@ -21,6 +20,10 @@ namespace gmsh_writer {
 inline string mesh_size = "meshSize";
 inline constexpr double MESH_SIZE = 0.05;
 inline constexpr size_t NUMBER_MESHCOMPONENT_PER_SPHERE = 15;
+
+//! @return the gmsh name of the object
+template<class OBJ>
+string name_of(const OBJ& object);
 
 //! write a geometrical entity in a gmsh format (.geo)
 //! \param object : geometrical entity
@@ -72,14 +75,14 @@ void writePreamble(std::ostream& f);
 //! \param f : output flux
 //! \param meshOrder : order of the mesh
 //! \param binaryOutput : is the output in binary format?
-void writeEnd(std::ostream& f, double meshSize = MESH_SIZE, size_t meshOrder = 2, bool binaryOutput = false);
-} // namespace auxi
+void writeEnd(std::ostream& f, vector<string> name_outputs = {}, double meshSize = MESH_SIZE, size_t meshOrder = 2, bool binaryOutput = false);
+}  // namespace auxi
 
-} // namespace gmsh_writer
-} // namespace mesh
-} // namespace merope
+}  // namespace gmsh_writer
+}  // namespace mesh
+}  // namespace merope
 
 
 #include "../Mesh/GmshWriter.ixx"
 
-#endif /* MESH_GMSHWRITER_HXX_ */
+

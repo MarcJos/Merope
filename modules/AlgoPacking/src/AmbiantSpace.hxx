@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief Class for describing the ambiant space (=vector space and bigShape)
+//! \briefClass for describing the ambiant space (=vector space and bigShape)
 //
-#ifndef AMBIANTSPACE_HXX_
-#define AMBIANTSPACE_HXX_
+#pragma once
 
 #include "AuxiFunctions.hxx"
 ////
@@ -24,4 +23,4 @@
 ////
 #include "GlobalShape.hxx"
 
-#endif /* AMBIANTSPACE_HXX_ */
+

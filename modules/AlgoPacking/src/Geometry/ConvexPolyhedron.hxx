@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef ALGOPACKING_SRC_GEOMETRY_CONVEXPOLYHEDRON_HXX_
-#define ALGOPACKING_SRC_GEOMETRY_CONVEXPOLYHEDRON_HXX_
+#pragma once
 
 #include "../StdHeaders.hxx"
 
@@ -17,9 +16,9 @@ template<unsigned short DIM>
 class ConvexPolyhedron {
 public:
     //! constructor
-    ConvexPolyhedron(const Point<DIM>& center__, const vector<HalfSpace<DIM>>& faces__): center{ center__ }, faces{ faces__ } {}
+    ConvexPolyhedron(const Point<DIM>& center__, const vector<HalfSpace<DIM>>& faces__) : center{ center__ }, faces{ faces__ } {}
     //! constructor
-    ConvexPolyhedron(const Cuboid<DIM> cuboid);
+    explicit ConvexPolyhedron(const Cuboid<DIM> cuboid);
 
 
 public:
@@ -33,8 +32,8 @@ public:
     bool isInside(const Point<DIM>& point) const;
 };
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
 #include "../Geometry/ConvexPolyhedron.ixx"
 
-#endif /* ALGOPACKING_SRC_GEOMETRY_CONVEXPOLYHEDRON_HXX_ */
+

@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MEROPE_CORE_SRC_VOXELLATION_REALSCALARFIELD_HXX_
-#define MEROPE_CORE_SRC_VOXELLATION_REALSCALARFIELD_HXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 
@@ -22,13 +21,13 @@ template<unsigned short DIM>
 class Field {
 public:
     //! constructor
-    Field(std::function<double(Point<DIM>)> fieldFunction_): fieldFunction{ fieldFunction_ } {};
+    Field(std::function<double(Point<DIM>)> fieldFunction_) : fieldFunction{ fieldFunction_ } {};
     //! stores the fieldFunction
     std::function<double(Point<DIM>)> fieldFunction;
 };
 
-} // namespace realScalarField
-} // namespace merope
+}  // namespace realScalarField
+}  // namespace merope
 
 
-#endif /* MEROPE_CORE_SRC_VOXELLATION_REALSCALARFIELD_HXX_ */
+

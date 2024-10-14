@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef SPHERECONTAINER_HXX_
-#define SPHERECONTAINER_HXX_
+#pragma once
 
 #include "StdHeaders.hxx"
 
@@ -15,14 +14,14 @@ using namespace std;
 
 namespace auxi_SphereCollection {
 //! tuple for (phase, volume fraction)
-template<class TYPE_PHASE>
+template<class PHASE_TYPE>
 class PhaseFrac {
 public:
-    TYPE_PHASE phase;
-    double fracVol; // volume fraction
-    PhaseFrac(TYPE_PHASE p = 0, double f = 0) :
+    PHASE_TYPE phase;
+    double fracVol;  // volume fraction
+    PhaseFrac(PHASE_TYPE p = 0, double f = 0) :
         phase{ p }, fracVol{ f } {}
-    bool operator<(PhaseFrac<TYPE_PHASE>& phfv2) {
+    bool operator<(PhaseFrac<PHASE_TYPE>& phfv2) {
         return this->phase < phfv2.phase;
     }
 };
@@ -32,10 +31,10 @@ class PhaseFracRadN : public PhaseFrac<PhaseType> {
 public:
     PhaseFracRadN(unsigned short p = 0, double f = 0, double r = 0) :
         PhaseFrac(p, f), radius{ r }, number{ 0 } {}
-    double radius; // radius (of spheres)
+    double radius;  // radius (of spheres)
     size_t number;
 };
-} // namespace auxi_SphereCollection
+}  // namespace auxi_SphereCollection
 
 template<unsigned short DIM>
 class SphereContainer {
@@ -43,6 +42,7 @@ class SphereContainer {
 protected:
     //! Sphere collection
     vector<Sphere<DIM>> theSpheres;
+
 public:
     SphereContainer() :
         theSpheres{}, dictionary{ nullptr } {}
@@ -123,6 +123,7 @@ public:
 protected:
     //! refers to the global shape
     AmbiantSpace::BigShape<DIM>* bigShape;
+
 private:
     //! avoids to re-compute the nb of Phases at each time
     size_t nbPhases;
@@ -135,7 +136,7 @@ template<unsigned short DIM>
 SphereCollection<DIM> fromFile(istream& fileStream, PhaseType phase,
     AmbiantSpace::BigShape<DIM>* bigShape_);
 }
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
 #include "SphereContainer.ixx"
-#endif /* SPHERECONTAINER_HXX_ */
+

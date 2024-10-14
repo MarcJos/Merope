@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GRID_VTKHISTOGRAMM_HXX_
-#define GRID_VTKHISTOGRAMM_HXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 
@@ -13,11 +12,11 @@
 namespace merope {
 namespace vox {
 
-template<class PHASE_TYPE>
+template<class PHASE_TYPE, class COEFF_TYPE>
 class TabPhaseCoeff {
     //! auxiliary class to make sure that the final grid has phases [0, N-1], with at least one voxel per phase
 public:
-    TabPhaseCoeff(vector<PHASE_TYPE>& phases_, vector<double>& coeff_) :
+    TabPhaseCoeff(vector<PHASE_TYPE>& phases_, vector<COEFF_TYPE>& coeff_) :
         phases{ phases_ }, coeff{ coeff_ } {}
     //! verifies if coeff_ is sufficiently large
     bool verifyCoherent() const;
@@ -29,12 +28,12 @@ private:
     //! represents the phase grid
     vector<PHASE_TYPE>& phases;
     //! the values of the coeff at voxel is coeff[phases[i]]
-    vector<double>& coeff;
+    vector<COEFF_TYPE>& coeff;
 };
 
-} // namespace vox
-} // namespace merope
+}  // namespace vox
+}  // namespace merope
 
 #include "../Grid/VtkHistogramm.ixx"
 
-#endif /* GRID_VTKHISTOGRAMM_HXX_ */
+

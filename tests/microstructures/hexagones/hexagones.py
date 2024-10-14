@@ -39,28 +39,26 @@ polyCrystal.computeTessels()
 mIncl = merope.MultiInclusions_3D()
 mIncl.setInclusions(polyCrystal)
 mIncl.addLayer(mIncl.getAllIdentifiers(), 1000, 0.05)
+structure = merope.Structure_3D(mIncl)
 
 ### voxellation
-
-grid = merope.Voxellation_3D(mIncl)
+gridParameters = merope.vox.create_grid_parameters_N_L_3D([n3D,n3D,10], L)
+grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Center)
 pureCoeffs = [2 for i in range(0,1001)]
 pureCoeffs[1000] = 1
-grid.setPureCoeffs(pureCoeffs)
-grid.setVoxelRule(merope.VoxelRule.Center)
-grid.setHomogRule(merope.HomogenizationRule.Voigt)
-grid.proceed([n3D,n3D,10])
-grid.printFile("Zone.vtk","Coeffs.txt")
+grid.apply_coefficients(pureCoeffs)
 
+my_printer = merope.vox.vtk_printer_3D()
+my_printer.printVTK(grid, "Field.vtk")
+my_printer.printVTK_segmented(grid, "Zone.vtk","Coeffs.txt")
 
 ### test of structure
 structure = merope.Structure_3D(mIncl)
+grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Center)
+pureCoeffs = [2 for i in range(0,1001)]
+pureCoeffs[1000] = 1
+grid.apply_coefficients(pureCoeffs)
 
-grid = merope.Voxellation_3D(structure)
-pureCoeffs = [1 for i in range(0,1001)]
-pureCoeffs[1000] = 2
-grid.setPureCoeffs(pureCoeffs)
-grid.setVoxelRule(merope.VoxelRule.Center)
-grid.setHomogRule(merope.HomogenizationRule.Voigt)
-grid.proceed([n3D,n3D,10])
-grid.printFile("Zone_bis.vtk","Coeffs_bis.txt")
+my_printer = merope.vox.vtk_printer_3D()
+my_printer.printVTK_segmented(grid, "Zone_bis.vtk","Coeffs_bis.txt")
 

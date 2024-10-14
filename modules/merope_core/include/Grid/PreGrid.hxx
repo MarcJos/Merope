@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GRID_PreGRID_HXX_
-#define GRID_PreGRID_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -58,27 +57,29 @@ protected:
 };
 
 template<unsigned short DIM>
-//! Minimal knowledge for a cartesian grid
-class PreGrid : public InsideTorus<DIM>, public ArrayDimensions<DIM>, public With_dx<DIM> {
-public:
-    PreGrid(array<size_t, DIM> nbNodes_, array<double, DIM> dx_) :
-        InsideTorus<DIM>(get_L_from<DIM>(nbNodes_, dx_)), ArrayDimensions<DIM>(nbNodes_), With_dx<DIM>(dx_) {}
-    //! setter
-    void set_nbNodes_L(const array<size_t, DIM>& nbNodes_, const array<double, DIM>& L_);
-private:
-    using InsideTorus<DIM>::setLength; // avoid setting L without setting dx
-};
-
-template<unsigned short DIM>
-class PreSubGrid : public InsideTorus<DIM>, public SubArrayDimensions<DIM>, public With_dx<DIM> {
+class GridParameters : public InsideTorus<DIM>, public SubArrayDimensions<DIM>, public With_dx<DIM> {
     //! the subgrid extracts a grid nMin<= ijk < nMax from the grid 0 <= ijk < nbNodes
 public:
-    PreSubGrid(array<size_t, DIM> nbNodes_, array<double, DIM> dx_);
+    GridParameters(array<size_t, DIM> nbNodes_, array<double, DIM> dx_);
     //! \warning : reset nMin and nMax
     void set_nbNodes_L(const array<size_t, DIM>& nbNodes_, const array<double, DIM>& L_);
 private:
-    using InsideTorus<DIM>::setLength; // avoid setting L without setting dx
+    using InsideTorus<DIM>::setLength;  // avoid setting L without setting dx
 };
+
+//! @return : a subgrid=grid of given dimensions
+//! @param nbNodes : total number of voxels
+//! @param L : lengths of the domain
+template<unsigned short DIM>
+GridParameters<DIM> create_grid_parameters_N_L(array<size_t, DIM> nbNodes, array<double, DIM> L);
+
+//! @return : a subgrid of given dimensions
+//! @param nbNodes : total number of voxels
+//! @param nMin : minimal index of the subgrid.
+//! @param nMax : maxmal index of the subgrid.
+//! @param L : lengths of the domain
+template<unsigned short DIM>
+GridParameters<DIM> create_grid_parameters_N_L(array<size_t, DIM> nbNodes, array<size_t, DIM> nMin, array<size_t, DIM> nMax, array<double, DIM> L);
 
 
 namespace auxi {
@@ -91,20 +92,14 @@ array<array<long, 2>, DIM> computeGridLimits(const Cuboid<DIM>& cuboid, const au
 //! \param torusGridLimits : gridLimits in the full grid
 //! \param preSubGrid : subgrid parametrization
 template<unsigned short DIM>
-vector<array<array<long, 2>, DIM>> intersectGridLimits(const array<array<long, 2>, DIM>& gridLimits_, const PreSubGrid<DIM>& preSubGrid);
+vector<array<array<long, 2>, DIM>> intersectGridLimits(const array<array<long, 2>, DIM>& gridLimits_, const GridParameters<DIM>& preSubGrid);
 //! recovers a sequence of segments such that their projections by periodicity lie in nbMin <= i < nMax
 vector<array<long, 2>> auxi_intersectGridLimits(const array<long, 2>& gridLimits, long nbNodes, long nMin, long nMax);
-//! \return the coordinates of the origin of voxels surrounding a cuboid
-//! \warning : may get out of the grid (does not take periodicity into account)
-//! \param cuboid : real space cuboid
-//! \param preGrid : space discretisation
-template<unsigned short DIM>
-vector<array<long, DIM>> smallGrid(const Cuboid<DIM>& cuboid, const PreGrid<DIM>& preGrid);
-} // namespace auxi
+}  // namespace auxi
 
-} // namespace vox
-} // namespace merope
+}  // namespace vox
+}  // namespace merope
 
 #include "../Grid/PreGrid.ixx"
 
-#endif /* GRID_PreGRID_HXX_ */
+

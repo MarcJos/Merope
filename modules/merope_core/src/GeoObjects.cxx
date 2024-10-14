@@ -1,6 +1,6 @@
 //! Copyright : see license.txt
 //!
-//! \brief Encodes geometry objects compatible with OpenCascad/gmsh
+//! \briefEncodes geometry objects compatible with OpenCascad/gmsh
 
 
 #include "../../AlgoPacking/src/StdHeaders.hxx"
@@ -65,7 +65,7 @@ void GeoObject::print(std::ostream& f) const {
 
 string getName(TypeObject typeObject) {
     static const vector<string> singleton{ "Unknown", "Point", "Edge", "CurveLoop", "Surface", "SurfaceLoop", "Solid", "PhysicalSurface", "PhysicalSolid", "PerPoint", "PeriodicSurface" };
-    return singleton.at(static_cast<int>(typeObject));
+    return singleton.at(static_cast<size_t>(typeObject));
 }
 
 void GeoObject::shiftIndices(const Identifier shift) {
@@ -78,11 +78,12 @@ void GeoObject::shiftIndices(const Identifier shift) {
     this->roots = newRoots;
     //
     for (auto& index : this->leaves) {
-        index += shift;
+        if (index >= 0) index += shift;
+        if (index < 0) index -= shift;
     }
 }
 
-}//namespace geoObjects
-}//namespace mesh
-} // namespace merope
+}  // namespace geoObjects
+}  // namespace mesh
+}  // namespace merope
 

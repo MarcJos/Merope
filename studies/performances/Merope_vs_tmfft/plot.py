@@ -60,7 +60,6 @@ for j, nVoxRef in enumerate(reference_nVox):
                 tTMFFT.append(timeTMFFT[i])
                 nbSph.append(nbSpheres[i])
                 tMerope.append(timeMerope[i])
-
     plt.plot(nbSph, tMerope, linestyle='-', lw=3, color=colors[j], label = "Merope, nVox = "+str(nVoxRef)+"^3", marker='d', markersize=pointsize)
     plt.plot(nbSph, tTMFFT, linestyle=':', lw=3, color=colors[j], label = "TMFFT, nVox = "+str(nVoxRef)+"^3", marker='d', markersize=pointsize)
 

@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
-#ifndef VOROINTERFACE_HXX_
-#define VOROINTERFACE_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -17,6 +16,7 @@
 
 #include "container.hh"
 #include "pre_container.hh"
+#include "wall.hh"
 
 //! prepare the use of voro++
 namespace voro {
@@ -40,12 +40,16 @@ public:
     //! \param L : lenghts of the torus
     //! \param voropp_container : pointer to be modified, shall contain at the end the tessellation
     //! \param periodicity : periodicity in all directions
-    PreparedVoroppContainer(const vector<Sphere<3>>& centerTessels,
-        array<double, 3> L, array<bool, 3> periodicity = { true, true, true });
+    PreparedVoroppContainer(const vector<Sphere<3>>& centerTessels, array<double, 3> L, array<bool, 3> periodicity = { true,true,true });
     //! @brief : destructor
-    virtual ~PreparedVoroppContainer() { delete voropp_container; }
+    virtual ~PreparedVoroppContainer() {
+        delete voropp_container;
+    }
+    //! @brief change container shape to cylinder
+    void addWallCylinder(double xc_, double yc_, double zc_, double xa_, double ya_, double za_, double rc_);
     //! @brief : contains the interface to the voro++ code
     voro::container_poly* voropp_container;
+    shared_ptr<voro::wall> voropp_wall_ptr;
 
 private:
     // DELETE OPERATORS
@@ -87,17 +91,25 @@ public:
     //! main constructor
     //! \param L : lengths of the torus
     //! \param centerTesssels : center and weights of the tessels
-    VoroInterface(array<double, DIM> L, const vector<Sphere<DIM>>& centerTessels);
+    //! \param periodicity : center and weights of the tessels
+    VoroInterface(array<double, DIM> L, const vector<Sphere<DIM>>& centerTessels, array<bool, DIM> periodicity = create_array<DIM, bool>(true));
     //! \returns the tessel containing the point
     //! \param pt : a point of the torus
     int findTessel(const Point<DIM>& pt);
     //! draw the particles in gnuplot format
     void drawGnuPlot(string fileName);
     //! get all the cells
+    void drawCellsPov(string fileName);
+    //! write cells in pov file
+    void printCustom(string format, string fileName);
+    //! write cells in custom file with format (vertex, edges, faces etc) specified in char. 
+    //! See Voro++ documentation for char format syntax and options: https://math.lbl.gov/voro++/doc/custom.html
     vector<smallShape::ConvexPolyhedronInc<DIM>> getMicroInclusions();
     //! get all the cells
     //! \warning : will not work in dimension d = 2
     vector<SingleCell> getSingleCells();
+    //! @brief change container shape to cylinder
+    void addWallCylinder(double xc_, double yc_, double zc_, double xa_, double ya_, double za_, double rc_);
 
 protected:
     //! auxiliary function to add an inclusion to the list polyhedrons, used by getMicroInclusion()
@@ -165,7 +177,7 @@ vector<HalfSpace<2>> getFaces2D(voro::voronoicell_neighbor* cell);
 //! \return the cuboid in which the voronoi cell lie
 //! \param cell : a voro++ cell
 template<unsigned short DIM>
-Cuboid<DIM> getCuboid(voro::voronoicell_neighbor* cell, const Point<DIM>& center);
+Cuboid<DIM> getCuboid(voro::voronoicell_neighbor* cell);
 //! \return the list of vertices of  the voronoi cell
 //! the origin is the center given
 //! \param cell : a voro++ cell
@@ -190,11 +202,12 @@ Point<3> extendDimension(const Point<2>& oldPoint, const array<double, 3>& L);
 //! for each sphere, convert its center in 2 dimensions to a center in 3 dimensions by a adding a 3rd coordinate equal to 0.5 L[3]
 //! \param L : length of the (virtual) 3-dimensional torus
 vector<Sphere<3>> extendDimension(const vector<Sphere<2>>& oldSpheres, const array<double, 3>& L);
+array<bool, 3> extendPeriodicity(const array<bool, 2>& oldPeriodicity);
 
 //! \return the tessel containing the point
 //! \param pt : a point of the torus
 int findTessel(const Point<3>& pt, voro::container_poly* voropp_container);
-} // namespace voroInterface_aux
+}  // namespace voroInterface_aux
 
 //! for each sphere, get the closest neighbors
 template<unsigned short DIM>
@@ -215,9 +228,9 @@ vector<Point<3>> compute_relative_centroids(const vector<Sphere<3>>& centerTesse
 template<class Func>
 void loop_on_voroppcontainer(voro::container_poly* voropp_container, Func my_function);
 
-} // namespace voroInterface
-} // namespace merope
+}  // namespace voroInterface
+}  // namespace merope
 
 
 #include "../Voronoi/VoroInterface.ixx"
-#endif /* VOROINTERFACE_HXX_ */
+

@@ -2,8 +2,7 @@
 //!
 //! \brief
 //
-#ifndef FFTW3_COVSUM_HXX_
-#define FFTW3_COVSUM_HXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 
@@ -15,8 +14,8 @@ namespace gaussianField {
 //! Abstract class for a covariance function
 class CovIso {
 protected:
-    double r; //!< Range
-    double s; //!< Sill
+    double r;  //!< Range
+    double s;  //!< Sill
 public:
     //! Default Destructor
     virtual ~CovIso();
@@ -47,7 +46,7 @@ enum class CovType {
 };
 
 //! Exponential covariance function
-class CovExpo: public CovIso {
+class CovExpo : public CovIso {
 public:
     //! Default constructor
     //! \param r Range
@@ -59,7 +58,7 @@ public:
 };
 
 //! Spherical covariance function
-class CovSpherical: public CovIso {
+class CovSpherical : public CovIso {
 public:
     //! Default constructor
     //! \param r Range
@@ -71,7 +70,7 @@ public:
 };
 
 //! Gaussian covariance function
-class CovGaussian: public CovIso {
+class CovGaussian : public CovIso {
 public:
     //! Default constructor
     //! \param r Range
@@ -83,7 +82,7 @@ public:
 };
 
 //! Covariance sum
-class CovSum: public std::vector<CovIso*> {
+class CovSum : public std::vector<CovIso*> {
 public:
     //! destructor
     ~CovSum();
@@ -107,7 +106,7 @@ private:
     void add(CovIso* c);
 };
 
-} // namespace gaussianField
-} // namespace merope
+}  // namespace gaussianField
+}  // namespace merope
 
-#endif /* FFTW3_COVSUM_HXX_ */
+

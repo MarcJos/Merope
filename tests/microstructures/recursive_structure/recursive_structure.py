@@ -85,19 +85,18 @@ structureFinale = merope.Structure_3D(structure1, structure2, structureMask)
 
 # Print
 
-grid = merope.Voxellation_3D(structure1)
-grid.proceed([nWidth,nWidth,nHeight])
-grid.printFile("Zone_struct_1.vtk","Coeffs_1.txt")
+def printStructure(structure, name_file_vtk):
+    gridParameters = merope.vox.create_grid_parameters_N_L_3D([nWidth,nWidth,nHeight], L)
+    grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Center)
+    
+    my_printer = merope.vox.vtk_printer_3D()
+    my_printer.printVTK_removeUnusedPhase(grid, name_file_vtk, "Coeffs.txt")
 
-grid = merope.Voxellation_3D(structure2)
-grid.proceed([nWidth,nWidth,nHeight])
-grid.printFile("Zone_struct_2.vtk","Coeffs_2.txt")
+printStructure(structure1, "Zone_struct_1.vtk")
 
-grid = merope.Voxellation_3D(structureMask)
-grid.proceed([nWidth,nWidth,nHeight])
-grid.printFile("Zone_struct_mask.vtk","Coeffs_mask.txt")
+printStructure(structure2, "Zone_struct_2.vtk")
 
-grid = merope.Voxellation_3D(structureFinale)
-grid.proceed([nWidth,nWidth,nHeight])
-grid.printFile("Zone_struct_finale.vtk","Coeffs_finale.txt")
+printStructure(structureMask, "Zone_struct_mask.vtk")
+
+printStructure(structureFinale, "Zone_struct_finale.vtk")
 

@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief Includes the other loops
+//! \briefIncludes the other loops
 //
-#ifndef LOOPS_HXX_
-#define LOOPS_HXX_
+#pragma once
 
 #include "StdHeaders.hxx"
 
@@ -29,9 +28,9 @@ vector<array<INDEX_TYPE, DIM>> getAllIndices_from0(C limits);
 template<unsigned short DIM, class C, class Ctilde>
 vector<array<C, DIM>> cartesianProduct(Ctilde indicesLimits);
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
 #include "Loops.ixx"
 #include "Loops_2.ixx"
 
-#endif /* LOOPS_HXX_ */
+

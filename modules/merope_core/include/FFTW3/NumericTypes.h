@@ -1,16 +1,11 @@
 //! Copyright : see license.txt
 //!
-//! \brief Numeric type definitions
+//! \briefNumeric type definitions
 
 #ifndef _LIB_TMFFT_FFTW3NUMERICTYPES_H_
 #define _LIB_TMFFT_FFTW3NUMERICTYPES_H_ 
 
-
-#if defined(_WIN32) || defined(WIN32) // ugly for Eclipse
-#include "../../../FFTW_Win/fftw3.h"
-#else
 #include <fftw/fftw3.h>
-#endif
 
 #ifdef	__cplusplus
 extern "C" {

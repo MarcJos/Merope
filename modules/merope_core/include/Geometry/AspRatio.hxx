@@ -1,11 +1,10 @@
 //! Copyright : see license.txt
 //!
-//! \brief Implement an aspect ratio shared by the whole structure
+//! \briefImplement an aspect ratio shared by the whole structure
 //
 //
 
-#ifndef MESOSTRUCTURE_ASPRATIO_HXX_
-#define MESOSTRUCTURE_ASPRATIO_HXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 
@@ -34,10 +33,10 @@ protected:
 namespace auxi_aspratio {
 template<unsigned short DIM>
 void renormalizeAspRatio(Point<DIM>&);
-} // auxi_aspratio
+}  // auxi_aspratio
 
-} // namespace merope
+}  // namespace merope
 
 #include "../Geometry/AspRatio.ixx"
 
-#endif /* MESOSTRUCTURE_ASPRATIO_HXX_ */
+

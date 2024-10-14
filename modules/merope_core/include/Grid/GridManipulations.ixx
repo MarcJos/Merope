@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GRID_GRIDMANIPULATIONS_IXX_
-#define GRID_GRIDMANIPULATIONS_IXX_
+#pragma once
 
 
 #include "../MeropeNamespace.hxx"
@@ -37,9 +36,11 @@ CartesianGrid<DIM, VOXEL_TYPE> gridAuxi::combineGridMask(const CartesianGrid<DIM
 
 template<class VOXEL_TYPE>
 VOXEL_TYPE gridAuxi::combineVoxelMask(const VOXEL_TYPE& phf1, const VOXEL_TYPE& phf2, const VOXEL_TYPE& mask) {
-    static_assert(is_Voxel_TYPE_Frac<VOXEL_TYPE> or std::is_arithmetic<VOXEL_TYPE>::value);
+    static_assert(composite::is_Iso<VOXEL_TYPE>
+        or std::is_arithmetic_v<VOXEL_TYPE>
+        or composite::is_AnIso<VOXEL_TYPE>);
     //
-    if constexpr (is_Voxel_TYPE_Frac<VOXEL_TYPE>) { // case of PhaseFracVol
+    if constexpr (composite::is_Iso<VOXEL_TYPE>) {  // case of PhaseFracVol
         array<double, 2> proportions = vox::gridAuxi::translateMask(mask);
         if (proportions[1] < geomTools::EPSILON) {
             return phf1;
@@ -57,38 +58,45 @@ VOXEL_TYPE gridAuxi::combineVoxelMask(const VOXEL_TYPE& phf1, const VOXEL_TYPE& 
             }
             return result;
         }
-    } else if constexpr (std::is_arithmetic<VOXEL_TYPE>::value) { // case of numeric type
+    } else if constexpr (std::is_arithmetic_v<VOXEL_TYPE>) {  // case of numeric type
         if (mask > 0) {
             return phf2;
         } else {
             return phf1;
         }
+    } else if constexpr (composite::is_AnIso<VOXEL_TYPE>) {
+        cerr << __PRETTY_FUNCTION__ << endl; throw runtime_error("Not done yet");
     }
 }
 
 template<class VOXEL_TYPE, class FUNCTION>
 VOXEL_TYPE gridAuxi::combineVoxelFunc(const VOXEL_TYPE& voxphf1, const VOXEL_TYPE& voxphf2, const FUNCTION& func) {
-    static_assert(is_Voxel_TYPE_Frac<VOXEL_TYPE>
-        or std::is_arithmetic<VOXEL_TYPE>::value);
+    static_assert(composite::is_Iso<VOXEL_TYPE>
+        or std::is_arithmetic_v<VOXEL_TYPE>
+        or composite::is_AnIso<VOXEL_TYPE>);
     //
-    if constexpr (is_Voxel_TYPE_Frac<VOXEL_TYPE>) { // case of PhaseFracVol
+    if constexpr (std::is_arithmetic_v<VOXEL_TYPE>) {  // case of numeric type
+        return func(voxphf1, voxphf2);
+    } else if constexpr (composite::is_Iso<VOXEL_TYPE>
+        or composite::is_AnIso<VOXEL_TYPE>) {  // case of PhaseFracVol
         VOXEL_TYPE result{};
         for (const auto& pf1 : voxphf1) {
             for (const auto& pf2 : voxphf2) {
                 auto pf3 = pf1;
                 pf3.phase = func(pf1.phase, pf2.phase);
                 pf3.fracVol = pf1.fracVol * pf2.fracVol;
+                if constexpr (composite::is_AnIso<VOXEL_TYPE>) {
+                    if (voxphf1.size() == 1) { pf3.normal = pf2.normal; }
+                }
                 result.push_back(pf3);
             }
         }
         result.merge();
         return result;
-    } else if constexpr (std::is_arithmetic<VOXEL_TYPE>::value) { // case of numeric type
-        return func(voxphf1, voxphf2);
     }
 }
 
-} // namespace vox
-} // namespace merope
+}  // namespace vox
+}  // namespace merope
 
-#endif /* GRID_GRIDMANIPULATIONS_IXX_ */
+

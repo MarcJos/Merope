@@ -35,10 +35,9 @@ def execution(nb_proc):
     gaussianne.seed = 1
     
     structure = merope.Structure_3D(gaussianne, L)
-    vox = merope.Voxellation_3D(structure)
-    vox.proceed([n3D, n3D, n3D])
     
-    
+    gridParameters = merope.vox.create_grid_parameters_N_L_3D([n3D, n3D, n3D], L)
+    grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Center)
         
     final_time = time.time() - tic0
    

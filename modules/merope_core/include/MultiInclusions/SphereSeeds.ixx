@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
 
-#ifndef SPHERESEEDS_IXX_
-#define SPHERESEEDS_IXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -15,7 +14,7 @@
 namespace merope {
 
 template<unsigned short DIM>
-inline SphereSeeds<DIM>::SphereSeeds():
+inline SphereSeeds<DIM>::SphereSeeds() :
     InsideTorus<DIM>() {
     this->setShape(&this->tore);
 }
@@ -35,8 +34,8 @@ inline void SphereSeeds<DIM>::fromFile(string fname1, string fname2) {
     // set the length
     this->setLength(mi1.tore.L);
     // get the sphetes
-    vector < Sphere <DIM>> vSph1 = mi1.getSpheres(); //phase = 1
-    vector < Sphere <DIM>> vSph2 = mi2.getSpheres(); //phase = 1
+    vector < Sphere <DIM>> vSph1 = mi1.getSpheres();  //phase = 1
+    vector < Sphere <DIM>> vSph2 = mi2.getSpheres();  //phase = 1
     for (auto& sph : vSph2) {
         sph.phase = 2;
     }
@@ -70,11 +69,11 @@ inline void SphereSeeds<DIM>::fromFile(string fname) {
     array<double, DIM> length;
     readKeyword("'Lx'", fileStream);
     fileStream >> length[0];
-    if (d > 1) { // d= 2 ou d=3
+    if (d > 1) {  // d= 2 ou d=3
         readKeyword("'Ly'", fileStream);
         fileStream >> length[1];
     }
-    if (d > 2) { // d=3
+    if (d > 2) {  // d=3
         readKeyword("'Lz'", fileStream);
         fileStream >> length[2];
     }
@@ -112,7 +111,7 @@ inline bool SphereSeeds<DIM>::isClose(const double di) {
     return false;
 }
 
-} // namespace merope
+}  // namespace merope
 
 
-#endif /* SPHERESEEDS_IXX_ */
+

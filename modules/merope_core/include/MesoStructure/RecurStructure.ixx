@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef PREMICROSTRUCTURE_IXX_
-#define PREMICROSTRUCTURE_IXX_
+#pragma once
 
 #include "../Grid/AreCompatible.hxx"
 
@@ -15,7 +14,7 @@ namespace merope {
 
 template<unsigned short DIM, class BasicStruct, class BasicType>
 inline RecursiveStructure<DIM, BasicStruct, BasicType>::RecursiveStructure(
-    auxiMicroStructure::TypeOfCombination typeOf_):
+    auxiMicroStructure::TypeOfCombination typeOf_) :
     InsideTorus<DIM>(),
     typeOfCombination{ typeOf_ },
     basicStructure{ nullptr },
@@ -134,8 +133,7 @@ template<unsigned short DIM, class BasicStruct, class BasicType>
 inline const BasicStruct& RecursiveStructure<DIM, BasicStruct, BasicType>::getBasicStructure() const {
     if (basicStructure) {
         return *basicStructure;
-    }
-    else {
+    } else {
         throw runtime_error(__PRETTY_FUNCTION__);
     }
 }
@@ -144,8 +142,7 @@ template<unsigned short DIM, class BasicStruct, class BasicType>
 inline const BasicStruct& RecursiveStructure<DIM, BasicStruct, BasicType>::getOneBasicStructure() const {
     if (basicStructure) {
         return *basicStructure;
-    }
-    else {
+    } else {
         return getRecurStructure1().getOneBasicStructure();
     }
 }
@@ -155,8 +152,7 @@ inline const RecursiveStructure<DIM, BasicStruct, BasicType>&
 RecursiveStructure<DIM, BasicStruct, BasicType>::getMask() const {
     if (mask) {
         return *mask;
-    }
-    else {
+    } else {
         throw runtime_error(__PRETTY_FUNCTION__);
     }
 }
@@ -166,8 +162,7 @@ inline const RecursiveStructure<DIM, BasicStruct, BasicType>&
 RecursiveStructure<DIM, BasicStruct, BasicType>::getRecurStructure1() const {
     if (recurStructure1) {
         return *recurStructure1;
-    }
-    else {
+    } else {
         throw runtime_error(__PRETTY_FUNCTION__);
     }
 }
@@ -177,8 +172,7 @@ inline const RecursiveStructure<DIM, BasicStruct, BasicType>&
 RecursiveStructure<DIM, BasicStruct, BasicType>::getRecurStructure2() const {
     if (recurStructure2) {
         return *recurStructure2;
-    }
-    else {
+    } else {
         throw runtime_error(__PRETTY_FUNCTION__);
     }
 }
@@ -188,8 +182,7 @@ inline std::function<BasicType(BasicType, BasicType)> RecursiveStructure<DIM,
     BasicStruct, BasicType>::getTransformFunction() const {
     if (transformFunction) {
         return *transformFunction;
-    }
-    else {
+    } else {
         throw runtime_error(__PRETTY_FUNCTION__);
     }
 }
@@ -217,7 +210,7 @@ inline bool RecursiveStructure<DIM, BasicStruct, BasicType>::isValid() const {
 ////
 
 template<unsigned short DIM>
-inline RecurGeom<DIM>::RecurGeom():
+inline RecurGeom<DIM>::RecurGeom() :
     RecursiveStructure<DIM, BasicStruct, BasicType>(),
     allPhases{}{
 }
@@ -258,6 +251,6 @@ inline void RecurGeom<DIM>::setMask(const RecurGeom<DIM>& mi1,
     }
 }
 
-} // namespace merope
+}  // namespace merope
 
-#endif /* PREMICROSTRUCTURE_IXX_ */
+

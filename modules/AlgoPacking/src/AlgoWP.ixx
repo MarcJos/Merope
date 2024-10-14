@@ -7,8 +7,7 @@
 
 // algoWP_aux::Pair
 
-#ifndef ALGOWP_IXX_
-#define ALGOWP_IXX_
+#pragma once
 
 namespace sac_de_billes {
 inline bool algoWP_aux::Pair::operator<(const algoWP_aux::Pair& pair2) const {
@@ -86,7 +85,7 @@ inline void algoWP_aux::IntersectedSpheres<DIM>::updatePositions() {
         if (i < j) {
             Sphere <DIM>& sph1 = motherGrid->placedSpheres[i];
             Sphere <DIM>& sph2 = motherGrid->placedSpheres[j];
-            for (auto k = 0; k < DIM; k++) {
+            for (size_t k = 0; k < DIM; k++) {
 #pragma omp atomic
                 sph1.center[k] -= displacements[l][k];
 #pragma omp atomic
@@ -187,7 +186,7 @@ template<unsigned short DIM>
 inline WPGrid<DIM>::WPGrid(DiscPoint<DIM> sizes_,
     AmbiantSpace::BigShape<DIM>* bigShape_, double voxelLength_,
     double minRadius_, double maxRadius_) :
-    algoRSA_aux::MotherGrid<DIM>(sizes_, bigShape_, voxelLength_,
+    algoRSA_aux::MotherGrid<DIM>(auxi_function::convertArray<DIM, long, size_t>(sizes_), bigShape_, voxelLength_,
         minRadius_, maxRadius_), activatedVoxels{ } {
     //\fixme : maybe shrink should decrease when reaching the desired radius?
 }
@@ -367,7 +366,7 @@ inline algoWP_aux::AlgoWP_Template<DIM>::AlgoWP_Template(
     DiscPoint <DIM> sizes;
     double maxRadius = radiusGen->maxRadius();
     double minRadius = radiusGen->minRadius();
-    double voxelLength = 2.0001 * maxRadius; // difficult to find the optimal choice...
+    double voxelLength = 2.0001 * maxRadius;  // difficult to find the optimal choice...
     if (voxelLength < 2 * maxRadius) {
         throw runtime_error(
             "Algorithm badly parametrized"
@@ -414,6 +413,6 @@ vector<Sphere<DIM>> algoWP_aux::AlgoWP_Template<DIM>::initPlacedSpheres(
     algoRSABase.proceed(seed, method);
     return algoRSABase.getSpheres();
 }
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* ALGOWP_IXX_ */
+

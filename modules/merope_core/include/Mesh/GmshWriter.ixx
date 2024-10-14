@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MESH_GMSHWRITER_IXX_
-#define MESH_GMSHWRITER_IXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/AuxiFunctions.hxx"
 #include "../Mesh/GeoObjects.hxx"
@@ -18,23 +17,41 @@ namespace mesh {
 namespace gmsh_writer {
 
 template<class OBJ>
+string name_of(const OBJ& object) {
+    if constexpr (is_same_v<OBJ, geoObjects::Edge>) {
+        if (object.typeEdge == geoObjects::TypeEdge::Segment)           return "Line";
+        if (object.typeEdge == geoObjects::TypeEdge::Circle)            return "Circle";
+        throw runtime_error("Unexpected!");
+    } else if constexpr (is_same_v<OBJ, geoObjects::CurveLoop>)         return "Line Loop";
+    else if constexpr (is_same_v<OBJ, geoObjects::Surface>) {
+        if (object.typeSurface == geoObjects::TypeSurface::Plane)       return "Plane Surface";
+        if (object.typeSurface == geoObjects::TypeSurface::Curved)      return "Surface";
+        throw runtime_error("Unexpected!");
+    } else if constexpr (is_same_v<OBJ, geoObjects::SurfaceLoop>)       return "Surface Loop";
+    else if constexpr (is_same_v<OBJ, geoObjects::Solid>)               return "Volume";
+    else if constexpr (is_same_v<OBJ, geoObjects::PhysicalSurface>)     return "Physical Surface";
+    else if constexpr (is_same_v<OBJ, geoObjects::PhysicalVolume>)      return  "Physical Volume";
+    throw runtime_error("Unexpected type!");
+}
+
+template<class OBJ>
 inline void write(const OBJ& object, std::ostream& f) {
-    if constexpr (is_same<OBJ, geoObjects::GeoPoint<3>>::value)                  auxi::write_point<3>(object, f);
-    else if constexpr (is_same<OBJ, geoObjects::GeoPoint<2>>::value)             auxi::write_point<2>(object, f);
-    else if constexpr (is_same<OBJ, geoObjects::PerPoint>::value)                auxi::write_simple(object, "PerPoint", f);
-    else if constexpr (is_same<OBJ, geoObjects::Edge>::value)                    auxi::write_simple(object, "Line", f);
-    else if constexpr (is_same<OBJ, geoObjects::CurveLoop>::value)               auxi::write_simple(object, "Line Loop", f);
-    else if constexpr (is_same<OBJ, geoObjects::Surface>::value)                 auxi::write_simple(object, "Plane Surface", f);
-    else if constexpr (is_same<OBJ, geoObjects::SurfaceLoop>::value)             auxi::write_simple(object, "Surface Loop", f);
-    else if constexpr (is_same<OBJ, geoObjects::Solid>::value)                   auxi::write_simple(object, "Volume", f);
-    else if constexpr (is_same<OBJ, geoObjects::PhysicalSurface>::value)         auxi::write_simple(object, "Physical Surface", f);
-    else if constexpr (is_same<OBJ, geoObjects::PhysicalVolume>::value)          auxi::write_simple(object, "Physical Volume", f);
-    else if constexpr (is_same<OBJ, geoObjects::PerSurface<3>>::value)           auxi::write_perSurface<3>(object, f);
-    else if constexpr (is_same<OBJ, geoObjects::PerSurface<2>>::value)           auxi::write_perSurface<2>(object, f);
-    else if constexpr (is_same<OBJ, meshStructure::VoroMesh_Periodic<3>>::value) auxi::write_geoPerStructure<3>(object, f);
-    else if constexpr (is_same<OBJ, meshStructure::VoroMesh_Periodic<2>>::value) auxi::write_geoPerStructure<2>(object, f);
-    else if constexpr (is_same<OBJ, Sphere<3>>::value)                           auxi::write_sphere<3>(object, f);
-    else if constexpr (is_same<OBJ, Sphere<2>>::value)                           auxi::write_sphere<2>(object, f);
+    if constexpr (is_same_v<OBJ, geoObjects::GeoPoint<3>>)                  auxi::write_point<3>(object, f);
+    else if constexpr (is_same_v<OBJ, geoObjects::GeoPoint<2>>)             auxi::write_point<2>(object, f);
+    else if constexpr (is_same_v<OBJ, geoObjects::PerPoint>)                auxi::write_simple(object, "PerPoint", f);
+    else if constexpr (is_same_v<OBJ, geoObjects::Edge>
+        or is_same_v<OBJ, geoObjects::CurveLoop>
+        or is_same_v<OBJ, geoObjects::Surface>
+        or is_same_v<OBJ, geoObjects::SurfaceLoop>
+        or is_same_v<OBJ, geoObjects::Solid>
+        or is_same_v<OBJ, geoObjects::PhysicalSurface>
+        or is_same_v<OBJ, geoObjects::PhysicalVolume>)                      auxi::write_simple(object, gmsh_writer::name_of(object), f);
+    else if constexpr (is_same_v<OBJ, geoObjects::PerSurface<3>>)           auxi::write_perSurface<3>(object, f);
+    else if constexpr (is_same_v<OBJ, geoObjects::PerSurface<2>>)           auxi::write_perSurface<2>(object, f);
+    else if constexpr (is_same_v<OBJ, meshStructure::VoroMesh_Periodic<3>>) auxi::write_geoPerStructure<3>(object, f);
+    else if constexpr (is_same_v<OBJ, meshStructure::VoroMesh_Periodic<2>>) auxi::write_geoPerStructure<2>(object, f);
+    else if constexpr (is_same_v<OBJ, Sphere<3>>)                           auxi::write_sphere<3>(object, f);
+    else if constexpr (is_same_v<OBJ, Sphere<2>>)                           auxi::write_sphere<2>(object, f);
     else throw runtime_error("Unexpected type!");
 }
 
@@ -48,7 +65,7 @@ inline void auxi::write_geoPerStructure(const meshStructure::VoroMesh_Periodic<D
     auxi::writePreamble(f);
     auto write_loc = [&f](auto nameObject, const auto& dictThing) {
         auxi::writeDict(nameObject, dictThing, f);
-    };
+        };
     write_loc("POINT", geoPerStructure.dictPoint);
     write_loc("LINE", geoPerStructure.dictEdge);
     write_loc("CURVE_LOOP", geoPerStructure.dictCurveLoop);
@@ -113,16 +130,16 @@ inline void auxi::write_sphere(Sphere<DIM> sphere, std::ostream& f, vector<Ident
     auto translateIndex = [](auto decalage, auto i) {
         if (i < 0) return i - decalage;
         else return i + decalage;
-    };
+        };
     //
     auto easyCoord = [&sphere](const auto& i, const auto& j, const auto& k) {
         return Point<DIM>({ sphere.center[0] + i * sphere.radius, sphere.center[1] + j * sphere.radius, sphere.center[2] + k * sphere.radius });
-    };
+        };
     //
     auto writePt = [&index, &translateIndex, &easyCoord, &f](Identifier indexLoc, long i, long j, long k) {
         mesh::geoObjects::GeoPoint<DIM> pt(translateIndex(index, indexLoc), easyCoord(i, j, k));
         write(pt, f);
-    };
+        };
     writePt(1, 0, 0, 0);
     writePt(2, 1, 0, 0);
     writePt(3, 0, 1, 0);
@@ -135,7 +152,7 @@ inline void auxi::write_sphere(Sphere<DIM> sphere, std::ostream& f, vector<Ident
         f << "Circle(" << translateIndex(index, indexLoc) << ")={"
             << translateIndex(index, i) << "," << translateIndex(index, j)
             << "," << translateIndex(index, k) << "};\n";
-    };
+        };
     //
     writeCircle(1, 2, 1, 3);
     writeCircle(2, 3, 1, 5);
@@ -154,7 +171,7 @@ inline void auxi::write_sphere(Sphere<DIM> sphere, std::ostream& f, vector<Ident
         f << "Line Loop(" << translateIndex(index, indexLoc) << ") = {"
             << translateIndex(index, i) << "," << translateIndex(index, j)
             << "," << translateIndex(index, k) << "};\n";
-    };
+        };
     //
     writeLineLoop(1, 1, 11, 8);
     writeLineLoop(2, 2, 7, -11);
@@ -167,7 +184,7 @@ inline void auxi::write_sphere(Sphere<DIM> sphere, std::ostream& f, vector<Ident
     //
     auto writeRuleSurface = [&index, &translateIndex, &f](Identifier indexLoc) {
         f << "Surface(" << translateIndex(index, indexLoc) << ")={" << translateIndex(index, indexLoc) << "};\n";
-    };
+        };
     //
     vector<long> identifiers{};
     for (long i = 1; i < 9; i++) {
@@ -181,8 +198,7 @@ inline void auxi::write_sphere(Sphere<DIM> sphere, std::ostream& f, vector<Ident
     //
     if (removedVolumes.size() == 0) {
         f << "Volume(" << index << ")={" << index << "};\n";
-    }
-    else {
+    } else {
         f << "Volume(" << index << ")={" << index << ",";
         auxi_function::writeVectorToString(removedVolumes, f);
         f << "};\n";
@@ -191,9 +207,9 @@ inline void auxi::write_sphere(Sphere<DIM> sphere, std::ostream& f, vector<Ident
     f << "//END OF SPHERE \n";
 }
 
-} // namespace gmsh_writer
-} // namespace mesh
-} // namespace merope
+}  // namespace gmsh_writer
+}  // namespace mesh
+}  // namespace merope
 
 
-#endif /* MESH_GMSHWRITER_IXX_ */
+

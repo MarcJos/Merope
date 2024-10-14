@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief Include all the necessary headers.
+//! \briefInclude all the necessary headers.
 //
-#ifndef ALGOPACKING_SRC_STDHEADERS_HXX_
-#define ALGOPACKING_SRC_STDHEADERS_HXX_
+#pragma once
 
 
 #include <omp.h>
@@ -48,6 +47,6 @@
 
 #include <utility>
 
-//#include <cstdlib>
+// #include <cstdlib>
 
-#endif /* ALGOPACKING_SRC_STDHEADERS_HXX_ */
+

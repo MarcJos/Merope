@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief Geostatistic data needed to simulate a periodic medium
+//! \briefGeostatistic data needed to simulate a periodic medium
 //!
 
-#ifndef _GEOSTAT_HXX
-#define _GEOSTAT_HXX 1
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -32,8 +31,8 @@ private:
 
 //! Positive step Probability distribution
 class StepDis : public RV {
-    std::vector<double> xi; //!< Interval limits
-    std::vector<double> Fi; //!< Cumulative distribution function
+    std::vector<double> xi;  //!< Interval limits
+    std::vector<double> Fi;  //!< Cumulative distribution function
 public:
     //! Default constructor
     StepDis();
@@ -69,8 +68,8 @@ private:
 //! Gaussian Random Variable
 class GaussRV {
 protected:
-    double m; //!< Mean
-    double s; //!< standard deviation
+    double m;  //!< Mean
+    double s;  //!< standard deviation
     double w;  //!< Weight in a sum
 public:
     //! Default constructor
@@ -90,8 +89,8 @@ public:
 
 //! Truncated Gaussian
 class TGauss : public GaussRV {
-    double l; //!< Threshhold
-    double A, Fl; //!< Norm
+    double l;  //!< Threshhold
+    double A, Fl;  //!< Norm
 public:
     //! Default constructor of a truncated Gaussian random variable
     //! \param m Mean
@@ -127,7 +126,7 @@ public:
 
 //! Sum of Elementary Random Variables
 class SofERV : public RV, public std::vector<GaussRV*> {
-    mutable StepDis sd; //!< Step wise approximation
+    mutable StepDis sd;  //!< Step wise approximation
 public:
     //! Destructor
     virtual ~SofERV();
@@ -148,8 +147,8 @@ private:
     double inverseF(double x) const;
 };
 
-} // namespace gaussianField
-} // namespace merope
+}  // namespace gaussianField
+}  // namespace merope
 
-#endif /* _GEOSTAT_HXX */
+
 

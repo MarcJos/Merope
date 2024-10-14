@@ -1,10 +1,9 @@
 #include "Path.hxx"
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef PATH_IXX_
-#define PATH_IXX_
+#pragma once
 
 namespace sac_de_billes {
 using namespace std;
@@ -12,15 +11,15 @@ using namespace std;
 template<unsigned short DIM, size_t NB_NGHB>
 inline array<array<int, DIM>, nbSubcubes<DIM>(NB_NGHB)> Path::createParcours() {
     array<array<int, DIM>, nbSubcubes<DIM>(NB_NGHB)> path_ = { };
-    int compteur = 0;
+    size_t compteur = 0;
     constexpr auto ix = IX;
     if constexpr (DIM == 3) {
-        loop<0, NB_NGHB, 0, NB_NGHB, 0, NB_NGHB>([&](const array<long, 3u>& i) {
+        loop<false, 0, NB_NGHB, 0, NB_NGHB, 0, NB_NGHB>([&](const array<long, 3u>& i) {
             path_[compteur] = array<int, DIM> { ix[i[0]], ix[i[1]], ix[i[2]] };
             compteur++;
             });
     } else if constexpr (DIM == 2) {
-        loop<0, NB_NGHB, 0, NB_NGHB>([&](const array<long, 2u>& i) {
+        loop<false, 0, NB_NGHB, 0, NB_NGHB>([&](const array<long, 2u>& i) {
             path_[compteur] = array<int, DIM> { ix[i[0]], ix[i[1]] };
             compteur++;
             });
@@ -30,7 +29,7 @@ inline array<array<int, DIM>, nbSubcubes<DIM>(NB_NGHB)> Path::createParcours() {
 
     auto norme2 = [](auto x) {
         double res = 0;
-        for (int j = 0; j < DIM; j++) {
+        for (size_t j = 0; j < DIM; j++) {
             res += x[j] * x[j];
         }
         return res;
@@ -62,10 +61,10 @@ inline const array<array<int, DIM>, nbSubcubes<DIM>(NB_NGHB)>& Path::pathForNeig
 }
 
 template<unsigned short DIM>
-inline int Path::fromCorner2Index(array<int, DIM> posRelative) const {
-    int result = 0;
-    array<int, 3> exponents({ 9, 3, 1 });
-    for (int j = 0; j < DIM; j++) {
+inline size_t Path::fromCorner2Index(array<int, DIM> posRelative) const {
+    size_t result = 0;
+    array<size_t, 3> exponents({ 9, 3, 1 });
+    for (size_t j = 0; j < DIM; j++) {
         if (posRelative[j] > 0) {
             result += 2 * exponents[j];
         } else if (posRelative[j] == 0) {
@@ -101,7 +100,7 @@ TabCorner<DIM>::TabCorner() : storage_tab_corner{} {
                 array<unsigned short, 3> { 1, 0, 0 }
         };
     } else {
-        int nb_corners = auxi_function::puissance<DIM>(2);
+        size_t nb_corners = auxi_function::puissance<DIM>(2);
         storage_tab_corner.resize(nb_corners);
         for (size_t i = 0; i < nb_corners; i++) {
             int k = i;
@@ -119,8 +118,8 @@ inline const TabCorner<DIM>& TabCorner<DIM>::get() {
     return tabC;
 }
 
-} // namespace  path
+}  // namespace  path
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* PATH_IXX_ */
+

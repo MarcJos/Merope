@@ -1,6 +1,6 @@
 //! Copyright : see license.txt
 //!
-//! \brief Medium from a TIFF File
+//! \briefMedium from a TIFF File
 //!
 
 
@@ -37,7 +37,8 @@ void TIFFRead::Header() {
         isMM = true;
     else if (('I' == c[0]) and ('I' == c[1]))
         isMM = false;
-    else throw(logic_error("TIFFRead::Header: Début difficile"));
+    else
+        throw(logic_error("TIFFRead::Header: Début difficile"));
 
     // Lecture de l'offset de l'Image File Directory (IFD)
     unsigned i32;
@@ -86,5 +87,5 @@ void TIFFRead::print(ostream& fout) const {
     }
 }
 
-} // namespace merope
+}  // namespace merope
 

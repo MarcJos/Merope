@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MESOSTRUCTURE_POLYINCLUSIONS_HXX_
-#define MESOSTRUCTURE_POLYINCLUSIONS_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -38,9 +37,9 @@ protected:
     vector<smallShape::ConvexPolyhedronInc<DIM>> polyInclusions;
 };
 
-} // namespace merope
+}  // namespace merope
 
 
 #include "../MultiInclusions/PolyInclusions.ixx"
 
-#endif /* MESOSTRUCTURE_POLYINCLUSIONS_HXX_ */
+

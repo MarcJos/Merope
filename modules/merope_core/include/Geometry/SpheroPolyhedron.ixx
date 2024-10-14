@@ -2,8 +2,7 @@
 //!
 //! \brief
 //!
-#ifndef ALGOPACKING_SRC_GEOMETRY_SPHEROPOLYHEDRON_IXX_
-#define ALGOPACKING_SRC_GEOMETRY_SPHEROPOLYHEDRON_IXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/Geometry/GeomTools_1.hxx"
 #include "../Geometry/GeomTools.hxx"
@@ -45,9 +44,9 @@ inline SpheroPolyhedron<DIM>::SpheroPolyhedron(
             local_list_vertices[halfSize + j] = local_list_vertices[j] + translationVector;
         }
         //
-        vector<vector<long>> local_face_indices(halfSize + 2); // face_indices local to the added polyhedron on the boundary
+        vector<vector<long>> local_face_indices(halfSize + 2);  // face_indices local to the added polyhedron on the boundary
         for (long j = 0; j < static_cast<long>(halfSize); j++) {
-            local_face_indices[0].push_back(halfSize - 1 - j); // inverse rotation
+            local_face_indices[0].push_back(halfSize - 1 - j);  // inverse rotation
             local_face_indices[1].push_back(halfSize + j);
             local_face_indices[2 + j] = { j, j + 1, static_cast<long>(auxi_function::fast_modulo(halfSize + j + 1, 2 * halfSize)), static_cast<long>(halfSize + j) };
         }
@@ -125,7 +124,7 @@ inline HalfSpace<DIM> SpheroPolyhedron<DIM>::closestTangentSpace(
     // 3° For each candidate point, test whether it is on the surface of the spheropolyhedron or inside it
     //      (It may happen for sphere, for example, where there are 2 candidates, and at least 1 is inside the spheropolyhedron)
     // 4° among all these candidates, find the closest one
-    vector<array<Point<DIM>, 2>> vec_candidates_normal{}; // store {candidate point, normal}
+    vector<array<Point<DIM>, 2>> vec_candidates_normal{};  // store {candidate point, normal}
     for (const auto& hf : this->outerPolyhedron) {
         vec_candidates_normal.push_back(array<Point<DIM>, 2>{geomTools::projection<DIM>(hf, vector_from_center_to_point), hf.vec()});
     }
@@ -158,6 +157,6 @@ inline HalfSpace<DIM> SpheroPolyhedron<DIM>::closestTangentSpace(
     throw runtime_error("No tangent space has been found. There is a bug or a 0 Minkowski radius.");
 }
 
-} // namespace merope
+}  // namespace merope
 
-#endif /* ALGOPACKING_SRC_GEOMETRY_SPHEROPOLYHEDRON_IXX_ */
+

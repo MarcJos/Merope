@@ -33,12 +33,12 @@ void testMesh::test1() {
     GeoPoint<DIM> pt5(100, Point<DIM>{0, 0, 1.0000001});
     vector<GeoPoint<DIM>>  vGeo{ pt1, pt2, pt3, pt4, pt5 };
     // 2
-    Edge e1(4, { 4,1 });
-    Edge e2(5, { 4,2 });
-    Edge e3(6, { 4,3 });
-    Edge e4(7, { 1,2 });
-    Edge e5(8, { 1,3 });
-    Edge e6(9, { 2,3 });
+    Edge e1(4, { 4, 1 });
+    Edge e2(5, { 4, 2 });
+    Edge e3(6, { 4, 3 });
+    Edge e4(7, { 1, 2 });
+    Edge e5(8, { 1, 3 });
+    Edge e6(9, { 2, 3 });
     Edge e7(101, { 100, 1 });
     vector<Edge>            vecEdge{ e1, e2, e3, e4, e5, e6, e7 };
     // 3
@@ -55,7 +55,7 @@ void testMesh::test1() {
     // 5
     vector<Surface>         vecSurface{ s1, s2, s3, s4 };
     // 6
-    SurfaceLoop sL(1, { 1,2,3,4 });
+    SurfaceLoop sL(1, { 1, 2, 3, 4 });
     vector<SurfaceLoop>     vecSurfaceLoop{ sL };
     // 7
     Solid so(1, { 1 });
@@ -108,7 +108,7 @@ void testMesh::test2() {
     mesh::meshStructure::VoroMesh_UnStructureData<3> rawMeshData = voroTranslater.getMeshData();
     mesh::meshStructure::VoroMesh_Periodic<DIM> geoPerStructure(rawMeshData);
     ofstream f1("Output_0.geo");
-    geoPerStructure.print(cerr);
+    //geoPerStructure.print(cerr);
     mesh::gmsh_writer::write(geoPerStructure, f1);
 
     ofstream f2("Output_0_enveloppe.geo");
@@ -132,7 +132,7 @@ void testMesh::test3() {
     MultiInclusions<DIM> mi{};
     mi.setInclusions(sphInc);
     mi.setMatrixPhase(1);
-    //mi.addLayer(mi.getAllIdentifiers(), 2, 0.1);
+    // mi.addLayer(mi.getAllIdentifiers(), 2, 0.1);
 
     mesh::generator::MeshGenerator meshGenerator{};
     meshGenerator.setMeshOrder(2);
@@ -179,7 +179,11 @@ void testMesh::test5() {
     LaguerreTess<3> polyCrystal(L, spheres);
     MultiInclusions<3> multiInclusions{};
     multiInclusions.setInclusions(polyCrystal);
-    multiInclusions.changePhase(multiInclusions.getAllIdentifiers(), multiInclusions.getAllIdentifiers());
+    auto new_phases = multiInclusions.getAllIdentifiers();
+    for (auto& ph : new_phases) ph += 2;
+    multiInclusions.setMatrixPhase(1);
+    multiInclusions.changePhase(multiInclusions.getAllIdentifiers(), new_phases);
+
 
     mesh::generator::MeshGenerator meshGenerator{};
     meshGenerator.setMeshOrder(1);
@@ -190,6 +194,36 @@ void testMesh::test5() {
     meshGenerator.write("mmm_mesh.geo");
 }
 
+void testMesh::test6() {
+    Point<3> L = { 1, 1, 1 };
+    int nbSpheres = 16;
+    double distMin = 0.05;
+    int randomSeed = 0;
+    auto theSpheres = sac_de_billes::algoSpheres::fillMaxRSA<3>(AmbiantSpace::NameShape::Tore, L, nbSpheres, randomSeed, distMin);
 
-} // namespace merope
+    for (auto& sphere : theSpheres) {
+        sphere.phase = 2;
+    }
+
+    merope::SphereInclusions<3>  sphInc{};
+    sphInc.setLength(L);
+    sphInc.setSpheres(theSpheres);
+
+    MultiInclusions<3> mi{};
+    mi.setInclusions(sphInc);
+    mi.setMatrixPhase(1);
+    mi.addLayer(mi.getAllIdentifiers(), 3, 0.05);
+    mi.addLayer(mi.getAllIdentifiers(), 4, 0.05);
+
+
+    mesh::generator::MeshGenerator meshGenerator{};
+    meshGenerator.setMeshOrder(2);
+    meshGenerator.setMeshSize(0.025);
+    meshGenerator.setMultiInclusions(mi);
+    meshGenerator.do_not_mesh({ 2 });
+    meshGenerator.set_nameOutput({ "spheres.vtk" });
+    meshGenerator.write("sphere_mesh.geo");
+}
+
+}  // namespace merope
 

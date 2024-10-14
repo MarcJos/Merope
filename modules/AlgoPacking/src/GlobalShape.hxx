@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief Gathers tools for the surrounding shape
+//! \briefGathers tools for the surrounding shape
 //! to be refactored : no virtual method should be here!
 
-#ifndef GLOBALSHAPE_HXX_
-#define GLOBALSHAPE_HXX_
+#pragma once
 
 #include "StdHeaders.hxx"
 
@@ -45,7 +44,7 @@ public:
     Point<DIM> L;
 
     //! Default Constructor
-    BigShape(Point<DIM> L_) :
+    explicit BigShape(Point<DIM> L_) :
         d{ DIM }, L{ L_ }, boundaryExclusionDistance{ 0 } {}
 
     virtual ~BigShape() {}
@@ -97,7 +96,7 @@ class Cube : public BigShape<DIM> {
 public:
     // constructor
     //! \param L_ : the lengths of the sides of the cube
-    Cube(Point<DIM> L_);
+    explicit Cube(Point<DIM> L_);
 
     //! \return the volume of the cube
     double volume() const override;
@@ -125,7 +124,7 @@ public:
 };
 
 template<short unsigned DIM>
-class Tore : public Cube<DIM> {
+class Tore final : public Cube<DIM> {
 public:
     // constructor
     Tore(Point<DIM> L_);
@@ -163,7 +162,7 @@ public:
     // constructor
     //! \param L_: surrounding box.
     //! the sphere is centered of maximal radius in the box
-    BigSphere(Point<DIM> L_);
+    explicit BigSphere(Point<DIM> L_);
 
     //! \return the volume of the sphere
     double volume() const override;
@@ -190,7 +189,7 @@ public:
     // constructor
     //! \param L_: surrounding box.
     //! the cylinder has its axis in the z direction, and is maximal in all directions wrt the box
-    BigCylinder(Point<DIM> L_);
+    explicit BigCylinder(Point<DIM> L_);
 
     //! \return the volume of the cylinder
     double volume() const override;
@@ -225,8 +224,8 @@ inline unique_ptr<AmbiantSpace::BigShape<DIM>> createShape(
     return ptr;
 }
 
-} // namespace AmbiantSpace
-} // namespace sac_de_billes
+}  // namespace AmbiantSpace
+}  // namespace sac_de_billes
 
 #include "GlobalShape.ixx"
-#endif /* GLOBALSHAPE_HXX_ */
+

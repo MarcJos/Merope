@@ -16,12 +16,10 @@ Path::Path() :
     pathNghb_3D_5{ createParcours<3, 5>() },
     pathNghb_3D_7{ createParcours<3, 7>() },
     pathNghb_2D_5{ createParcours<2, 5>() },
-    pathNghb_2D_7{ createParcours<2, 7>() } {
-
-}
+    pathNghb_2D_7{ createParcours<2, 7>() } {}
 
 inline const vector<array<unsigned short, 3> >& Path::myCornersEfficient(
-    int indexPosRelative)  const {
+    size_t indexPosRelative)  const {
     return pathFor27Corners[indexPosRelative];
 }
 
@@ -29,9 +27,9 @@ inline const vector<array<unsigned short, 3> >& Path::myCornersEfficient(
 
 vector<array<unsigned short, 3> > Path::myCorners(array<int, 3> posRelative) const {
     array<unsigned short, 3> i = { 0, 0, 0 };
-    array<int, 3> iMin = { 1, 1, 1 };
-    array<int, 3> iMax = { 1, 1, 1 };
-    for (int j = 0; j < 3; j++) {
+    array<size_t, 3> iMin = { 1, 1, 1 };
+    array<size_t, 3> iMax = { 1, 1, 1 };
+    for (size_t j = 0; j < 3; j++) {
         if (-posRelative[j] <= 0) {
             iMin[j] = 0;
         }
@@ -50,8 +48,8 @@ vector<array<unsigned short, 3> > Path::myCorners(array<int, 3> posRelative) con
 
     // reordering the corners in a more efficient way (in the spirit of TABCORNER)
     if (answer.size() == 8) {
-        for (int j = 0; j < 8; j++) {
-            for (int k = 0; k < 3; k++) {
+        for (size_t j = 0; j < 8; j++) {
+            for (size_t k = 0; k < 3; k++) {
                 answer[j][k] = path::TabCorner<3>::get().getTab()[j][k];
             }
         }
@@ -64,18 +62,18 @@ vector<array<unsigned short, 3> > Path::myCorners(array<int, 3> posRelative) con
 
 vector<vector<array<unsigned short, 3>>> Path::buildPathForCoin() {
     vector<vector<array<unsigned short, 3>>> pathForCorner = { };
-    for (int i = 0; i < 5 * 5 * 5; i++) {
+    for (size_t i = 0; i < 5 * 5 * 5; i++) {
         pathForCorner.push_back(myCorners(pathNghb_3D_5[i]));
     }
     return pathForCorner;
 }
 
-array<array<int, 3>, 27> Path::create27Directions() {
+array<array<int, 3>, 27> Path::create27Directions() const {
     array<array<int, 3>, 27> res{ };
     array<int, 3> index{ };
-    int compteur = 0;
-    loop<0, 3, 0, 3, 0, 3>([&](const array<long, 3u>& i) {
-        for (int j = 0; j < 3; j++) {
+    size_t compteur = 0;
+    loop<false, 0, 3, 0, 3, 0, 3>([&](const array<long, 3u>& i) {
+        for (size_t j = 0; j < 3; j++) {
             index[j] = static_cast<int>(i[j] - 1);
         }
         res[compteur] = index;
@@ -97,4 +95,4 @@ const Path& Path::get() {
     return path_;
 }
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes

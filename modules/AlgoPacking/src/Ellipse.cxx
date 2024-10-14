@@ -2,9 +2,6 @@
 //!
 //! \brief
 
-#ifndef SRC_ELLIPSE_CXX
-#define SRC_ELLIPSE_CXX
-
 #include "Geometry/Ellipse.hxx"
 #include "Geometry/Area.hxx"
 #include "AmbiantSpace.hxx"
@@ -23,7 +20,7 @@ double sac_de_billes::ellipseAux::computeChordArea(const Ellipse<2>& ellipse, Po
     if (theta1 <= theta0) {
         theta1 += 2 * M_PI;
     }
-    double result = computeAngularArea(ellipse, theta1) - computeAngularArea(ellipse, theta0); // only angular part
+    double result = computeAngularArea(ellipse, theta1) - computeAngularArea(ellipse, theta0);  // only angular part
     // decide whether triangle should be added or removed
     if (theta1 - theta0 < M_PI) {
         result -= geomTools::area::triangle<2>({ 0, 0 }, x_0, x_1);
@@ -43,4 +40,3 @@ double sac_de_billes::ellipseAux::computeAngularArea(const Ellipse<2>& ellipse, 
             / ((b + a) + (b - a) * cos(2 * theta))));
 }
 
-#endif // SRC_ELLIPSE_CXX

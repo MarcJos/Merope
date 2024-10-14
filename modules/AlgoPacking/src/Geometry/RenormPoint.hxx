@@ -2,8 +2,7 @@
 //!
 //! \brief
 
-#ifndef RENORMPOINT_HXX
-#define RENORMPOINT_HXX
+#pragma once
 
 #include "Point.hxx"
 #include "GeomTools_1.hxx"
@@ -15,8 +14,8 @@ template<unsigned short DIM>
 class RenormPoint : private Point<DIM> {
 public:
     RenormPoint() : Point<DIM>(create_array<DIM>(0.)) { (*this)(0) = 1.; }
-    RenormPoint(const Point<DIM>& pt) : Point<DIM>(pt) { geomTools::renormalize<DIM>(*this); }
-    RenormPoint(Point<DIM>&& pt) : Point<DIM>(pt) { geomTools::renormalize<DIM>(*this); }
+    explicit RenormPoint(const Point<DIM>& pt) : Point<DIM>(pt) { geomTools::renormalize<DIM>(*this); }
+    explicit RenormPoint(Point<DIM>&& pt) : Point<DIM>(pt) { geomTools::renormalize<DIM>(*this); }
     inline double operator[](size_t i) const { return Point<DIM>::operator[](i); }
     // nonconst operator[] is deleted for it should be private, but can't.
     // Indeed, it would prevent non const RenormPoint use the const operator.
@@ -27,6 +26,6 @@ private:
     inline double& operator()(size_t i) { return Point<DIM>::operator[](i); }
 };
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif // RENORMPOINT_HXX
+

@@ -2,8 +2,7 @@
 //!
 //! \brief
 
-#ifndef LAGUERRETESS_IXX_
-#define LAGUERRETESS_IXX_
+#pragma once
 
 #include "../Geometry/GeomTools.hxx"
 #include "../Voronoi/VoroInterface.hxx"
@@ -16,7 +15,7 @@ namespace merope {
 // LaguerreTess
 
 template<unsigned short DIM>
-inline LaguerreTess<DIM>::LaguerreTess(array<double, DIM> L_, vector<Sphere<DIM> > seeds_):
+inline LaguerreTess<DIM>::LaguerreTess(array<double, DIM> L_, vector<Sphere<DIM> > seeds_) :
     PolyInclusions<DIM>(), seeds{ seeds_ } {
     this->setLength(L_);
 }
@@ -37,7 +36,7 @@ template<unsigned short DIM>
 inline void LaguerreTess<DIM>::no_aspratio_computeTessels() {
     voroInterface::VoroInterface<DIM> voroInterface(this->tore.L, seeds);
     this->polyInclusions = voroInterface.getMicroInclusions();
-    for (size_t i = 0; i < this->polyInclusions.size(); i++) { // recovers the correct phase
+    for (size_t i = 0; i < this->polyInclusions.size(); i++) {  // recovers the correct phase
         this->polyInclusions[i].getPhaseGraphical(0) = seeds[i].phase;
     }
 }
@@ -60,7 +59,7 @@ inline void LaguerreTess<DIM>::with_aspratio_computeTessels() {
     }
 }
 
-} // namespace merope
+}  // namespace merope
 
 
-#endif /* LAGUERRETESS_IXX_ */
+

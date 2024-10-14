@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GRIDMANIPULATIONS_HXX_
-#define GRIDMANIPULATIONS_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -26,7 +25,7 @@ namespace gridAuxi {
 //! \param phaseFrac : a list of phase and volume fractions
 //! \param coeff :  a list of coefficients corresponding the the phases
 //! \fixme : Il vaudrait mieux traiter d'une part phaseFrac, et considérer coeff ailleurs.
-array<vector<double>, 2> getTabCoeff(const VoxelPhaseFrac& phaseFrac,
+array<vector<double>, 2> getTabCoeff(const composite::Iso<PhaseType>& phaseFrac,
         const vector<double>& coeff);
 //! \return the combination of two grids by means of a function
 //! \param grid1, grid2 : voxellations
@@ -57,17 +56,17 @@ VOXEL_TYPE combineVoxelFunc(const VOXEL_TYPE& voxelData1, const VOXEL_TYPE& voxe
 //! \return the coefficient of the convex combination to be applied on phases densities
 //! \param voxelMask : data of the voxel in the mask
 //! \seed combineVoxelMask
-array<double, 2> translateMask(const VoxelPhaseFrac& voxelMask);
+array<double, 2> translateMask(const composite::Iso<PhaseType>& voxelMask);
 //! \return the coefficient of the convex combination to be applied on phases densities
 //! \param voxelMask : data of the voxel in the mask, assumed to represent a density function
 //! \seed combineVoxelMask
-array<double, 2> translateMask(const VoxelValueFrac& voxelMask);
+array<double, 2> translateMask(const composite::Iso<double>& voxelMask);
 
 
-} // namespace gridAuxi
-} // namespace vox
-} // namespace merope
+}  // namespace gridAuxi
+}  // namespace vox
+}  // namespace merope
 
 #include "../Grid/GridManipulations.ixx"
 
-#endif /* GRIDMANIPULATIONS_HXX_ */
+

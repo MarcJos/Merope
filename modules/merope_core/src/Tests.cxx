@@ -12,9 +12,9 @@
 #include "MultiInclusions/SphereInclusions.hxx"
 #include "Obsolete_MesoStructure/InterfaceStructure.hxx"
 #include "Obsolete_MesoStructure/MicroType.hxx"
-#include "Voxellation/Voxellation.hxx"
+#include "Voxellation/Voxellizer.hxx"
 #include "VTKinout/VTKStream.hxx"
-#include "Parallelism/SetNbOfThreads.hxx"
+#include "VTKinout/VTK_adapter.hxx"
 #include "AlgoLaguerre/Optimize_LaguerreTess.hxx"
 #include "AlgoLaguerre/MakeCentroidal.hxx"
 
@@ -24,16 +24,16 @@
 namespace merope {
 
 void Tests::polyCrystal11() {
-    auto sv = 0; // Random number generations seed for seperating spheres positionning
-    auto N = 20; // Nb spheres
-    double l3D = 10; // RVE dimensions
+    auto sv = 0;  // Random number generations seed for seperating spheres positionning
+    auto N = 20;  // Nb spheres
+    double l3D = 10;  // RVE dimensions
     constexpr unsigned short DIM = 3;
     array<double, DIM> L = { l3D, l3D, l3D };
     double mindist = 0;
     // Discretization
     size_t n3D = 64;
     auto theSpheres = algoSpheres::fillMaxRSA<DIM>(AmbiantSpace::NameShape::Tore, L, N, sv, mindist);
-    double e = 0.125; // width of the layer
+    double e = 0.125;  // width of the layer
 
     LaguerreTess<DIM> lag(L, theSpheres);
     lag.setAspRatio(array<double, DIM> { 2, 1., 1.});
@@ -61,21 +61,17 @@ void Tests::polyCrystal11() {
         cerr << "Phase =" << i << endl;
     }
 
-    vox::Voxellation<DIM> voxGrid{ structure };
 
-    voxGrid.proceed(array<size_t, DIM> { n3D, n3D, n3D });
-
-    voxGrid.printFile("poro3D_1.vtk", "Coeffs.txt");
-
-    //
-    //
-    Grid g{};
+    array<size_t, DIM> nbNodes = { n3D, n3D, n3D };
+    auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(nbNodes, L);
+    auto grid = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(structure, grid_parameters);
+    vtk_adapter::printVTK_removeUnusedPhase<unsigned short>(grid, "poro3D_1__.vtk", "Coeffs.txt");
 }
 
 void Tests::polyCrystal0() {
-    auto sv = 0; // Random number generations seed for seperating spheres positionning
-    auto N = 20; // Nb spheres
-    double l3D = 10; // RVE dimensions
+    auto sv = 0;  // Random number generations seed for seperating spheres positionning
+    auto N = 20;  // Nb spheres
+    double l3D = 10;  // RVE dimensions
     constexpr unsigned short DIM = 3;
     array<double, DIM> L = { l3D, l3D, l3D };
     double mindist = 0;
@@ -83,7 +79,7 @@ void Tests::polyCrystal0() {
     size_t n3D = 64;
     auto theSpheres = algoSpheres::fillMaxRSA<DIM>(AmbiantSpace::NameShape::Tore, L, N, sv, mindist);
 
-    double e = 0.125; // width of the layer
+    double e = 0.125;  // width of the layer
     // Voronoi avec porositÃ©s
 
     InterfaceStructure<3> v3D{};
@@ -101,18 +97,21 @@ void Tests::polyCrystal0() {
 
     auto structure_0 = v3D.build();
     // Grille
-    vox::Voxellation<3> voxGrid_0{ structure_0 };
-    voxGrid_0.setPureCoeffs(vector<double>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21});
-    voxGrid_0.proceed(array<size_t, 3> {n3D, n3D, n3D});
-    voxGrid_0.printFile("poro3D_2_0.vtk", "Coeffs_3D_0.txt");
+
+    array<size_t, DIM> nbNodes = { n3D, n3D, n3D };
+    auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(nbNodes, L);
+    //!
+    auto grid_phase = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(structure_0, grid_parameters);
+    vector<double> coefficients = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21 };
+    auto grid_field = vox::voxellizer::apply_coefficients(grid_phase, coefficients);
+    vtk_adapter::printVTK_segmented<unsigned short>(grid_field, "poro3D_2_0.vtk", "Coeffs_3D_0.txt");
 
     v3D.setColorization(ColorMaterialID::Erode3Mat);
     auto structure = v3D.build();
     // Grille
-    vox::Voxellation<3> voxGrid{ structure };
-    voxGrid.setPureCoeffs(vector<double>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21});
-    voxGrid.proceed(array<size_t, 3> {n3D, n3D, n3D});
-    voxGrid.printFile("poro3D_2.vtk", "Coeffs_3D.txt");
+    auto grid_phase_2 = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(structure, grid_parameters);
+    auto grid_field_2 = vox::voxellizer::apply_coefficients(grid_phase_2, coefficients);
+    vtk_adapter::printVTK_segmented<unsigned short>(grid_field_2, "poro3D_2.vtk", "Coeffs_3D.txt");
 
     InterfaceStructure<3> vNew{};
     vNew.setLength(L);
@@ -120,9 +119,8 @@ void Tests::polyCrystal0() {
     vNew.mainInclusions.setSpheres(spherePores);
     vNew.setColorization(ColorMaterialID::Erode2Mat);
     vNew.setInnerPhase(1);
-    vox::Voxellation<3> newVoxGrid{ vNew.build() };
-    newVoxGrid.proceed(array<size_t, 3> {n3D, n3D, n3D});
-    newVoxGrid.printFile("poro3D_spheres_2.vtk", "Coeffs_3D.txt");
+    auto grid_phase_3 = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(vNew.build(), grid_parameters);
+    vtk_adapter::printVTK<unsigned short>(grid_phase_3, "poro3D_spheres_2.vtk");
 
 
     vox::symmetrize<3>("poro3D_spheres_2.vtk", "poro3D_spheres_2_sym.vtk", array<size_t, 3>{0, 1, 2});
@@ -131,9 +129,9 @@ void Tests::polyCrystal0() {
 
 
 void Tests::polyCrystal10() {
-    auto sv = 0; // Random number generations seed for seperating spheres positionning
-    auto N = 150; // Nb spheres
-    double l3D = 10; // RVE dimensions
+    auto sv = 0;  // Random number generations seed for seperating spheres positionning
+    auto N = 150;  // Nb spheres
+    double l3D = 10;  // RVE dimensions
     constexpr unsigned short DIM = 2;
     array<double, DIM> L = { l3D, l3D };
     double mindist = 0;
@@ -141,7 +139,7 @@ void Tests::polyCrystal10() {
     size_t n2D = 64;
     auto theSpheres = algoSpheres::fillMaxRSA<DIM>(AmbiantSpace::NameShape::Tore, L, N, sv, mindist);
 
-    double e = 0.125; // width of the layer
+    double e = 0.125;  // width of the layer
 
     LaguerreTess<DIM> lag(L, theSpheres);
     lag.setAspRatio(array<double, 2> { 2, 1. });
@@ -163,19 +161,21 @@ void Tests::polyCrystal10() {
 
     Structure<DIM> structure(mi, mi2, std::map<PhaseType, PhaseType>{ { 2, 3 }});
 
-    vox::Voxellation<2> voxGrid{ structure };
-    voxGrid.setPureCoeffs(vector<double>{1, 2, 3, 4});
 
-    voxGrid.proceed(array<size_t, 2> { n2D, n2D });
-
-    voxGrid.printFile("poro2D_1.vtk", "Coeffs.txt");
+    //!
+    array<size_t, DIM> nbNodes = { n2D, n2D };
+    auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(nbNodes, L);
+    auto grid_phase = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(structure, grid_parameters);
+    vector<double> coefficients{ 1, 2, 3, 4 };
+    auto grid_field = vox::voxellizer::apply_coefficients(grid_phase, coefficients);
+    vtk_adapter::printVTK_segmented<unsigned short>(grid_field, "poro2D_1.vtk", "Coeffs.txt");
 }
 
 
 void Tests::polyCrystal1() {
-    auto sv = 0; // Random number generations seed for seperating spheres positionning
-    auto N = 150; // Nb spheres
-    double l3D = 10; // RVE dimensions
+    auto sv = 0;  // Random number generations seed for seperating spheres positionning
+    auto N = 150;  // Nb spheres
+    double l3D = 10;  // RVE dimensions
     constexpr unsigned short DIM = 2;
     array<double, DIM> L = { l3D, l3D };
     double mindist = 0;
@@ -183,7 +183,7 @@ void Tests::polyCrystal1() {
     size_t n2D = 256;
     auto theSpheres = algoSpheres::fillMaxRSA<DIM>(AmbiantSpace::NameShape::Tore, L, N, sv, mindist);
 
-    double e = 0.125; // width of the layer
+    double e = 0.125;  // width of the layer
 
     ofstream file("fractionsBOOL.txt");
     // Voronoi avec porositÃ©s
@@ -203,18 +203,18 @@ void Tests::polyCrystal1() {
 
     auto structure = v2D.build();
     // Grille
-    vox::Voxellation<2> voxGrid{ structure };
 
-    voxGrid.proceed(array<size_t, 2> {n2D, n2D});
-
-    voxGrid.printFile("poro2D_2.vtk", "Coeffs.txt");
+    array<size_t, DIM> nbNodes = { n2D, n2D };
+    auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(nbNodes, L);
+    auto grid_phase = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(structure, grid_parameters);
+    vtk_adapter::printVTK<unsigned short>(grid_phase, "poro2D_2.vtk");
 }
 
 
 void Tests::polyCrystal9() {
-    auto sv = 0; // Random number generations seed for seperating spheres positionning
-    auto N = 150; // Nb spheres
-    double l3D = 10; // RVE dimensions
+    auto sv = 0;  // Random number generations seed for seperating spheres positionning
+    auto N = 150;  // Nb spheres
+    double l3D = 10;  // RVE dimensions
     constexpr unsigned short DIM = 3;
     array<double, DIM> L = { l3D, l3D, l3D };
     double mindist = 0;
@@ -222,7 +222,7 @@ void Tests::polyCrystal9() {
     size_t n3D = 256;
     auto theSpheres = algoSpheres::fillMaxRSA<DIM>(AmbiantSpace::NameShape::Tore, L, N, sv, mindist);
 
-    double e = 0.125; // width of the layer
+    double e = 0.125;  // width of the layer
 
     InterfaceStructure<DIM> v3D{};
     v3D.setLength(L);
@@ -239,18 +239,17 @@ void Tests::polyCrystal9() {
 
     auto structure = v3D.build();
     // Grille
-    vox::Voxellation<DIM> voxGrid{ structure };
-
-    voxGrid.proceed(array<size_t, DIM> {n3D, n3D, n3D});
-
-    voxGrid.printFile("poro3D-gdVolume.vtk", "Coeffs.txt");
+    array<size_t, DIM> nbNodes = { n3D, n3D, n3D };
+    auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(nbNodes, L);
+    auto grid_phase = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(structure, grid_parameters);
+    vtk_adapter::printVTK<unsigned short>(grid_phase, "poro3D-gdVolume_2.vtk");
 }
 
 template<unsigned short DIM>
 inline void auxi_polyCrystal_fit_volumes(string fileVTK) {
-    auto sv = 0; // Random number generations seed for seperating spheres positionning
-    auto N = 200; // Nb spheres
-    double l3D = 10; // RVE dimensions
+    auto sv = 0;  // Random number generations seed for seperating spheres positionning
+    auto N = 200;  // Nb spheres
+    double l3D = 10;  // RVE dimensions
     array<double, DIM> L = create_array<DIM>(l3D);
     double mindist = 0;
     // Discretization
@@ -287,13 +286,12 @@ inline void auxi_polyCrystal_fit_volumes(string fileVTK) {
     LaguerreTess<DIM> lag(L, new_center_tessels);
     MultiInclusions<DIM> mi{};
     mi.setInclusions(lag);
+    Structure<DIM> structure(mi);
     //////////////////////////////////////
-    vox::Voxellation<DIM> voxellation{ mi };
     array<size_t, DIM> nbVox = create_array<DIM, size_t>(64);
-    voxellation.proceed(nbVox);
-    //////////////////////////////////////
-    string fileCoeff = "Coeffs.txt";
-    voxellation.printFile(fileVTK, fileCoeff);
+    auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(nbVox, L);
+    auto grid_phase = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(structure, grid_parameters);
+    vtk_adapter::printVTK<unsigned short>(grid_phase, fileVTK);
 }
 
 void Tests::polyCrystal_fit_volumes_3D(string fileVTK) {
@@ -304,10 +302,67 @@ void Tests::polyCrystal_fit_volumes_2D(string fileVTK) {
     auxi_polyCrystal_fit_volumes<2>(fileVTK);
 }
 
+void Tests::outputLaminate() {
+    auto sv = 0;  // Random number generations seed for seperating spheres positionning
+    double l3D = 10;  // RVE dimensions
+    constexpr unsigned short DIM = 3;
+    array<double, DIM> L = { l3D, l3D, l3D };
+    // Discretization
+    size_t n3D = 64;
+
+    vector<array<double, 2>> desiredRPhi = { {1,  0.1} };
+    auto spherePores = algoSpheres::throwSpheres<DIM>(algoSpheres::TypeAlgo::BOOL,
+        AmbiantSpace::NameShape::Tore, L, sv, desiredRPhi,
+        vector<PhaseType> { 1 });
+    cerr << spherePores.size() << endl;
+    MultiInclusions<DIM> mi2{};
+    SphereInclusions<DIM> si{};
+    si.setLength(L);
+    si.setSpheres(spherePores);
+    mi2.setInclusions(si);
+    //
+
+    Structure<DIM> structure(mi2);
+    auto allPhases = structure.getAllPhases();
+
+
+    for (auto i : allPhases) {
+        cerr << "Phase =" << i << endl;
+    }
+
+    vector<double> coefficients(*std::max_element(allPhases.begin(), allPhases.end()));
+    for (size_t i = 0; i < coefficients.size(); i++) {
+        coefficients[i] = i;
+    }
+
+
+
+    array<size_t, DIM> nbNodes = { n3D, n3D, n3D };
+    auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(nbNodes, L);
+    auto grid_phase = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Average>(structure, grid_parameters);
+    auto grid_field = vox::voxellizer::applyHomogRule_T<homogenization::Rule::Voigt>(grid_phase, coefficients);
+    vtk_adapter::printVTK_segmented<unsigned short>(grid_field, "spheres_for_laminate.vtk", "Coeffs.txt");
+
+    cerr << "Second test" << endl;
+
+    auto grid_phase_anIso = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Laminate>(structure, grid_parameters);
+    auto myVoxField = vox::convertGrid::convert_to_stl_format(grid_phase_anIso);
+
+    auto normalField = vox::convertGrid::localConvert<true, DIM, array<double, DIM>, vox::composite::stl_format_AnIso<DIM, vox::PhaseType>>(myVoxField, [](const auto& cell) {
+        double mult = (get<0>(cell).size() == 1) ? 0 : 1;
+        return mult * get<1>(cell);
+        });
+
+
+    string nameFileVectors = "composite_normals.vtk";
+    string nameVectors = "composite_normals";
+    merope::vtk_adapter::printVTK<float, DIM>(normalField, nameFileVectors, nameVectors);
+}
+
 void Tests::polyCrystalCentroidal(bool use_acceleration) {
-    auto sv = 0; // Random number generations seed for seperating spheres positionning
-    auto N = 4000; // Nb spheres
-    double l3D = 10; // RVE dimensions
+    auto sv = 0;  // Random number generations seed for seperating spheres positionning
+    auto N = 4000;  // Nb spheres
+    double l3D = 10;  // RVE dimensions
     constexpr unsigned short DIM = 3;
     array<double, DIM> L = { l3D, l3D, l3D };
     double mindist = 0;
@@ -319,9 +374,9 @@ void Tests::polyCrystalCentroidal(bool use_acceleration) {
 
 
 void Tests::polyCrystal8() {
-    auto sv = 0; // Random number generations seed for seperating spheres positionning
-    auto N = 150; // Nb spheres
-    double l3D = 10; // RVE dimensions
+    auto sv = 0;  // Random number generations seed for seperating spheres positionning
+    auto N = 150;  // Nb spheres
+    double l3D = 10;  // RVE dimensions
     constexpr unsigned short DIM = 3;
     array<double, DIM> L = { l3D, l3D, l3D };
     double mindist = 0;
@@ -329,7 +384,7 @@ void Tests::polyCrystal8() {
     size_t n3D = 256;
     auto theSpheres = algoSpheres::fillMaxRSA<DIM>(AmbiantSpace::NameShape::Tore, L, N, sv, mindist);
 
-    double e = 0.125; // width of the layer
+    double e = 0.125;  // width of the layer
 
     InterfaceStructure<DIM> v3D{};
     v3D.setLength(L);
@@ -342,11 +397,11 @@ void Tests::polyCrystal8() {
 
     auto structure = v3D.build();
     // Grid
-    vox::Voxellation<DIM> voxGrid{ structure };
 
-    voxGrid.proceed(array<size_t, DIM> {n3D, n3D, n3D});
-
-    voxGrid.printFile("poly3D-gdVolume.vtk", "Coeffs.txt");
+    array<size_t, DIM> nbNodes = { n3D, n3D, n3D };
+    auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(nbNodes, L);
+    auto grid_phase = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(structure, grid_parameters);
+    vtk_adapter::printVTK<unsigned short>(grid_phase, "poly3D-gdVolume.vtk");
 }
 
 void Tests::spheres1() {
@@ -364,11 +419,11 @@ void Tests::spheres1() {
     mi.setInclusions(sphInc);
     mi.addLayer(mi.getAllIdentifiers(), 1, 0.1);
 
-    vox::Voxellation<DIM> voxellation{ mi };
-    voxellation.proceed(nbVox);
-    string fileVTK = "Spheres.vtk";
-    string fileCoeff = "Coeffs.txt";
-    voxellation.printFile(fileVTK, fileCoeff);
+    Structure<DIM> structure(mi);
+
+    auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(nbVox, L);
+    auto grid_phase = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(structure, grid_parameters);
+    vtk_adapter::printVTK<unsigned short>(grid_phase, "Spheres.vtk");
 }
 
 void Tests::extraction() {
@@ -386,12 +441,13 @@ void Tests::extraction() {
     MultiInclusions<DIM> multiInclusions2{};
     multiInclusions2.setInclusions(sphIncl2);
 
-    vox::Voxellation<DIM> grid1(multiInclusions2);
-    grid1.setPureCoeffs(vector<double>{0, 1});
-    grid1.setVoxelRule(vox::VoxelRule::Center);
-    grid1.setHomogRule(homogenization::Rule::Largest);
-    grid1.proceed(nVox, nVoxMin, nVoxMax);
-    grid1.printFile("Zone_Inclusions_extraction.vtk", "Coeffs.txt");
+
+    Structure<DIM> structure2(multiInclusions2);
+    auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(nVox, nVoxMin, nVoxMax, L);
+    auto grid_phase = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(structure2, grid_parameters);
+    vector<double> coefficients = { 0, 1 };
+    auto grid_field = vox::voxellizer::apply_coefficients(grid_phase, coefficients);
+    vtk_adapter::printVTK_segmented<unsigned short>(grid_field, "Zone_Inclusions_extraction.vtk", "Coeffs.txt");
 
     SphereInclusions<DIM> sphIncl{};
     sphIncl.setLength(L);
@@ -411,24 +467,18 @@ void Tests::extraction() {
         coeffs.push_back(i);
     }
 
-    vox::Voxellation<DIM> grid2(multiInclusions);
-    grid2.setPureCoeffs(coeffs);
-    grid2.setVoxelRule(vox::VoxelRule::Center);
-    grid2.setHomogRule(homogenization::Rule::Largest);
-    grid2.proceed(nVox, nVoxMin, nVoxMax);
-    grid2.printFile("Zone_Crystal_extraction.vtk", "Coeffs.txt");
+    Structure<DIM> structure__1(multiInclusions);
+    auto grid_phase_1 = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(structure__1, grid_parameters);
+    vtk_adapter::printVTK_removeUnusedPhase<unsigned short>(grid_phase_1, "Zone_Crystal_extraction.vtk", "Coeffs.txt");
 
     map<PhaseType, PhaseType> dictionnaire{};
     dictionnaire[N] = N + 1;
     Structure<DIM> structure(multiInclusions, multiInclusions2, dictionnaire);
 
-    vox::Voxellation<DIM> grid3(structure);
     coeffs.push_back(N + 1);
-    grid3.setPureCoeffs(coeffs);
-    grid3.setVoxelRule(vox::VoxelRule::Center);
-    grid3.setHomogRule(homogenization::Rule::Largest);
-    grid3.proceed(nVox, nVoxMin, nVoxMax);
-    grid3.printFile("Zone_extraction.vtk", "Coeffs.txt");
+    auto grid_phase_2 = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(structure, grid_parameters);
+    auto grid_field_2 = vox::voxellizer::apply_coefficients(grid_phase_2, coeffs);
+    vtk_adapter::printVTK_segmented<unsigned short>(grid_field_2, "Zone_extraction.vtk", "Coeffs.txt");
 }
 
 void Tests::testPerf0() {
@@ -444,11 +494,18 @@ void Tests::testPerf0() {
         ///
         MultiInclusions<DIM> multiInclusions{};
         multiInclusions.setInclusions(sphIncl);
-        vox::Voxellation<DIM> grid{ multiInclusions };
-        grid.setHomogRule(homogenization::Rule::Voigt);
-        grid.setVoxelRule(vox::VoxelRule::Average);
+
+        Structure<DIM> structure(multiInclusions);
+
+        auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(nbVox, L);
+
+        vector<double> coefficients = { 0, 1, 2 };
+
         clock_t t0 = clock();
-        grid.proceed(nbVox);
+
+        auto grid_phase = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Average>(structure, grid_parameters);
+        auto grid_field = vox::voxellizer::applyHomogRule_T<homogenization::Rule::Voigt>(grid_phase, coefficients);
+
         total_time += (static_cast<double>(clock() - t0)) / CLOCKS_PER_SEC;
         cerr << "Total time = " << total_time << endl;
     }
@@ -470,7 +527,9 @@ void Tests::testFields() {
     std::function<double(double)> nonlinearFunction = [](double a) {return exp(a);};
     CartesianField<DIM> cartesianField(gaussianField::SimpleGaussianField<DIM>(covariance, nonlinearFunction), L);
     FieldStructure<DIM> fieldStructure(cartesianField);
-    vox::Voxellation<DIM> myVox(fieldStructure);
+    array<size_t, DIM> N3D_ = { 128, 128, 128 };
+    auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(N3D_, L);
+    auto grid_phase = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(fieldStructure, grid_parameters);
 }
 
 void Tests::testFields2() {
@@ -517,50 +576,54 @@ void Tests::testFields2() {
     mask.setInclusions(sphIncl);
     mask.setMatrixPhase(0);
     // printStruc
-    auto printStruc = [](const auto& struc, const auto& N3D_, const string& name) {
-        merope::vox::Voxellation<DIM> voxelTot(struc);
-        voxelTot.proceed(N3D_);
-        voxelTot.printFile(name + ".vtk", name + ".txt");
+    auto printStruc = [L](const auto& struc, const auto& N3D_, const string& name) {
+        auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(N3D_, L);
+        auto grid_phase = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(struc, grid_parameters);
+        if constexpr (is_same_v<typeof(struc), Structure<DIM>>) {
+            vtk_adapter::printVTK_removeUnusedPhase<unsigned short>(grid_phase, name + ".vtk", name + ".txt");
+        } else {
+            vtk_adapter::printVTK<double>(grid_phase, "field_" + name + ".vtk");
+            vtk_adapter::printVTK_segmented<unsigned short>(grid_phase, name + ".vtk", "Coeffs.txt");
+        }
         };
     // print Gaussian Field
     merope::CartesianField<DIM> cField_Gauss(gaussianne, L);
     merope::FieldStructure<DIM> struc_gauss(cField_Gauss);
-    merope::vox::Voxellation<DIM> vox(struc_gauss);
-    vox.proceed(N3D);
-    vox.printFile("gauss.vtk", "gauss.txt");
+
+    auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(N3D, L);
+    auto grid_phase = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(struc_gauss, grid_parameters);
+    vtk_adapter::printVTK_segmented<unsigned short>(grid_phase, "gauss.vtk", "gauss.txt");
     printStruc(struc_gauss, N3D, "struc_gauss");
     // print mask
     merope::Structure<DIM> structureMask(mask);
-    merope::vox::Voxellation<DIM> voxellationMask(structureMask);
-    voxellationMask.setVoxelRule(merope::vox::VoxelRule::Average);
-    voxellationMask.setHomogRule(merope::homogenization::Rule::Voigt);
-    voxellationMask.proceed(N3D);
-    voxellationMask.printFile("mask.vtk", "mask.txt");
-    auto fieldMask = voxellationMask.getField();
+
+    vector<double> coefficients = { 0., 1., 2., 3., 4. };
+    auto grid_iso_mask = vox::voxellizer::transformStructIntoGrid<DIM, merope::vox::VoxelRule::Average>(structureMask, grid_parameters);
+    auto fieldMask = vox::voxellizer::applyHomogRule_T<merope::homogenization::Rule::Voigt>(grid_iso_mask, coefficients);
+    vtk_adapter::printVTK_segmented<unsigned short>(fieldMask, "mask.vtk", "mask.txt");
+
     merope::CartesianField<DIM> cField_mask(fieldMask, L);
     merope::FieldStructure<DIM> struc_mask(cField_mask);
     printStruc(struc_mask, N3D, "struc_mask");
     // print inclusions
     merope::Structure<DIM> structureIncl(mIncl);
-    merope::vox::Voxellation<DIM> voxellationIncl(structureIncl);
-    voxellationIncl.setVoxelRule(merope::vox::VoxelRule::Average);
-    voxellationIncl.setHomogRule(merope::homogenization::Rule::Reuss);
-    voxellationIncl.setPureCoeffs({ lambda_0clay, lambda_lead, lambda_silver });
-    voxellationIncl.proceed(N3D);
-    voxellationIncl.printFile("inclusions.vtk", "inclusions.txt");
-    auto fieldInclusions = voxellationIncl.getField();
+
+    auto grid_1 = vox::voxellizer::transformStructIntoGrid<DIM, merope::vox::VoxelRule::Average>(structureIncl, grid_parameters);
+    vector<double> coefficients_1 = { lambda_0clay, lambda_lead, lambda_silver };
+    auto fieldInclusions = vox::voxellizer::applyHomogRule_T<merope::homogenization::Rule::Reuss>(grid_1, coefficients_1);
+    vtk_adapter::printVTK_segmented<unsigned short>(fieldInclusions, "inclusions.vtk", "inclusions.txt");
+
     merope::CartesianField<DIM> cField_inclusions(fieldInclusions, L);
     merope::FieldStructure<DIM> struc_incl(cField_inclusions);
     printStruc(struc_incl, N3D, "struc_incl");
     // resulting microstructure
-    merope::FieldStructure<DIM>fieldStructureTot(struc_gauss, struc_incl, struc_mask);
-    merope::vox::Voxellation<DIM> voxelTot(fieldStructureTot);
-    voxelTot.setVoxelRule(merope::vox::VoxelRule::Average);
-    voxelTot.setHomogRule(merope::homogenization::Rule::Reuss);
-    voxelTot.proceed(N3D);
-    voxelTot.printFile("totalStruct.vtk", "totalStruct.txt");
+    merope::FieldStructure<DIM> fieldStructureTot(struc_gauss, struc_incl, struc_mask);
+    auto grid_tot = vox::voxellizer::transformStructIntoGrid<DIM, merope::vox::VoxelRule::Average>(fieldStructureTot, grid_parameters);
+    auto field_tot = vox::voxellizer::applyHomogRule_T<merope::homogenization::Rule::Reuss>(grid_tot);
+    vtk_adapter::printVTK<double>(field_tot, "totalStruct_real.vtk");
+    vtk_adapter::printVTK_segmented<unsigned short>(field_tot, "totalStruct.vtk", "totalStruct.txt");
 }
 
 
-} // namespace merope
+}  // namespace merope
 

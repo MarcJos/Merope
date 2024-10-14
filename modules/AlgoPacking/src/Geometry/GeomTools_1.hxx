@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GEOMTOOLS1_HXX_
-#define GEOMTOOLS1_HXX_
+#pragma once
 
 #include "../StdHeaders.hxx"
 
@@ -22,7 +21,7 @@ constexpr unsigned short nbSubcubes(unsigned short Number = 2) {
 }
 
 namespace geomTools {
-//! \brief geometrical functions
+//! \briefgeometrical functions
 
 //! compute the volume of a given solid
 template<class SOLID>
@@ -52,7 +51,7 @@ bool isPointOnBoundary(const SOLID& solid, const Point<DIM>& point, const Point<
 template<unsigned short DIM, class SOLID>
 double distanceTo(const SOLID& halfSpaces, const Point<DIM>& vector_from_center_to_point);
 
-} // namespace geomTools
+}  // namespace geomTools
 
 namespace linearTransform {
 //! The space is dilated through (x_1,x_2,x_3) -> (lambda_1 x_1, lambda_2 x_2, lambda_3 x_3)
@@ -78,8 +77,8 @@ void proceed(ConvexPolyhedron<DIM>&, const Point<DIM>& linTransform);
 template<unsigned short DIM>
 void proceed(Ellipse<DIM>&, const Point<DIM>& linTransform);
 
-} // namespace linearTransform
-} // namespace sac_de_billes
+}  // namespace linearTransform
+}  // namespace sac_de_billes
 
 #include "../Geometry/GeomTools_1.ixx"
-#endif /* GEOMTOOLS1_HXX_ */
+

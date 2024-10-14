@@ -1,14 +1,13 @@
 //! Copyright : see license.txt
 //!
-//! \brief Main part of the code.
+//! \briefMain part of the code.
 //! Description : 	RSA algorithm from
 //! 				A Simple Algorithm for Maximal Poisson-Disk Sampling in High Dimensions
 //! 				Mohamed S. Ebeida, Scott A. Mitchell, Anjul Patney, Andrew A. Davidson, and John D. Owens.
 //!					Has been adapted in order to tackle as well different sphere sizes and
 //!					objective volume fractions.
 
-#ifndef ALGORSA_HXX_
-#define ALGORSA_HXX_
+#pragma once
 
 #include "StdHeaders.hxx"
 
@@ -36,14 +35,14 @@ template<unsigned short DIM>
 class MotherGrid {
     //! Main grid, that contains the motherVoxels and informations necessary for find the spheres
 public:
-    MotherGrid(DiscPoint<DIM> sizes_, AmbiantSpace::BigShape<DIM>* bigShape_,
+    MotherGrid(std::array<size_t, DIM> sizes_, AmbiantSpace::BigShape<DIM>* bigShape_,
         double voxelLength_, double minRadius_, double maxRadius_);
     //! Numbers of nodes in x, y, z directions (spatial discretization)
-    DiscPoint<DIM> sizes;
+    std::array<size_t, DIM> sizes;
     //! Ambiant space
     AmbiantSpace::BigShape<DIM>* bigShape;
     //! 3D table of Voxels
-    typedef typename merope::vox::MultiDArrayObject < DIM, MotherVoxel<DIM>, merope::vox::ArrayDimensions<DIM>> TYPE_TABVOXEL; //!< defines the type of tabVoxels
+    typedef typename merope::vox::MultiDArrayObject < DIM, MotherVoxel<DIM>, merope::vox::ArrayDimensions<DIM>> TYPE_TABVOXEL;  //!< defines the type of tabVoxels
     TYPE_TABVOXEL tabVoxels;
     //! getter for tabVoxels
     template<typename T>
@@ -142,10 +141,10 @@ public:
     //! random generatpr
     mt19937* randGen;
     //! number of uncovered voxels ( =/= tabVoxels.size() in general)
-    long nbUncoveredVoxels;
+    size_t nbUncoveredVoxels;
 
     //! set the tabVoxels (accordingly, nbUncoveredVoxels and distribution)
-    void setTabVoxels(const vector<Voxel<DIM>>& tabVoxels_);
+    void setTabVoxels(vector<Voxel<DIM>>&& tabVoxels_);
     //! \return a random activated voxel
     Voxel<DIM>* pickUncoveredVoxel();
     //! subdivides the grid
@@ -197,7 +196,7 @@ private:
     //! minimal radius of spheres
     double minRadius;
     //! maximal number of voxels (if more, the algorithm considers it cannot achieve a higher volume fraction)
-    long nbMaxVoxels;
+    size_t nbMaxVoxels;
 
     //! throws a dart and gives the consequences
     //! \return whether this leads to a new ball or not
@@ -213,9 +212,9 @@ private:
     bool proceed_T();
 };
 
-} // namespace algoRSA_aux
-} // namespace sac_de_billes
+}  // namespace algoRSA_aux
+}  // namespace sac_de_billes
 
 #include "AlgoRSA.ixx"
 
-#endif /* ALGORSA_IXX_ */
+

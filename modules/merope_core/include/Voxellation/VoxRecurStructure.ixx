@@ -1,13 +1,14 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MEROPE_CORE_SRC_VOXELLATION_VOXRECURSTRUCTURE_IXX_
-#define MEROPE_CORE_SRC_VOXELLATION_VOXRECURSTRUCTURE_IXX_
+#pragma once
 
 
 #include "VoxSimpleGauss.hxx"
 #include "VoxSimpleMultiInclusions.hxx"
+#include "../MultiInclusions/MultiInclusions.hxx"
+
 
 
 #include "../MeropeNamespace.hxx"
@@ -16,33 +17,43 @@
 namespace merope {
 namespace vox {
 
-template<unsigned short DIM, class VOXEL_TYPE, class BasicStruct>
-inline CartesianGrid<DIM, VOXEL_TYPE> transformIntoGrid(
-    const BasicStruct& basicStruct,
-    const vox::PreSubGrid<DIM>& gridParameters) {
+
+template<unsigned short DIM, class VOXEL_TYPE, class STRUCTURE>
+vox::CartesianGrid<DIM, VOXEL_TYPE> transformIntoGrid(const  STRUCTURE& structure, const vox::GridParameters<DIM>& gridParameters) {
+    static_assert(is_same_v<STRUCTURE, MultiInclusions<DIM>> or
+        is_same_v<STRUCTURE, CartesianField<DIM>> or
+        is_same_v<STRUCTURE, Structure<DIM>> or
+        is_same_v<STRUCTURE, FieldStructure<DIM>>);
     //
-    constexpr bool isMultiInclusions = std::is_same<BasicStruct, MultiInclusions<DIM>>::value;
-    constexpr bool isField = std::is_same<BasicStruct, CartesianField<DIM>>::value;
-    static_assert(isMultiInclusions or isField);
-    //
-    if constexpr (isMultiInclusions) {
-        return VoxSimpleMultiInclusions<DIM, GetVoxelRule<VOXEL_TYPE>()>(basicStruct, gridParameters)();
+    if constexpr (is_same_v<STRUCTURE, MultiInclusions<DIM>>) {
+        return VoxSimpleMultiInclusions<DIM, GetVoxelRule<VOXEL_TYPE>()>(structure, gridParameters)();
     }
-    if constexpr (isField) {
-        auto field = vox::VoxSimpleGauss<DIM>(basicStruct, gridParameters)();
-        if constexpr (std::is_same<VOXEL_TYPE, double>::value) {
+    // 
+    else if constexpr (is_same_v<STRUCTURE, CartesianField<DIM>>) {
+        auto field = vox::VoxSimpleGauss<DIM>(structure, gridParameters)();
+        if constexpr (std::is_same_v<VOXEL_TYPE, double>) {
             return field;
-        } else if constexpr (std::is_same<VOXEL_TYPE, vox::VoxelValueFrac>::value) {
-            return vox::convertGrid::fromPhaseToFracVol(field);
+        } else if constexpr (std::is_same_v<VOXEL_TYPE, vox::composite::Iso<double>>) {
+            return vox::convertGrid::fromPureToIso(field);
+        } else if constexpr (std::is_same_v<VOXEL_TYPE, vox::composite::AnIso<DIM, PhaseType>>) {
+            return vox::convertGrid::fromPureToAnIso(field);
         } else {
             cerr << __PRETTY_FUNCTION__ << endl;
             throw runtime_error("Unexpected");
         }
     }
+    //
+    else if constexpr (is_same_v<STRUCTURE, Structure<DIM>>) {
+        return auxi::VoxStructure<DIM, VOXEL_TYPE, MultiInclusions<DIM>, PhaseType>(structure, gridParameters)();
+    }
+    //
+    else if constexpr (is_same_v<STRUCTURE, FieldStructure<DIM>>) {
+        return auxi::VoxStructure<DIM, VOXEL_TYPE, CartesianField<DIM>, double>(structure, gridParameters)();
+    }
 }
 
 template <unsigned short DIM, class VOXEL_TYPE, class BasicStruct, class BasicType>
-inline void VoxStructure<DIM, VOXEL_TYPE, BasicStruct, BasicType>::build() {
+void auxi::VoxStructure<DIM, VOXEL_TYPE, BasicStruct, BasicType>::build() {
     switch (structure->getTypeOf()) {
     case(auxiMicroStructure::TypeOfCombination::Simple):
     {
@@ -75,8 +86,8 @@ inline void VoxStructure<DIM, VOXEL_TYPE, BasicStruct, BasicType>::build() {
     }
 }
 
-} //namespace vox
-} // namespace merope
+}  // namespace vox
+}  // namespace merope
 
 
-#endif /* MEROPE_CORE_SRC_VOXELLATION_VOXRECURSTRUCTURE_IXX_ */
+

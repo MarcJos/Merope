@@ -2,8 +2,7 @@
 //!
 //! \brief
 //
-#ifndef ALGONAMES_HXX_
-#define ALGONAMES_HXX_
+#pragma once
 
 namespace sac_de_billes {
 using namespace std;
@@ -13,7 +12,7 @@ namespace algoSpheres {
 enum class TypeAlgo {
     RSA, BOOL, WP
 };
-} // namespace algoSpheres
-} // namespace sac_de_billes
+}  // namespace algoSpheres
+}  // namespace sac_de_billes
 
-#endif /* ALGONAMES_HXX_ */
+

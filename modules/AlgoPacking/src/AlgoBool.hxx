@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief Implements random boolean sphere placement
+//! \briefImplements random boolean sphere placement
 //
-#ifndef ALGOBOOL_HXX_
-#define ALGOBOOL_HXX_
+#pragma once
 
 #include "StdHeaders.hxx"
 
@@ -40,14 +39,12 @@ private:
     Point<DIM> pickPoint();
     //! random generator
     mt19937 randGenerator;
-    //! uniform law between [0,1)
-    std::uniform_real_distribution<> randomReal;
 };
 
 template<unsigned short DIM>
 using AlgoBool = AlgoInterface<DIM, AlgoBool_Template<DIM>>;
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
 #include "AlgoBool.ixx"
-#endif /* ALGOBOOL_HXX_ */
+

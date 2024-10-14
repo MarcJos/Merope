@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef ALGOPACKING_SRC_GEOMETRY_CONVEXPOLYHEDRON_IXX_
-#define ALGOPACKING_SRC_GEOMETRY_CONVEXPOLYHEDRON_IXX_
+#pragma once
 
 #include "../Geometry/GeomTools_1.hxx"
 
@@ -11,7 +10,7 @@ namespace sac_de_billes {
 
 template<unsigned short DIM>
 inline sac_de_billes::ConvexPolyhedron<DIM>::ConvexPolyhedron(
-    const Cuboid<DIM> cuboid): ConvexPolyhedron(0.5 * (cuboid.x_min + cuboid.x_max), {}) {
+    const Cuboid<DIM> cuboid) : ConvexPolyhedron(0.5 * (cuboid.x_min + cuboid.x_max), {}) {
     Point<DIM> xmin = cuboid.x_min - this->center;
     Point<DIM> xmax = cuboid.x_max - this->center;
     for (size_t i = 0; i < DIM; i++) {
@@ -29,6 +28,6 @@ inline bool sac_de_billes::ConvexPolyhedron<DIM>::isInside(
     return geomTools::isInside_Intersection<DIM>(faces, point - center);
 }
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* ALGOPACKING_SRC_GEOMETRY_CONVEXPOLYHEDRON_IXX_ */
+

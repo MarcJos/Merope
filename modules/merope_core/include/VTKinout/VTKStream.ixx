@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief Defines a VTK stream format
+//! \briefDefines a VTK stream format
 //
 
-#ifndef _VTKSTREAM_IXX
-#define _VTKSTREAM_IXX 1
+#pragma once
 
 
 #include "../MeropeNamespace.hxx"
@@ -100,7 +99,7 @@ inline void vtkRead(DATA* data, std::istream& is) {
 #endif
 
 
-template<class VECTOR_DATA, class ARRAY_DIM>
+template<class PHASE_OUT, class VECTOR_DATA, class ARRAY_DIM>
 void VTKstream::writeVector(const VECTOR_DATA& vectorData, ARRAY_DIM n) {
     size_t n2 = 1;
     if (n.size() == 3) {
@@ -111,7 +110,15 @@ void VTKstream::writeVector(const VECTOR_DATA& vectorData, ARRAY_DIM n) {
     for (k = 0; k < n2; ++k) {
         for (j = 0; j < n[1]; ++j) {
             for (i = 0; i < n[0]; ++i) {
-                write(vectorData[k + n2 * (j + i * n[1])]);
+                if constexpr (is_arithmetic_v<typename VECTOR_DATA::value_type>) {
+                    write(static_cast<PHASE_OUT>(vectorData[k + n2 * (j + i * n[1])]));
+                } else if constexpr (is_same_v<typename VECTOR_DATA::value_type, array<double, 2>> or is_same_v<typename VECTOR_DATA::value_type, array<double, 3>>) {
+                    for (size_t d = 0; d < vectorData[k + n2 * (j + i * n[1])].size(); d++) {
+                        write(static_cast<PHASE_OUT>(vectorData[k + n2 * (j + i * n[1])][d]));
+                    }
+                } else {
+                    cerr << __PRETTY_FUNCTION__ << endl; throw runtime_error("Impossible");
+                }
             }
         }
     }
@@ -133,7 +140,7 @@ void vtkByteSwap(DATA& data) {
 #endif
 }
 
-} // namespace merope
+}  // namespace merope
 
 
-#endif // _VTKSTREAM_IXX
+

@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
 
-#ifndef GEOMTOOLS_HXX_
-#define GEOMTOOLS_HXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 
@@ -84,22 +83,41 @@ double fracVolIntersection(HalfSpace<DIM> face,
 template<unsigned short DIM>
 double fracVolIntersection(const vector<HalfSpace<DIM>>& faces,
         const Point<DIM>& centerPoly_to_origVoxel,
-        const Point<DIM>& cubeLength);
+        const Point<DIM>& cubeLength,
+        Point<DIM>& vector_intersect);
+//! for a ConvexPolyhedron
+template<unsigned short DIM>
+double fracVolIntersection(const ConvexPolyhedron<DIM>& polyhedron,
+        const Point<DIM>& centerPoly_to_origVoxel,
+        const Point<DIM>& cubeLength,
+        Point<DIM>& vector_intersect) {
+        return geomTools::fracVolIntersection<DIM>(polyhedron.faces,
+                centerPoly_to_origVoxel, cubeLength, vector_intersect);
+}
 //! for a spheroPolyhedron
 template<unsigned short DIM>
 double fracVolIntersection(const SpheroPolyhedron<DIM>& sphP,
         const Point<DIM>& centerPoly_to_origVoxel,
-        const Point<DIM>& cubeLength);
+        const Point<DIM>& cubeLength,
+        Point<DIM>& vector_intersect);
+//! for a cylinder
+template<unsigned short DIM>
+double fracVolIntersection(const Cylinder<3>& cylinder,
+        const Point<3>& centerCyl_to_origVoxel,
+        const Point<3>& cubeLength,
+        Point<3>& vector_intersect);
+
+template<unsigned short DIM, class SOLID>
+Point<DIM> get_center(const SOLID& solid);
 
 namespace fracVolIntersect {
-//! \brief auxiliary functions for geomTools::fracVolIntersection
+//! \briefauxiliary functions for geomTools::fracVolIntersection
 template<unsigned short DIM>
 double core(const HalfSpace<DIM>& hf);
 template<unsigned short DIM>
 double auxi(const HalfSpace<DIM>& hf);
 }
-
-} // namespace geomTools
+}  // namespace geomTools
 
 namespace auxi_Corner_of_Cubes {
 template<unsigned short DIM>
@@ -123,7 +141,7 @@ constexpr array<array<double, 2>, 4> TABCORNER2D{ array<double, 2> { 0, 0 },
 //! stores the result of Indices_TABCORNER
 constexpr array<short, 8> Indices_TABCORNER3D{ -1, 1, 1, -1, 1, -1, -1, 1 };
 constexpr array<short, 4> Indices_TABCORNER2D{ 1, 1, -1, -1 };
-} // namespace auxi_Corner_of_Cubes
+}  // namespace auxi_Corner_of_Cubes
 
 namespace Corners_of_Cubes {
 //! Class to manage corners of cubes
@@ -135,10 +153,10 @@ constexpr const array<array<double, DIM>,
 template<unsigned short DIM>
 constexpr const array<short, auxi_Corner_of_Cubes::NumberOfCorners<DIM>()>& Indices_TabCorner();
 
-} // namespace Corner_of_Cubes
-} // namespace sac_de_billes
+}  // namespace Corner_of_Cubes
+}  // namespace sac_de_billes
 
 
 #include "../Geometry/GeomTools.ixx"
 
-#endif /* GEOMTOOLS_HXX_ */
+

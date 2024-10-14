@@ -1,6 +1,6 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
 //!
 
@@ -17,8 +17,8 @@
 namespace merope {
 
 inline void Rotation2D::VecProd() {
-    a[2] = -a[1]; // a[1,2]
-    a[3] = a[0]; // a[2,2]
+    a[2] = -a[1];  // a[1,2]
+    a[3] = a[0];  // a[2,2]
 }
 
 Rotation2D::Rotation2D() {
@@ -29,11 +29,11 @@ Rotation2D::Rotation2D(const CastemReal* const v, const bool verif) {
     if (verif) {
         // Normalisation
         CastemReal n = sqrt(v[0] * v[0] + v[1] * v[1]);
-        a[0] = v[0] / n; // a[1,1]
-        a[1] = v[1] / n; // a[2,1]
+        a[0] = v[0] / n;  // a[1,1]
+        a[1] = v[1] / n;  // a[2,1]
     } else {
-        a[0] = v[0]; // a[1,1]
-        a[1] = v[1]; // a[2,1]
+        a[0] = v[0];  // a[1,1]
+        a[1] = v[1];  // a[2,1]
     }
     // Second vector: vectorial product
     VecProd();
@@ -52,9 +52,9 @@ void Rotation2D::randomEuler(default_random_engine& eng) {
 
 void Rotation2D::EulerToAxis(const double theta) {
     // First vector
-    a[0] = cos(theta); // a[1,1]
-    a[1] = sin(theta); // a[2,1]
-    VecProd(); // Second vector: vectorial product
+    a[0] = cos(theta);  // a[1,1]
+    a[1] = sin(theta);  // a[2,1]
+    VecProd();  // Second vector: vectorial product
 }
 
 const CastemReal* Rotation2D::getMat() const {
@@ -84,9 +84,9 @@ Rotation3D::Rotation3D() {
 
 inline void Rotation3D::VecProd() {
     // Third vector
-    a[6] = a[1] * a[5] - a[4] * a[2]; // a[1,3]
-    a[7] = a[2] * a[3] - a[5] * a[0]; // a[2,3]
-    a[8] = a[0] * a[4] - a[3] * a[1]; // a[3,3]
+    a[6] = a[1] * a[5] - a[4] * a[2];  // a[1,3]
+    a[7] = a[2] * a[3] - a[5] * a[0];  // a[2,3]
+    a[8] = a[0] * a[4] - a[3] * a[1];  // a[3,3]
 }
 
 Rotation3D::Rotation3D(const CastemReal* const v, const bool verif) {
@@ -94,14 +94,14 @@ Rotation3D::Rotation3D(const CastemReal* const v, const bool verif) {
         // First vector
         // Normalisation
         CastemReal n = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-        a[0] = v[0] / n; // a[1,1]
-        a[1] = v[1] / n; // a[2,1]
-        a[2] = v[2] / n; // a[3,1]
+        a[0] = v[0] / n;  // a[1,1]
+        a[1] = v[1] / n;  // a[2,1]
+        a[2] = v[2] / n;  // a[3,1]
 
         // Third vector
-        a[6] = v[1] * v[5] - v[2] * v[4]; // a[1,3]
-        a[7] = v[2] * v[3] - v[0] * v[5]; // a[2,3]
-        a[8] = v[0] * v[4] - v[1] * v[3]; // a[3,3]
+        a[6] = v[1] * v[5] - v[2] * v[4];  // a[1,3]
+        a[7] = v[2] * v[3] - v[0] * v[5];  // a[2,3]
+        a[8] = v[0] * v[4] - v[1] * v[3];  // a[3,3]
         // Normalisation
         n = sqrt(a[6] * a[6] + a[7] * a[7] + a[8] * a[8]);
         a[6] /= n;
@@ -109,18 +109,18 @@ Rotation3D::Rotation3D(const CastemReal* const v, const bool verif) {
         a[8] /= n;
 
         // Second vector
-        a[3] = a[7] * a[2] - a[8] * a[1]; // a[1,2]
-        a[4] = a[8] * a[0] - a[6] * a[2]; // a[2,2]
-        a[5] = a[6] * a[1] - a[7] * a[0]; // a[3,2]
+        a[3] = a[7] * a[2] - a[8] * a[1];  // a[1,2]
+        a[4] = a[8] * a[0] - a[6] * a[2];  // a[2,2]
+        a[5] = a[6] * a[1] - a[7] * a[0];  // a[3,2]
     } else {
-        a[0] = v[0]; // a[1,1]
-        a[1] = v[1]; // a[2,1]
-        a[2] = v[2]; // a[3,1]
+        a[0] = v[0];  // a[1,1]
+        a[1] = v[1];  // a[2,1]
+        a[2] = v[2];  // a[3,1]
 
         // Second vector
-        a[3] = v[3]; // a[1,2]
-        a[4] = v[4]; // a[2,2]
-        a[5] = v[5]; // a[3,2]
+        a[3] = v[3];  // a[1,2]
+        a[4] = v[4];  // a[2,2]
+        a[5] = v[5];  // a[3,2]
 
         // Third vector: vectorial product
         VecProd();
@@ -155,14 +155,14 @@ void Rotation3D::EulerToAxis(const double phi, const double theta,
     const double cPsi = cos(psi);
 
     // First vector
-    a[0] = cPsi * cPhi - sPsi * cTheta * sPhi; // a[1,1]
-    a[1] = cPsi * sPhi + sPsi * cTheta * cPhi; // a[2,1]
-    a[2] = sPsi * sTheta; // a[3,1]
+    a[0] = cPsi * cPhi - sPsi * cTheta * sPhi;  // a[1,1]
+    a[1] = cPsi * sPhi + sPsi * cTheta * cPhi;  // a[2,1]
+    a[2] = sPsi * sTheta;  // a[3,1]
 
     // Second vector
-    a[3] = -sPsi * cPhi - cPsi * cTheta * sPhi; // a[1,2]
-    a[4] = -sPsi * sPhi + cPsi * cTheta * cPhi; // a[2,2]
-    a[5] = cPsi * sTheta; // a[3,2]
+    a[3] = -sPsi * cPhi - cPsi * cTheta * sPhi;  // a[1,2]
+    a[4] = -sPsi * sPhi + cPsi * cTheta * cPhi;  // a[2,2]
+    a[5] = cPsi * sTheta;  // a[3,2]
 
     // Third vector: vectorial product
     VecProd();
@@ -188,5 +188,5 @@ void Rotation3D::print(ofstream& f) const {
         << a[5] << endl;
 }
 
-} // namespace merope
+}  // namespace merope
 

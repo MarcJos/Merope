@@ -1,5 +1,3 @@
-#add_subdirectory(pybind11)
-
 # clean name
 pybind11_add_module(merope Interface.cxx ../../AlgoPacking/Interface_python/Interface_AlgoPacking.cxx)
 target_link_libraries(merope PUBLIC GeomVER Grid VTKinout VoroInterface VoroToMesh GeneOrientations OptiLaguerre)

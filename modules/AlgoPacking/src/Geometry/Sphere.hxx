@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef SPHERE_HXX_
-#define SPHERE_HXX_
+#pragma once
 
 #include "../StdHeaders.hxx"
 
@@ -85,8 +84,8 @@ void sort(vector<Sphere<DIM>>&);
 //! reads from a line in a file
 template<unsigned short DIM>
 bool fromLine(istream& fileStream, size_t phase, Sphere<DIM>& sphere);
-} // namespace sphereTools
-} // namespace sac_de_billes
+}  // namespace sphereTools
+}  // namespace sac_de_billes
 
 #include "../Geometry/Sphere.ixx"
-#endif /* SPHERE_HXX_ */
+

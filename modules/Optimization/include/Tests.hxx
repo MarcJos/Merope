@@ -24,7 +24,7 @@ void print(auto my_vector);
 template<bool USE_ANDERSON, int NB_ITER>
 void test_Anderson();
 
-} // namespace  tests
-} // namespace  optimization
+}  // namespace  tests
+}  // namespace  optimization
 
 #include "Tests.ixx"

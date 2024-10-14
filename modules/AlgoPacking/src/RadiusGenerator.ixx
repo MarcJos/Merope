@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef RADIUSGENERATOR_IXX_
-#define RADIUSGENERATOR_IXX_
+#pragma once
 
 namespace sac_de_billes {
 using namespace std;
@@ -16,8 +15,7 @@ inline void checkPhase(const vector<T>& tabRadii_, vector<PhaseType>& phases) {
         if (phases.size() == 0) {
             phases = vector<PhaseType>(tabRadii_.size(),
                 algoRSA_aux::DEFAULT_PHASE);
-        }
-        else {
+        } else {
             throw invalid_argument(
                 "Incoherency between list of phases and the list of radii (different size)");
         }
@@ -52,7 +50,7 @@ inline vector<algoRSA_aux::RPhiPhase> createTabRPhiPhase(
 template<unsigned short DIM>
 inline vector<array<double, 2>> reComputeRPhi(
     vector<array<double, 2>> desiredRPhi, double exclusionDistance) {
-    vector < array<double, 2> > new_desiredRPhi { };
+    vector < array<double, 2> > new_desiredRPhi{ };
     double new_R = 0;
     double new_Phi = 0;
     for (auto phiR : desiredRPhi) {
@@ -64,8 +62,8 @@ inline vector<array<double, 2>> reComputeRPhi(
 }
 
 inline vector<algoRSA_aux::RadiusPhase> readRadii(string nameFile) {
-    vector<double> tabRadii_ { };
-    vector<PhaseType> tabPhases_ { };
+    vector<double> tabRadii_{ };
+    vector<PhaseType> tabPhases_{ };
     ifstream input(nameFile);
     string line;
     while (getline(input, line)) {
@@ -74,7 +72,7 @@ inline vector<algoRSA_aux::RadiusPhase> readRadii(string nameFile) {
         PhaseType phase;
         iss >> radius;
         tabRadii_.push_back(radius);
-        if (iss >> phase) { // the 2nd identifier phase is not mandatory
+        if (iss >> phase) {  // the 2nd identifier phase is not mandatory
             tabPhases_.push_back(phase);
         }
     }
@@ -112,7 +110,7 @@ template<unsigned short DIM>
 inline algoRSA_aux::RadiusGenerator<DIM>::RadiusGenerator(
     AmbiantSpace::BigShape<DIM>* bigShape_,
     vector<array<double, 2>> desiredRPhi_, vector<PhaseType> phases,
-    double exclusionDistance):
+    double exclusionDistance) :
     RadiusGenerator(bigShape_) {
     auto normalized_desiredRPhi = reComputeRPhi < DIM
     >(desiredRPhi_, exclusionDistance);
@@ -123,7 +121,7 @@ inline algoRSA_aux::RadiusGenerator<DIM>::RadiusGenerator(
 template<unsigned short DIM>
 inline algoRSA_aux::RadiusGenerator<DIM>::RadiusGenerator(
     AmbiantSpace::BigShape<DIM>* bigShape_, vector<double> tabRadii_,
-    vector<PhaseType> phases_, double exclusionDistance):
+    vector<PhaseType> phases_, double exclusionDistance) :
     RadiusGenerator(bigShape_, createTabRadiiPhase(tabRadii_, phases_),
         exclusionDistance) {}
 
@@ -171,10 +169,10 @@ inline void algoRSA_aux::RadiusGenerator<DIM>::setDesiredRPhi(
         });
     // find the final size of the vector tabRadii
     for (size_t i = 0; i < desiredRPhi.size(); i++) {
-        long numberOfSpheres = (desiredRPhi[i].volFrac * bigShape->volume()
-            / sphereTools::volumeSphere <DIM>(desiredRPhi[i].radius));
+        size_t numberOfSpheres = static_cast<size_t>((desiredRPhi[i].volFrac * bigShape->volume()
+            / sphereTools::volumeSphere <DIM>(desiredRPhi[i].radius)));
         tabRadii.reserve(tabRadii.size() + numberOfSpheres);
-        for (long j = 0; j != numberOfSpheres; j++) {
+        for (size_t j = 0; j != numberOfSpheres; j++) {
             tabRadii.push_back(
                 RadiusPhase(desiredRPhi[i].radius, desiredRPhi[i].phase));
         }
@@ -201,11 +199,10 @@ vector<array<double, 2>> algoRSA_aux::RadiusGenerator<DIM>::achievedRPhi() const
     double currentPhi = 0;
     for (size_t i = 0; i < indexRadius; i++) {
         if (abs((tabRadii[i]).radius - currentRadius)
-            < 0.00001 * currentRadius) { // consider it is the same radius
+            < 0.00001 * currentRadius) {  // consider it is the same radius
             currentPhi += sphereTools::volumeSphere < DIM
             >(currentRadius) / bigShape->volumeTore();
-        }
-        else {
+        } else {
             res.push_back(array<double, 2> { currentRadius, currentPhi });
             currentRadius = tabRadii[i];
             currentPhi = sphereTools::volumeSphere < DIM
@@ -238,6 +235,6 @@ vector<array<double, 2>> createRPhi_Bool(vector<array<double, 2>> desiredRPhi) {
     return desiredRPhi;
 }
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* RADIUSGENERATOR_IXX_ */
+

@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef PRESTRUCTURE_HXX_
-#define PRESTRUCTURE_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -22,10 +21,10 @@ private:
     static constexpr array<double, DIM> L_DEFAULT = create_array<DIM>(1.);
 public:
     //! constructor
-    InsideTorus(array<double, DIM> L):
+    InsideTorus(array<double, DIM> L) :
         tore{ AmbiantSpace::Tore<DIM>(L) } {}
     //! constructor
-    InsideTorus(): InsideTorus<DIM>(L_DEFAULT) {}
+    InsideTorus() : InsideTorus<DIM>(L_DEFAULT) {}
     //! destructor
     virtual ~InsideTorus() {}
 
@@ -42,6 +41,6 @@ public:
     AmbiantSpace::Tore<DIM> tore;
 };
 
-} // namespace merope
+}  // namespace merope
 
-#endif /* PRESTRUCTURE_HXX_ */
+

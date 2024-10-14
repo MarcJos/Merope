@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
 
-#ifndef MICROINCLUSION_IXX_
-#define MICROINCLUSION_IXX_
+#pragma once
 
 #include "../MeropeNamespace.hxx"
 
@@ -15,8 +14,14 @@ namespace merope {
 namespace smallShape {
 template<unsigned short DIM, class SOLID>
 Cuboid<DIM> createCuboid(const SOLID& solid) {
+    static_assert(is_same_v<vector<Point<DIM>>, SOLID>
+        or is_same_v<Sphere<DIM>, SOLID>
+        or is_same_v<Ellipse<DIM>, SOLID>
+        or is_same_v<SpheroPolyhedron<DIM>, SOLID>
+        or is_same_v<Cylinder<3>, SOLID>
+        );
     // set of points
-    if constexpr (std::is_same<vector<Point<DIM>>, SOLID>::value) {
+    if constexpr (is_same_v<vector<Point<DIM>>, SOLID>) {
         Point <DIM> x_min;
         x_min.fill({ 0.5 * numeric_limits<double>::max() });
         Point <DIM> x_max;
@@ -30,7 +35,7 @@ Cuboid<DIM> createCuboid(const SOLID& solid) {
         return Cuboid <DIM>(x_min, x_max);
     }
     // sphere
-    else if constexpr (std::is_same<Sphere<DIM>, SOLID>::value) {
+    else if constexpr (is_same_v<Sphere<DIM>, SOLID>) {
         Point <DIM> x_min;
         Point <DIM> x_max;
         const Point<DIM>& center = solid.center;
@@ -42,18 +47,46 @@ Cuboid<DIM> createCuboid(const SOLID& solid) {
         return Cuboid <DIM>(x_min, x_max);
     }
     // ellipse
-    else if constexpr (std::is_same<Ellipse<DIM>, SOLID>::value) {
+    else if constexpr (is_same_v<Ellipse<DIM>, SOLID>) {
         auto alphas = solid.getAlphas();
         return createCuboid<DIM>(Sphere<DIM>(solid.center, *(std::min_element(alphas.begin(), alphas.end())), 0));
     }
     // spheroPolyhedron
-    else if constexpr (std::is_same<SpheroPolyhedron<DIM>, SOLID>::value) {
-        return createCuboid<DIM>(solid.getVertices(), solid.minkowskiRadius());
+    else if constexpr (is_same_v<SpheroPolyhedron<DIM>, SOLID>) {
+        return createCuboid<DIM>(solid.getVertices(), solid.getMinkowskiRadius());
     }
-    // else
-    else {
-        cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("Unexpected");
+    // Cylinder
+    else if constexpr (is_same_v<Cylinder<3>, SOLID>) {
+        Point<DIM> normal = solid.axis[1] - solid.axis[0];
+        double  l = geomTools::renormalize<DIM>(normal);
+        size_t i = 0;
+        double val = 0.8;
+        Point<DIM> vec = create_array<DIM>(0.);
+        for (size_t j = 0; j < DIM; j++) {
+            if (abs(normal[j]) < val) {
+                i = j;
+                val = abs(normal[j]);
+            }
+        }
+        vec[i] = 1;
+        Point<DIM> e1 = geomTools::prodVec<DIM>(vec, normal);
+        geomTools::renormalize<DIM>(e1);
+        Point<DIM> e2 = geomTools::prodVec<DIM>(e1, normal);
+        geomTools::renormalize<DIM>(e2);
+        // cylinder parametrized by (normal, e1, e2)
+        Point <DIM> x_min;
+        Point <DIM> x_max;
+        const Point<DIM>& center = geomTools::get_center<DIM>(solid);
+        for (size_t i_ = 0; i_ < DIM; i_++) {
+            Point<DIM> vecteur_dir = create_array<DIM>(0.);
+            vecteur_dir[i_] = 1;
+            double ps1 = geomTools::prodScal<DIM>(vecteur_dir, e1);
+            double ps2 = geomTools::prodScal<DIM>(vecteur_dir, e2);
+            double norme_ps = sqrt(ps1 * ps1 + ps2 * ps2);
+            x_min[i_] = center[i_] - 0.5 * l * abs(normal[i_]) - solid.radius * norme_ps;
+            x_max[i_] = center[i_] + 0.5 * l * abs(normal[i_]) + solid.radius * norme_ps;
+        }
+        return Cuboid <DIM>(x_min, x_max);
     }
 }
 
@@ -133,12 +166,21 @@ inline void MicroInclusion_<DIM, SOLID>::linearTransform(
 }
 
 template<unsigned short DIM, class SOLID>
+inline void MicroInclusion_<DIM, SOLID>::enlarge(double layerWidth) {
+    solids[0] = geomTools::enlarge<DIM>(solids[0], layerWidth);
+    cuboid.enlarge(layerWidth);
+    for (size_t i = 1; i < layerIncrement.size(); i++) {
+        layerIncrement[i] += layerWidth;
+    }
+}
+
+template<unsigned short DIM, class SOLID>
 inline void MicroInclusion_<DIM, SOLID>::pushLayer(double layerWidth,
     PhaseType layerPhase_) {
     layerIncrement.push_back(layerWidth);
     layerPhases.insert(layerPhases.end() - 1, layerPhase_);
     auto newSolid = geomTools::trim<DIM>(solids[solids.size() - 1], layerWidth);
-    if constexpr (is_same<SOLID, Sphere<DIM>>::value or is_same<SOLID, Ellipse<DIM>>::value) {
+    if constexpr (is_same_v<SOLID, Sphere<DIM>> or is_same_v<SOLID, Ellipse<DIM>>) {
         newSolid.phase = layerPhase_;
     }
     solids.push_back(newSolid);
@@ -167,13 +209,13 @@ inline bool MicroInclusion_<DIM, SOLID>::isInside(const Point<DIM>& point,
 
 template<unsigned short DIM, class SOLID>
 inline MicroInclusion_<DIM, SOLID>::MicroInclusion_(const SOLID& solid) :
-    MicroInclusion_<DIM, SOLID>(solid.phase, createCuboid<DIM>(solid), solid.center, solid) {}
+    MicroInclusion_<DIM, SOLID>(solid.phase, createCuboid<DIM>(solid), geomTools::get_center<DIM>(solid), solid) {}
 
 template<unsigned short DIM, class SOLID>
 inline bool MicroInclusion_<DIM, SOLID>::guaranteeOutside(
     const Point<DIM>& vector_from_center_to_point,
     const double& halfDiagonal, const size_t& layerIndex) const {
-    if constexpr (is_same<SOLID, ConvexPolyhedron<DIM>>::value) {
+    if constexpr (is_same_v<SOLID, ConvexPolyhedron<DIM>>) {
         for (size_t i = 0; i < DIM; i++) {
             if (vector_from_center_to_point[i] + this->center[i] < this->cuboid.x_min[i] - halfDiagonal
                 or vector_from_center_to_point[i] + this->center[i] > this->cuboid.x_max[i] + halfDiagonal) {
@@ -195,7 +237,7 @@ inline const PhaseType& MicroInclusion_<DIM, SOLID>::getPhaseGraphical(size_t i)
 }
 
 
-} // namespace smallShape
-} // namespace merope
+}  // namespace smallShape
+}  // namespace merope
 
-#endif /* MICROINCLUSION_IXX_ */
+

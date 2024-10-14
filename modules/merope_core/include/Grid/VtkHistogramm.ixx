@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GRID_VTKHISTOGRAMM_IXX_
-#define GRID_VTKHISTOGRAMM_IXX_
+#pragma once
 
 #include "../MeropeNamespace.hxx"
 
@@ -11,8 +10,8 @@
 namespace merope {
 namespace vox {
 
-template<class PHASE_TYPE>
-inline bool TabPhaseCoeff<PHASE_TYPE>::verifyCoherent() const {
+template<class PHASE_TYPE, class COEFF_TYPE>
+bool TabPhaseCoeff<PHASE_TYPE, COEFF_TYPE>::verifyCoherent() const {
     PHASE_TYPE maxPhase = *max_element(this->phases.begin(), this->phases.end());
     bool isCoherent = maxPhase < this->coeff.size();
     if (not isCoherent) {
@@ -24,8 +23,8 @@ inline bool TabPhaseCoeff<PHASE_TYPE>::verifyCoherent() const {
     return isCoherent;
 }
 
-template<class PHASE_TYPE>
-void TabPhaseCoeff<PHASE_TYPE>::guaranteeIncreasingValues() {
+template<class PHASE_TYPE, class COEFF_TYPE>
+void TabPhaseCoeff<PHASE_TYPE, COEFF_TYPE>::guaranteeIncreasingValues() {
     bool needSorting = not std::is_sorted(coeff.begin(), coeff.end());
     if (not needSorting) {
         return;
@@ -51,8 +50,8 @@ void TabPhaseCoeff<PHASE_TYPE>::guaranteeIncreasingValues() {
     }
 }
 
-template<class PHASE_TYPE>
-void TabPhaseCoeff<PHASE_TYPE>::removeUnusedPhase() {
+template<class PHASE_TYPE, class COEFF_TYPE>
+void TabPhaseCoeff<PHASE_TYPE, COEFF_TYPE>::removeUnusedPhase() {
     assert(verifyCoherent());
     guaranteeIncreasingValues();
     ///////////////////////////////////
@@ -72,14 +71,14 @@ void TabPhaseCoeff<PHASE_TYPE>::removeUnusedPhase() {
             number_of_void_phases++;
         }
         phaseList[i] -= number_of_void_phases;
-    } // at the end, thePhase[phase] links phase with \tilde{phase}, which such that any \tilde{phase} is at least represented once in tabPhaseCoeff
+    }  // at the end, thePhase[phase] links phase with \tilde{phase}, which such that any \tilde{phase} is at least represented once in tabPhaseCoeff
     size_t number_of_phases = phaseList[phaseList.size() - 1] + 1;
     // set the new phase
     for (auto& onePhase : phases) {
         onePhase = phaseList[onePhase];
     }
     // set the new coefficient
-    vector<double> newCoeff(number_of_phases);
+    vector<COEFF_TYPE> newCoeff(number_of_phases);
     size_t index = 0;
     for (size_t i = 0; i < phaseList.size(); i++) {
         if (voxelPerPhases[i] > 0) {
@@ -90,8 +89,8 @@ void TabPhaseCoeff<PHASE_TYPE>::removeUnusedPhase() {
     coeff = newCoeff;
 }
 
-} // namespace vox
-} // namespace merope
+}  // namespace vox
+}  // namespace merope
 
 
-#endif /* GRID_VTKHISTOGRAMM_IXX_ */
+

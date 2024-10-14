@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief Implementations for class Voxel and MotherVoxel
+//! \briefImplementations for class Voxel and MotherVoxel
 //
-#ifndef VOXEL_IXX_
-#define VOXEL_IXX_
+#pragma once
 
 
 namespace sac_de_billes {
@@ -144,32 +143,32 @@ algoRSA_aux::MotherVoxel<DIM>::MotherVoxel(
         { }), spheresRelativePosition({ }), isClose2Boundary(false) {}
 
 template<unsigned short DIM>
-inline Sphere<DIM> algoRSA_aux::MotherVoxel<DIM>::getSphere(int i) const {
+inline Sphere<DIM> algoRSA_aux::MotherVoxel<DIM>::getSphere(auto i) const {
     return this->motherGrid->placedSpheres[spheresInside[i]];
 }
 
 template<unsigned short DIM>
 inline bool algoRSA_aux::MotherVoxel<DIM>::isItClose2Boundary(
     AmbiantSpace::BigShape<DIM>* bigShape) {
-    Point <DIM> p{ }; // this will be the coordinates of the surrounding cube
+    Point <DIM> p{ };  // this will be the coordinates of the surrounding cube
     bool answer = false;
     if constexpr (DIM == 3) {
-        loop(2, 2, 2,
+        loop<false>(2, 2, 2,
             [&](const array<size_t, 3u>& i) {
                 for (size_t j = 0; j < DIM; j++) {
                     p[j] = (this->discreteCoordinates[j] + 3 * i[j]
                         - 2 * (1 - i[j])) * this->length;
                 }
-                answer = answer or not (bigShape->isInside(p, 0)); // tests if the corner of the big cube is inside the shape
+                answer = answer or not (bigShape->isInside(p, 0));  // tests if the corner of the big cube is inside the shape
             });
     } else if constexpr (DIM == 2) {
-        loop(2, 2,
+        loop<false>(2, 2,
             [&](const array<size_t, 2u>& i) {
                 for (size_t j = 0; j < DIM; j++) {
                     p[j] = (this->discreteCoordinates[j] + 3 * i[j]
                         - 2 * (1 - i[j])) * this->length;
                 }
-                answer = answer or not (bigShape->isInside(p, 0)); // tests if the corner of the big cube is inside the shape
+                answer = answer or not (bigShape->isInside(p, 0));  // tests if the corner of the big cube is inside the shape
             });
     } else {
         throw invalid_argument(__PRETTY_FUNCTION__);
@@ -186,7 +185,7 @@ void algoRSA_aux::VoxelSubdivision<DIM>::initialize() {
     newVoxel.length = 0.5 * fatherVoxel->length;
     size_t compteur = 0;
     if constexpr (DIM == 3) {
-        loop<0, 2, 0, 2, 0, 2>(
+        loop<false, 0, 2, 0, 2, 0, 2>(
             [&](const array<long, 3u>& i) {
                 for (size_t j = 0; j < DIM; j++) {
                     newVoxel.discreteCoordinates[j] = 2
@@ -197,7 +196,7 @@ void algoRSA_aux::VoxelSubdivision<DIM>::initialize() {
                 compteur++;
             });
     } else if constexpr (DIM == 2) {
-        loop<0, 2, 0, 2>(
+        loop<false, 0, 2, 0, 2>(
             [&](const array<long, 2u>& i) {
                 for (size_t j = 0; j < DIM; j++) {
                     newVoxel.discreteCoordinates[j] = 2
@@ -234,7 +233,7 @@ bool algoRSA_aux::VoxelSubdivision<DIM>::isEmpty() {
 }
 
 template<unsigned short DIM>
-void algoRSA_aux::VoxelSubdivision<DIM>::setFalse(int j) {
+void algoRSA_aux::VoxelSubdivision<DIM>::setFalse(size_t j) {
     tabUnCovered[j] = false;
     NbUncoveredVoxels--;
 }
@@ -277,7 +276,7 @@ void algoRSA_aux::VoxelSubdivision<DIM>::fillNewVoxels(
 }
 
 template<unsigned short DIM>
-bool algoRSA_aux::VoxelSubdivision<DIM>::checkSphere(const int& j,
+bool algoRSA_aux::VoxelSubdivision<DIM>::checkSphere(size_t j,
     const Sphere<DIM>& sphere,
     const vector<array<short unsigned, DIM>>& pathForCorner) {
     if (tabUnCovered[j]) {
@@ -328,7 +327,7 @@ void algoRSA_aux::VoxelSubdivision<DIM>::testSubVoxels() {
 template<unsigned short DIM>
 template<unsigned short NUM_METHOD, unsigned short NB_NGHB>
 bool algoRSA_aux::VoxelSubdivision<DIM>::testSphere(const Sphere<DIM>& sphere,
-    const size_t j, const int relativePosition) {
+    const size_t j, const size_t relativePosition) {
     if constexpr (DIM == 3) {
         if constexpr (NUM_METHOD == 1) {
             return checkSphere(j, sphere,
@@ -341,13 +340,13 @@ bool algoRSA_aux::VoxelSubdivision<DIM>::testSphere(const Sphere<DIM>& sphere,
                 return (checkSphere(j, sphere, Path::get().pathForCorners[0]));
             }
         }
-    } else if constexpr (DIM == 2) { //\fixme not optimized for 2D.
+    } else if constexpr (DIM == 2) {  //\fixme not optimized for 2D.
         return checkSphere(j, sphere, path::TabCorner<DIM>::get().getTab());
     } else {
         throw invalid_argument(
             "VoxelSubdivision<DIM>::testSubVoxels. Incorrect DIM");
     }
 }
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* VOXEL_IXX_ */
+

@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef POINT_IXX_
-#define POINT_IXX_
+#pragma once
 
 namespace sac_de_billes {
 
@@ -28,7 +27,7 @@ ostream& operator<<(ostream& out, const Point<DIM>& p) {
     return print(&out, &p);
 }
 
-template<int DIM, size_t... I, class C>
+template<unsigned short DIM, size_t... I, class C>
 constexpr array<C, DIM> create_array(C x, std::index_sequence<I...>) {
     auto f = [&x](size_t) {return x;};
     return array<C, DIM> {(f(I))...};
@@ -49,6 +48,6 @@ inline Point<DIM> average(const vector<Point<DIM>>& vPoints) {
     return result;
 }
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* POINT_IXX_ */
+

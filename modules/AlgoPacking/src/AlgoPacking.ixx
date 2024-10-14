@@ -2,8 +2,7 @@
 //!
 //! \brief
 //!
-#ifndef ALGOPACKING_IXX_
-#define ALGOPACKING_IXX_
+#pragma once
 
 
 namespace sac_de_billes {
@@ -73,8 +72,7 @@ inline void AlgoPacking<DIM>::verifyExclusionDistance() {
     }
     if (not isSet_exclusionDistance) {
         isSet_exclusionDistance = true;
-    }
-    else {
+    } else {
         cerr << __PRETTY_FUNCTION__ << endl;
         throw runtime_error(
             "The exclusionDistance should be set only once AND before the boundaryExclusionDistance!");
@@ -85,8 +83,7 @@ template<unsigned short DIM>
 inline void AlgoPacking<DIM>::verifyRadiusGenerator() {
     if (not isSet_radiusGen and isSet_bigShape) {
         isSet_radiusGen = true;
-    }
-    else {
+    } else {
         cerr << __PRETTY_FUNCTION__ << endl;
         throw runtime_error(
             "The radiusGenerator should be set only once! It is not possible to set the radius generator before the geometry!");
@@ -97,8 +94,7 @@ template<unsigned short DIM>
 inline void AlgoPacking<DIM>::verifyBigShape() {
     if (not isSet_bigShape) {
         isSet_bigShape = true;
-    }
-    else {
+    } else {
         cerr << __PRETTY_FUNCTION__ << endl;
         throw runtime_error("The bigShape should be set only once!");
     }
@@ -201,12 +197,10 @@ inline map<string, string> AlgoPacking<DIM>::proceed(unsigned seed, unsigned met
     if (not this->isSet_radiusGen or not this->isSet_bigShape) {
         cerr << __PRETTY_FUNCTION__ << " 1 " << endl;
         throw runtime_error("The radiusGenerator or the bigShape is not set!");
-    }
-    else if (this->has_proceeded) {
+    } else if (this->has_proceeded) {
         cerr << __PRETTY_FUNCTION__ << " 2 " << endl;
         throw runtime_error("I can proceed only once!");
-    }
-    else {
+    } else {
         outputMessage = proceed_loc(seed, method);
         has_proceeded = true;
     }
@@ -226,7 +220,7 @@ inline void AlgoPacking<DIM>::printVolumeFraction() {
 
 template<unsigned short DIM, class T>
 inline void AlgoInterface<DIM, T>::setSpheres() {
-    auto corePlacedSpheres = *(algo->placedSpheres); // beware, they take into account the exclusionDistance
+    auto corePlacedSpheres = *(algo->placedSpheres);  // beware, they take into account the exclusionDistance
     double exclusionRadius = 0.5 * this->exclusionDistance;
 #pragma omp parallel for firstprivate(exclusionRadius)
     for (size_t i = 0; i < corePlacedSpheres.size(); i++) {
@@ -241,6 +235,6 @@ inline map<string, string> AlgoInterface<DIM, T>::proceed_loc(unsigned seed, uns
     return algo->proceed(method);
 }
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* ALGOPACKING_IXX_ */
+

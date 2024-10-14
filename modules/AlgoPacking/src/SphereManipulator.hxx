@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief For manipulating spheres placed in a torus. (Applying isometries on it.)
+//! \briefFor manipulating spheres placed in a torus. (Applying isometries on it.)
 //!
 
-#ifndef SPHEREMANIPULATOR_HXX_
-#define SPHEREMANIPULATOR_HXX_
+#pragma once
 
 #include "StdHeaders.hxx"
 
@@ -18,7 +17,7 @@ namespace sac_de_billes {
 using namespace std;
 
 template<unsigned DIM>
-class SphereManipulator : public SphereContainer<DIM> {
+class SphereManipulator final : public SphereContainer<DIM> {
 private:
     //! Global shape (only periodicity is relevant)
     unique_ptr<AmbiantSpace::Tore<DIM>> torus;
@@ -64,8 +63,8 @@ private:
     bool cornerWithinSphere(const Sphere<DIM>& sphere, double dist) const;
 };
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
 #include "SphereManipulator.ixx"
 
-#endif /* SPHEREMANIPULATOR_HXX_ */
+

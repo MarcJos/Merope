@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GRID_CONVEXGRID_HXX_
-#define GRID_CONVEXGRID_HXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 #include "../MeropeNamespace.hxx"
@@ -41,6 +40,11 @@ struct SliceInstruction {
         VoxelType voxelType;
         //! phase
         PhaseType phase;
+        //! print
+        void print(std::ostream& ost) {
+                ost << limits[0] << " : " << limits[1] << " ; "
+                        << static_cast<int>(voxelType) << " ; " << phase;
+        }
 };
 
 
@@ -110,56 +114,40 @@ inline long convertExtremitySegment(double extremitySegment, double drift, doubl
 //! \param x1x2 : 1st and 2nd coordinates of a line (in 3D)
 //! \param ij : 1st and 2nd coordinates of a line of voxels (in 3D)
 //! \param dx : dimensions of each voxel in the line
-//! \param currentLimits : on line (x,y)=x1x2, [k_min, k_max) *dx[DIM-1] inside the smallShape and (k_min-1) * dx[DIM-1] and kmax * dx[DIM-1] outside the shape
+//! \param currentLimits : on line (x,y)=x1x2, 
+//!                             (i) [k_min, k_max) *dx[DIM-1] inside the smallShape
+//!                             (ii) (k_min-1) * dx[DIM-1] and kmax * dx[DIM-1] outside the shape
+//!                             if distance > 0 (ii) is guaranteed
+//!                             if distance < 0 (i) is guaranteed
+//!                             WARNING : in general, (i) and (ii) are not simulatenously guaranteed
 //! \param gridLimits: stores the vector {{i, i+1}, {j,j+1}, {k_min, k_max}} that describes the intersection
 //! \param distance : distance to make the shape grow othogonally to its surface. (Negative = inside the shape, positive = outside the shape).
 template<unsigned short DIM, class C>
 bool getLimits(const C& smallShape, const Point<DIM>& center, const DiscPoint<DIM>& ij,
-        const array<double, DIM>& dx, array<long, 2>& currentLimits, const array<array<long, 2>, DIM>& gridLimits, double distance, VoxelType voxelType);
+        const array<double, DIM>& dx, array<long, 2>& currentLimits,
+        const array<array<long, 2>, DIM>& gridLimits, double distance, VoxelType voxelType);
 
 
-//! compute the intersection of a voxel line i = ij[0] and j = ij[1] (in 3D) with a Sphere
-//! \param newLimit : store the limits. The new limits should be inside the given limits
-//! \param sphere: sphere to interset
+//! compute the intersection of a voxel line i = ij[0] and j = ij[1] (in 3D) with a convex inclusion
+//! \param dbLocalLimits : store the limits. The new limits should be inside the given limits
+//! \param inclusion: inclusion to interset
 //! \param x1x2 : the line is directed in the 3rd canonical direction, and goes through {x1x2[0], x1x2[1], 0}
-//! \param distance : distance to make the shape grow othogonally to its surface. (Negative = inside the shape, positive = outside the shape).
-template<unsigned short DIM>
-geomTools::Intersection_LineConvex getLimitSphere(array<double, 2>& dbLocalLimits, const Sphere<DIM>& sphere,
+//! \param distance : distance to make the shape grow othogonally to its surface. 
+//! = 0 : guarantees the intersection of the line with the shape is exact
+//! < 0 : guarantees the computed line is inside the set of points inside the shape at a distance at least (param)distance of the shape
+//! > 0 : guarantees the intersection of the shape with the computed line contains the set of points of the line either inside the shape or outside it as a distance at most (param)distance of the shape
+template<unsigned short DIM, class Inclusion>
+geomTools::Intersection_LineConvex getLimits_innerFunction(array<double, 2>& dbLocalLimits, const Inclusion& inclusion,
         const Point<DIM - 1>& x1x2, double distance);
-//! compute the intersection of a voxel line i = ij[0] and j = ij[1] (in 3D) with an ellipse
-//! \param newLimit : store the limits. The new limits should be inside the given limits
-//! \param ellipse : ellipse to interset
-//! \param x1x2 : the line is directed in the 3rd canonical direction, and goes through {x1x2[0], x1x2[1], 0}
-//! \param distance : distance to make the shape grow othogonally to its surface. (Negative = inside the shape, positive = outside the shape).
-template<unsigned short DIM>
-geomTools::Intersection_LineConvex getLimitEllipse(array<double, 2>& dbLocalLimits, const Ellipse<DIM>& sphere,
-        const Point<DIM - 1>& x1x2, double distance);
-//! compute the intersection of a voxel line i = ij[0] and j = ij[1] (in 3D) with a family of polyhedrons
-//! \param newLimit : store the limits. The new limits should be inside the given limits
-//! \param polyhedron: polyhdedron to intersect
-//! \param center : center of the polyhedron
-//! \param x1x2 : the line is directed in the 3rd canonical direction, and goes through {x1x2[0], x1x2[1], 0}
-//! \param distance : distance to make the shape grow othogonally to its surface. (Negative = inside the shape, positive = outside the shape).
-template<unsigned short DIM>
-geomTools::Intersection_LineConvex getLimitPolyhedron(array<double, 2>& newLimits, const ConvexPolyhedron<DIM>& polyhedron,
-        const Point<DIM - 1>& x1x2, double distance);
-//! compute the intersection of a voxel line i = ij[0] and j = ij[1] (in 3D) with a family of polyhedrons
-//! \param newLimit : store the limits. The new limits should be inside the given limits
-//! \param spheroPolyhedron: polyhdedron to intersect
-//! \param center : center of the polyhedron
-//! \param x1x2 : the line is directed in the 3rd canonical direction, and goes through {x1x2[0], x1x2[1], 0}
-//! \param distance : distance to make the shape grow othogonally to its surface. (Negative = inside the shape, positive = outside the shape).
-template<unsigned short DIM>
-geomTools::Intersection_LineConvex getLimitSpheroPolyhedron(array<double, 2>& newLimits, const SpheroPolyhedron<DIM>& spheroPolyhedron,
-        const Point<DIM - 1>& x1x2, double distance);
+
 //! fixme
 void verifySliceInstruction(vector<vox::auxi::SliceInstruction<long>>);
-} // namespace auxi_convexGrid
+}  // namespace auxi_convexGrid
 
-} // namespace auxi
-} // namespace vox
-} // namespace merope
+}  // namespace auxi
+}  // namespace vox
+}  // namespace merope
 
 #include "../Grid/ConvexGrid.ixx"
 
-#endif /* GRID_CONVEXGRID_HXX_ */
+

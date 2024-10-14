@@ -1,6 +1,6 @@
 //! Copyright : see license.txt
 //!
-//! \brief 	RSA algorithm from
+//! \brief	RSA algorithm from
 //! 				A Simple Algorithm for Maximal Poisson-Disk Sampling in High Dimensions
 //! 				Mohamed S. Ebeida, Scott A. Mitchell, Anjul Patney, Andrew A. Davidson, and John D. Owens.
 //!					Has been adapted in order to tackle as well different sphere sizes and
@@ -8,8 +8,7 @@
 //!
 //! This class defines interfaces for the library
 
-#ifndef ALGOPACKING_HXX_
-#define ALGOPACKING_HXX_
+#pragma once
 
 #include "StdHeaders.hxx"
 
@@ -74,43 +73,43 @@ public:
                         0 }, isSet_exclusionDistance(false), isSet_bigShape(false), isSet_radiusGen(
                                 false), has_proceeded(false) {}
 
-        virtual ~AlgoPacking() {}
+                        virtual ~AlgoPacking() {}
 
-        //! INPUTS
-        //! \see AlgoRSA_gen::setRadiusGenerator
-        void setRadiusGenerator(vector<array<double, 2>> desiredRPhi_,
-                vector<PhaseType> tabPhases_) override;
-        void setRadiusGenerator(vector<array<double, 2>> desiredRPhi_) override;
-        //! \see AlgoRSA_gen::setRadiusGenerator
-        void setRadiusGenerator(vector<double> tabRadii_, vector<PhaseType> tabPhases_)
-                override;
-        void setRadiusGenerator(vector<double> tabRadii_) override;
-        //! \see AlgoRSA_gen::setRadiusGenerator
-        void setRadiusGenerator(string nameFile) override;
-        void setRadiusGenerator(const algoRSA_aux::RadiusGenerator<DIM>&);
-        //! \see AlgoRSA_gen::setExclusionDistance
-        void setExclusionDistance(double exclusionDistance_) override;
-        //! \see AlgoRSA_gen::setExclusionDistance
-        void setBoundaryExclusionDistance(double boundaryExclusionDistance_)
-                override;
-        //! \see AlgoRSA_gen::setBigShape
-        void setBigShape(vector<double> L_, string nameShape_) override;
-        void setBigShape(vector<double> L_, AmbiantSpace::NameShape nameShape_);
-        void setBigShape(Point<DIM> L_, AmbiantSpace::NameShape nameShape_);
+                        //! INPUTS
+                        //! \see AlgoRSA_gen::setRadiusGenerator
+                        void setRadiusGenerator(vector<array<double, 2>> desiredRPhi_,
+                                vector<PhaseType> tabPhases_) override;
+                        void setRadiusGenerator(vector<array<double, 2>> desiredRPhi_) override;
+                        //! \see AlgoRSA_gen::setRadiusGenerator
+                        void setRadiusGenerator(vector<double> tabRadii_, vector<PhaseType> tabPhases_)
+                                override;
+                        void setRadiusGenerator(vector<double> tabRadii_) override;
+                        //! \see AlgoRSA_gen::setRadiusGenerator
+                        void setRadiusGenerator(string nameFile) override;
+                        void setRadiusGenerator(const algoRSA_aux::RadiusGenerator<DIM>&);
+                        //! \see AlgoRSA_gen::setExclusionDistance
+                        void setExclusionDistance(double exclusionDistance_) override;
+                        //! \see AlgoRSA_gen::setExclusionDistance
+                        void setBoundaryExclusionDistance(double boundaryExclusionDistance_)
+                                override;
+                        //! \see AlgoRSA_gen::setBigShape
+                        void setBigShape(vector<double> L_, string nameShape_) override;
+                        void setBigShape(vector<double> L_, AmbiantSpace::NameShape nameShape_);
+                        void setBigShape(Point<DIM> L_, AmbiantSpace::NameShape nameShape_);
 
-        //! OUTPUTS
-        //! \see AlgoRSA_gen::verifySphere
-        bool verifySphere() const override;
-        //! returns the dimension of the box
-        Point<DIM> getLength() const override;
-        //! \return volume fraction
-        double volumeFraction() const;
-        //! \see AlgoPacking_gen::proceed
-        map<string, string> proceed(unsigned seed, unsigned method) override;
-        //! puts the output of the algorithm inside the sphere collection theSpheres
-        virtual void setSpheres() = 0;
-        //! get the type of the algorithm
-        virtual algoSpheres::TypeAlgo getTypeAlgo() const = 0;
+                        //! OUTPUTS
+                        //! \see AlgoRSA_gen::verifySphere
+                        bool verifySphere() const override;
+                        //! returns the dimension of the box
+                        Point<DIM> getLength() const override;
+                        //! \return volume fraction
+                        double volumeFraction() const;
+                        //! \see AlgoPacking_gen::proceed
+                        map<string, string> proceed(unsigned seed, unsigned method) override;
+                        //! puts the output of the algorithm inside the sphere collection theSpheres
+                        virtual void setSpheres() = 0;
+                        //! get the type of the algorithm
+                        virtual algoSpheres::TypeAlgo getTypeAlgo() const = 0;
 
 protected:
         //! exclusion distance between spheres
@@ -142,7 +141,7 @@ protected:
         virtual map<string, string> proceed_loc(unsigned seed, unsigned method) = 0;
 };
 
-template<unsigned short DIM, class T> // T the type of algo used
+template<unsigned short DIM, class T>  // T the type of algo used
 class AlgoInterface : public AlgoPacking<DIM> {
 public:
         AlgoInterface() :
@@ -165,7 +164,7 @@ private:
 template<unsigned short DIM>
 using AlgoRSA = AlgoInterface<DIM, algoRSA_aux::AlgoRSA_Template<DIM>>;
 
-class AlgoRSA2D : public AlgoRSA<2> {
+class AlgoRSA2D final : public AlgoRSA<2> {
 public:
         //! \param desiredRPhi_ : an array containing in 1st position the radii of the spheres, in 2nd position the desired volume fraction of them.
         //! \param exclusionDistance_ : exclusion distance between spheres
@@ -176,7 +175,7 @@ public:
                 string nameShape_ = "Tore");
 };
 
-class AlgoRSA3D : public AlgoRSA<3> {
+class AlgoRSA3D final : public AlgoRSA<3> {
 public:
         //! \param desiredRPhi_ : an array containing in 1st position the radii of the spheres, in 2nd position the desired volume fraction of them.
         //! \param exclusionDistance_ : exclusion distance between spheres
@@ -194,8 +193,8 @@ public:
 };
 
 double fractionVolThMaxRSA(short unsigned d);
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
 #include "AlgoPacking.ixx"
 
-#endif /* ALGOPACKING_HXX_ */
+

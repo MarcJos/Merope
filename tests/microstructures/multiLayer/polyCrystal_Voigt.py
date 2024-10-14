@@ -35,10 +35,15 @@ mIncl.addLayer(range(10,30), 3, 0.15)
 print(time.time() - tic0)
 tic0 = time.time()
 
-grid = merope.Voxellation_3D(mIncl)
-grid.setVoxelRule(merope.VoxelRule.Average)
-grid.setHomogRule(merope.HomogenizationRule.Voigt)
-grid.proceed(nVox)
-grid.printFile("Zone_Voigt.vtk","Coeffs_Voigt.txt")
+
+structure = merope.Structure_3D(mIncl)
+
+gridParameters = merope.vox.create_grid_parameters_N_L_3D(nVox, L)
+grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Average)
+coeffs = [i for i in structure.getAllPhases()]
+grid.apply_homogRule(merope.HomogenizationRule.Voigt, coeffs)
+
+my_printer = merope.vox.vtk_printer_3D()
+my_printer.printVTK_segmented(grid, "Zone_Voigt.vtk","Coeffs_Voigt.txt")
 
 print(time.time() - tic0)

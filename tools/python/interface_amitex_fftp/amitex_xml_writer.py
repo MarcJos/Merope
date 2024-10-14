@@ -145,7 +145,7 @@ class Algo_diffusion:
             fic.write('''<Algorithm_Parameters>''' + "\n" + "\n")
             ###
             fic.write('''<Algorithm Type="Basic_Scheme">                     <!-- "Default" (Basic_Scheme) ou "Basic_Scheme" -->''' + "\n")
-            fic.write('''<Convergence_Criterion Value="''' + str(convergence_criterion_value) + '''"/>        <!-- "Default" (1e-4) ou valeur réelle positive <1e-3 -->''' + "\n")
+            fic.write('''<Convergence_Criterion Value="''' + str(convergence_criterion_value) + '''"/>        <!-- "Default" (1e-4) ou valeur reelle positive <1e-3 -->''' + "\n")
             fic.write('''<Convergence_Acceleration Value="True"/>        <!-- "True" ou "False" -->''' + "\n")
             fic.write('''<Nitermax Value="3000"/> <!-- Default is 1000 -->''' + "\n")
             fic.write('''</Algorithm>''' + "\n" + "\n")
