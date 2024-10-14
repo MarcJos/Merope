@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef TESTMESH_HXX_
-#define TESTMESH_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -30,10 +29,12 @@ void test4();
 //! meshes a microstructure made of Laguerre cells (buggy at the beginning)
 //! test for the special functions    setAdimMergeDistance0 // setAdimMergeDistance1(1.e-2);
 void test5();
+//! meshes a microstructure made of spherical inclusions with holes inside
+void test6();
 
-} // namespace testMesh
-} // namespace merope
+}  // namespace testMesh
+}  // namespace merope
 
 
 
-#endif /* TESTMESH_HXX_ */
+

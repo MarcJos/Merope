@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef ALGOPACKING_SRC_GEOMETRY_BASICGEOMETRICOPERATIONS_IXX_
-#define ALGOPACKING_SRC_GEOMETRY_BASICGEOMETRICOPERATIONS_IXX_
+#pragma once
 
 #include "../Geometry/Point.hxx"
 #include "BasicGeometricOperations.hxx"
@@ -87,12 +86,12 @@ inline Point<DIM> geomTools::odot(const C1& v1, const C2& v2) {
     return result;
 }
 
-template<unsigned short DIM, class T, typename std::enable_if<is_Point<T, DIM>, bool>::type>
+template<unsigned short DIM, class T, typename std::enable_if_t<is_Point<T, DIM>, bool>>
 inline double geomTools::normeCarre(const T& vec) {
     return prodScal <DIM>(vec, vec);
 }
 
-template<unsigned short DIM, class T, typename std::enable_if<is_Point<T, DIM>, bool>::type>
+template<unsigned short DIM, class T, typename std::enable_if_t<is_Point<T, DIM>, bool>>
 inline double geomTools::norme(const T& vec) {
     if constexpr (DIM == 1) {
         return abs(vec[0]);
@@ -101,11 +100,11 @@ inline double geomTools::norme(const T& vec) {
     } else if constexpr (DIM == 3) {
         return hypot(vec[0], vec[1], vec[2]);
     } else {
-	return sqrt(normeCarre<DIM>(vec));
+        return sqrt(normeCarre<DIM>(vec));
     }
 }
 
-template<unsigned short DIM, class T, typename std::enable_if<is_Point<T, DIM>, bool>::type>
+template<unsigned short DIM, class T, typename std::enable_if_t<is_Point<T, DIM>, bool>>
 inline double geomTools::distanceCarre(const T& v1, const T& v2) {
     double res = 0.;
     for (size_t i = 0; i < DIM; i++) {
@@ -114,7 +113,7 @@ inline double geomTools::distanceCarre(const T& v1, const T& v2) {
     return res;
 }
 
-template<unsigned short DIM, class T, typename std::enable_if<is_Point<T, DIM>, bool>::type>
+template<unsigned short DIM, class T, typename std::enable_if_t<is_Point<T, DIM>, bool>>
 inline bool geomTools::areEqual(const T& v1, const T& v2, double epsilon) {
     return distanceCarre<DIM>(v1, v2) <= epsilon * (std::numeric_limits<double>::epsilon()
         + geomTools::normeCarre<DIM>(v1) + geomTools::normeCarre<DIM>(v2));
@@ -129,6 +128,6 @@ inline double geomTools::renormalize(Point<DIM>& v) {
     return norm;
 }
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* ALGOPACKING_SRC_GEOMETRY_BASICGEOMETRICOPERATIONS_IXX_ */
+

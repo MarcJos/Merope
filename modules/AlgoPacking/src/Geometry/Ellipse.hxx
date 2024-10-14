@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief Class for defining ellipses
+//! \briefClass for defining ellipses
 //
-#ifndef ELLIPSE_HXX_
-#define ELLIPSE_HXX_
+#pragma once
 
 #include "../StdHeaders.hxx"
 
@@ -20,7 +19,7 @@ public:
     //! constructor
     Ellipse();
     //! constructor
-    Ellipse(const Sphere<DIM> sphere);
+    explicit Ellipse(const Sphere<DIM> sphere);
     //! constructor
     Ellipse(const Point<DIM>& center_, const array<Point<DIM>, DIM>& axes_);
     //! computes the volume of an ellipse
@@ -35,6 +34,7 @@ public:
 private:
     //! compute the quantities alphas
     void compute_alphas();
+
 public:
     //! phase
     PhaseType phase;
@@ -42,6 +42,7 @@ public:
     Point<DIM> center;
     //! normed axes of the ellipse, a_i
     array<Point<DIM>, DIM> axes;
+
 private:
     //! return 1/\alpha_i = |a_i|^2
     array<double, DIM> alphas;
@@ -63,9 +64,9 @@ double angleOnEllipse(const Ellipse<2>& ellipse, Point<2> pointOnEllipse);
 //! @param ellipse : ellipse
 //! @param theta : angle of the angular portion, starting from the first axis
 double computeAngularArea(const Ellipse<2>& ellipse, double theta);
-} // namespace  ellipseAux
+}  // namespace  ellipseAux
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
 #include "../Geometry/Ellipse.ixx"
-#endif /* ELLIPSE_HXX_ */
+

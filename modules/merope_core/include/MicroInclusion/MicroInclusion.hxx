@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief MicroInclusions
+//! \briefMicroInclusions
 //
 //
-#ifndef MICROINCLUSION_HXX_
-#define MICROINCLUSION_HXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 
@@ -36,10 +35,12 @@ template <unsigned short DIM, class SOLID>
 class MicroInclusion_ {
     //! MicroInclusion as a subset of the space. Is inside a cuboid (for voxellisation)
 public:
-    MicroInclusion_(Identifier i, Cuboid<DIM> cuboid_, Point<DIM> center_, SOLID solid): identifier{ i }, center(center_), cuboid{ cuboid_ }, layerPhases({ i }), layerIncrement({ 0 }), solids({ solid }) {}
+    MicroInclusion_(Identifier i, Cuboid<DIM> cuboid_, Point<DIM> center_, SOLID solid) : identifier{ i }, center(center_), cuboid{ cuboid_ }, layerPhases({ i }), layerIncrement({ 0 }), solids({ solid }) {}
     MicroInclusion_(const SOLID& solid);
     //! The space is dilated through (x_1,x_2,x_3) -> (lambda_1 x_1, lambda_2 x_2, lambda_3 x_3)
     void linearTransform(const Point<DIM>& linTransform);
+    //! enlarge an inclusion
+    void enlarge(double layerWidth);
     //! insert a new layer
     //! \param layerWidth : width of the new layer
     //! \param layerPhase : phase of the new layer
@@ -117,14 +118,33 @@ using SphereInc = MicroInclusion_<DIM, sac_de_billes::Sphere<DIM>>;
 template <unsigned short DIM>
 using EllipseInc = MicroInclusion_<DIM, sac_de_billes::Ellipse<DIM>>;
 
+template<unsigned short DIM, typename = std::enable_if_t<DIM == 3>>
+using CylinderInc = MicroInclusion_<DIM, sac_de_billes::Cylinder<DIM>>;
+
 template <unsigned short DIM>
 using ConvexPolyhedronInc = MicroInclusion_<DIM, ConvexPolyhedron<DIM>>;
 
 template <unsigned short DIM>
 using SpheroPolyhedronInc = MicroInclusion_<DIM, SpheroPolyhedron<DIM>>;
 
+template<unsigned short DIM, class Inclusion_Type>
+constexpr bool IsInc =
+std::is_same_v<Inclusion_Type, SphereInc<DIM>>
+or std::is_same_v<Inclusion_Type, EllipseInc<DIM>>
+or ((DIM == 3) and std::is_same_v<Inclusion_Type, CylinderInc<3>>)
+or std::is_same_v<Inclusion_Type, ConvexPolyhedronInc<DIM>>
+or std::is_same_v<Inclusion_Type, SpheroPolyhedronInc<DIM>>;
+
+template<unsigned short DIM, class Inclusion_Type_Inner>
+constexpr bool IsInc_Inner =
+std::is_same_v<Inclusion_Type_Inner, sac_de_billes::Sphere<DIM>>
+or std::is_same_v<Inclusion_Type_Inner, sac_de_billes::Ellipse<DIM>>
+or ((DIM == 3) and std::is_same_v<Inclusion_Type_Inner, sac_de_billes::Cylinder<3>>)
+or std::is_same_v<Inclusion_Type_Inner, ConvexPolyhedron<DIM>>
+or std::is_same_v<Inclusion_Type_Inner, SpheroPolyhedron<DIM>>;
+
 template <unsigned short DIM>
-class Rectangle final: public ConvexPolyhedronInc<DIM> {
+class Rectangle final : public ConvexPolyhedronInc<DIM> {
     // a cuboid MicroInclusion
 public:
     Rectangle(Identifier i, Point<DIM> xmin, Point<DIM> xmax);
@@ -133,12 +153,12 @@ public:
 namespace auxi_MicroInclusions {
 //! return the layerPhase index given a phaseIndex
 size_t getIndexPhaseGraphical(size_t phaseIndex, size_t nbOfLayers);
-} // namespace auxi_MicroInclusions
+}  // namespace auxi_MicroInclusions
 
 //! Standard type to add a layer
 struct LayerInstructions {
     //! constructor
-    LayerInstructions(Identifier identifier_, PhaseType phase_, double width_): identifier{ identifier_ }, phase{ phase_ }, width{ width_ } {};
+    LayerInstructions(Identifier identifier_, PhaseType phase_, double width_) : identifier{ identifier_ }, phase{ phase_ }, width{ width_ } {};
     //! identifier of the inclusion particle
     Identifier identifier;
     //! phase to be added
@@ -162,7 +182,6 @@ struct PolyhedronFactory {
     //! \param phase : phase of the polyhedron
     //! \param vertices : vertices, in absolute coordinates
     //! \param face_indices : array containing, for each face, the indices of the vertices contained in it
-    //! \param minkowskiRadius : additional parameter for enlarging the polyhedron (due to coupling with rockable)
     ConvexPolyhedronInc<DIM> fromVertices(Identifier phase, const vector<Point<DIM>>& vertices, const vector<vector<long>>& face_indices);
 };
 
@@ -183,11 +202,11 @@ namespace auxi_layerInstructions {
 //! build a vector of layerInstruction
 vector<LayerInstructions> buildInstructionVector(vector<Identifier> identifier, vector<PhaseType> phase, vector<double> width = {});
 
-} // namespace auxi_layerInstructions
+}  // namespace auxi_layerInstructions
 
-} // namespace smallShape
-} // namespace merope
+}  // namespace smallShape
+}  // namespace merope
 
 #include "../MicroInclusion/MicroInclusion.ixx"
 
-#endif /* MICROINCLUSION_HXX_ */
+

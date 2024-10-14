@@ -58,5 +58,5 @@ See [post_processing.py](tools/python/interface_amitex_fftp/post_processing.py).
 
 ## Computation of the thermal conductivity
 
-See [Thermal_amitex.py](tests/didacticExamples/buildVoxellation/Thermal_amitex.py).  
+See [Thermal_amitex.py](tests/microstructures/buildVoxellation/Thermal_amitex.py).  
 

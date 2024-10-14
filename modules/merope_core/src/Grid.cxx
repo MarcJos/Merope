@@ -1,13 +1,12 @@
 //! Copyright : see license.txt
 //!
-//! \brief Grid discretisation of a medium
+//! \briefGrid discretisation of a medium
 //!
 
 
 #include "../../AlgoPacking/src/StdHeaders.hxx"
 
 #include "Grid/Grid.hxx"
-#include "Parallelism/OpenmpWrapper.hxx"
 #include "VTKinout/TIFFRead.hxx"
 #include "VTKinout/VTKRead.hxx"
 #include "VTKinout/VTKStream.hxx"
@@ -42,12 +41,12 @@ void Grid::oneMat() {
     phases.resize(1);
     phases[0].resize(ng);
 #pragma omp parallel
-    { // begin parallel section
+    {  // begin parallel section
 #pragma omp for schedule(static)
         for (size_t i = 0; i < ng; ++i) {
             phases[0][i] = i;
         }
-    } // end parallel section
+    }  // end parallel section
 }
 
 Grid::Grid(const double lx_i, const size_t nx_i) :
@@ -116,7 +115,8 @@ Grid::Grid(TIFFRead& tf, const double dx) {
             tf.read(&c, 1);
             if (c)
                 phases[1].push_back(ny - 1 - j + i * ny);
-            else phases[0].push_back(ny - 1 - j + i * ny);
+            else
+                phases[0].push_back(ny - 1 - j + i * ny);
         }
     }
 }
@@ -174,19 +174,6 @@ void Grid::vtkReorderMaterialIdx(unsigned short* const ids) const {
     }
 }
 
-void Grid::VTKheaderCELL(VTKstream& fvtk) const {
-    switch (d) {
-    case 1:
-        throw runtime_error("Not programmed");
-        break;
-    case 2:
-        VTKheaderCELL_T<2>(fvtk);
-        break;
-    case 3:
-        VTKheaderCELL_T<3>(fvtk);
-    }
-}
-
 void Grid::toVTKCELL(VTKstream& fvtk) const {
     switch (d) {
     case 1:
@@ -200,8 +187,8 @@ void Grid::toVTKCELL(VTKstream& fvtk) const {
     }
 }
 
-unsigned short Grid::getNbOfPhases() const {
-    return (unsigned short)phases.size();
+size_t Grid::getNbOfPhases() const {
+    return phases.size();
 }
 
 const std::vector<NodesList>& Grid::getPhases() const {
@@ -250,7 +237,7 @@ unsigned Grid::Go2VTKo(const size_t Ig) const {
 
 void Grid::covX(const unsigned short a, const unsigned short b,
     ostream& fout) const {
-    vector<double> var(nx / 2 + 1, 0); // Covariance function
+    vector<double> var(nx / 2 + 1, 0);  // Covariance function
 
     // Geometry reconstruction
     vector<unsigned short> ids(ng);
@@ -266,7 +253,7 @@ void Grid::covX(const unsigned short a, const unsigned short b,
             for (size_t j = 0; j < ny; ++j, cj += nz) {
                 double sum = 0;
 #pragma omp parallel
-                { // begin parallel section
+                {  // begin parallel section
 #pragma omp for schedule(static) reduction(+: sum)
                     for (size_t i = 0; i < nx; ++i) {
                         size_t i2 = i + h;
@@ -274,7 +261,7 @@ void Grid::covX(const unsigned short a, const unsigned short b,
                         sum += (a == ids[cj + nyz * i])
                             * (b == ids[cj + nyz * i2]);
                     }
-                } // end parallel section
+                }  // end parallel section
                 *vi += sum;
             }
         }
@@ -292,7 +279,7 @@ void Grid::covX(const unsigned short a, const unsigned short b,
 
 void Grid::covY(const unsigned short a, const unsigned short b,
     ostream& fout) const {
-    vector<double> var(ny / 2 + 1, 0); // Covariance function
+    vector<double> var(ny / 2 + 1, 0);  // Covariance function
 
     // Geometry reconstruction
     vector<unsigned short> ids(ng);
@@ -314,12 +301,12 @@ void Grid::covY(const unsigned short a, const unsigned short b,
                 }
                 double sum = 0;
 #pragma omp parallel
-                { // begin parallel section
+                {  // begin parallel section
 #pragma omp for schedule(static) reduction(+: sum)
                     for (size_t i = 0; i < nx; ++i) {
                         sum += (a == ids[cj1 + i * nyz])
                             * (b == ids[cj2 + i * nyz]);
-                    } // end parallel section
+                    }  // end parallel section
                 }
                 *vi += sum;
             }
@@ -338,7 +325,7 @@ void Grid::covY(const unsigned short a, const unsigned short b,
 
 void Grid::covZ(const unsigned short a, const unsigned short b,
     ostream& fout) const {
-    vector<double> var(nz / 2 + 1, 0); // Covariance function
+    vector<double> var(nz / 2 + 1, 0);  // Covariance function
 
     // Geometry reconstruction
     vector<unsigned short> ids(ng);
@@ -356,13 +343,13 @@ void Grid::covZ(const unsigned short a, const unsigned short b,
             for (size_t j = 0; j < ny; ++j, cj1 += nz, cj2 += nz) {
                 double sum = 0;
 #pragma omp parallel
-                { // begin parallel section
+                {  // begin parallel section
 #pragma omp for schedule(static) reduction(+: sum)
                     for (size_t i = 0; i < nx; ++i) {
                         sum += (a == ids[cj1 + i * nyz])
                             * (b == ids[cj2 + i * nyz]);
                     }
-                } // end parallel section
+                }  // end parallel section
                 *vi += sum;
             }
         }
@@ -384,9 +371,9 @@ void Grid::varioX(const CastemReal* const v, ostream& fout) const {
     for (size_t h = 1; h <= nx / 2; ++h) {
         double sum = 0;
         size_t NT = 0;
-#pragma omp parallel default(shared) reduction(+:sum,NT)
+#pragma omp parallel default(shared) reduction(+:sum, NT)
         {
-#pragma omp for collapse(2) schedule(static) 
+#pragma omp for collapse(2) schedule(static)
             for (size_t jk = 0; jk < nyz; jk++) {
                 for (size_t i = 0; i < nx; ++i) {
                     size_t i2 = i + h;
@@ -413,8 +400,8 @@ void Grid::varioY(const CastemReal* const v, ostream& fout) const {
         double sum = 0;
         size_t NT = 0;
 #pragma omp parallel
-        { // begin parallel section
-#pragma omp for schedule(static) reduction(+: sum,NT)
+        {  // begin parallel section
+#pragma omp for schedule(static) reduction(+: sum, NT)
             for (size_t k = 0; k < nz; ++k) {
                 for (size_t j = 0, j2 = h; j < ny; ++j, ++j2) {
                     if (j2 >= ny) {
@@ -431,7 +418,7 @@ void Grid::varioY(const CastemReal* const v, ostream& fout) const {
                     }
                 }
             }
-        } // end parallel section
+        }  // end parallel section
         fout << h * dy << " " << sum / (2 * NT) << endl;
     }
 }
@@ -444,8 +431,8 @@ void Grid::varioZ(const CastemReal* const v, ostream& fout) const {
         double sum = 0;
         size_t NT = 0;
 #pragma omp parallel
-        { // begin parallel section
-#pragma omp for schedule(static) reduction(+: sum,NT)
+        {  // begin parallel section
+#pragma omp for schedule(static) reduction(+: sum, NT)
             for (size_t k = 0; k < nz; ++k) {
                 size_t k2 = k + h;
                 if (k2 >= nz) k2 -= nz;
@@ -459,9 +446,9 @@ void Grid::varioZ(const CastemReal* const v, ostream& fout) const {
                     }
                 }
             }
-        } // end parallel section
+        }  // end parallel section
         fout << h * dz << " " << sum / (2 * NT) << endl;
     }
 }
 
-} // namespace merope
+}  // namespace merope

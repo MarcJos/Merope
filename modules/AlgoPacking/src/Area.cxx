@@ -2,9 +2,6 @@
 //!
 //! \brief
 
-#ifndef ALGOPACKING_AREA_CXX
-#define ALGOPACKING_AREA_CXX
-
 #include "Geometry/Area.hxx"
 #include "Geometry/BasicGeometricOperations.hxx"
 
@@ -19,4 +16,3 @@ double sac_de_billes::geomTools::area::polygon(vector<Point<2>> vertices) {
 }
 
 
-#endif // ALGOPACKING_AREA_CXX

@@ -2,8 +2,7 @@
 //!
 //! \brief
 //
-#ifndef RANDOMSHOOTER_IXX_
-#define RANDOMSHOOTER_IXX_
+#pragma once
 
 namespace sac_de_billes {
 using namespace std;
@@ -12,8 +11,9 @@ namespace randomShooter {
 
 template<unsigned short DIM>
 inline Point<DIM> pickInCuboid(mt19937& randGenerator,
-    uniform_real_distribution<>& randomReal,
     const Point<DIM>& length) {
+    static uniform_real_distribution<> randomReal(0., 1.);
+    //
     Point <DIM> point{};
     for (size_t i = 0; i < DIM; i++) {
         point[i] = randomReal(randGenerator) * length[i];
@@ -22,12 +22,12 @@ inline Point<DIM> pickInCuboid(mt19937& randGenerator,
 }
 
 template<unsigned short DIM>
-inline Point<DIM> pickOnSphere(mt19937& randGenerator,
-    uniform_real_distribution<>& randomReal) {
+inline Point<DIM> pickOnSphere(mt19937& randGenerator) {
+    //
     Point<DIM> length = create_array<DIM>(1.);
     Point<DIM> point{};
     while (true) {    // only accepts point to be inside the sphere
-        point = pickInCuboid<DIM>(randGenerator, randomReal, length);
+        point = pickInCuboid<DIM>(randGenerator, length);
         for (auto& coord : point) {
             coord -= 0.5;
         }
@@ -38,7 +38,7 @@ inline Point<DIM> pickOnSphere(mt19937& randGenerator,
     geomTools::renormalize<DIM>(point);
     return point;
 }
-} // namespace randomShooter
-} // namespace sac_de_billes
+}  // namespace randomShooter
+}  // namespace sac_de_billes
 
-#endif /* RANDOMSHOOTER_IXX_ */
+

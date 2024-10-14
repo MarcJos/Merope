@@ -8,7 +8,7 @@ using namespace std;
 
 template<unsigned DIM>
 inline SphereManipulator<DIM>::SphereManipulator(
-    vector<Sphere<DIM> > theSpheres_, Point<DIM> length):
+    vector<Sphere<DIM> > theSpheres_, Point<DIM> length) :
     originalSpheres(theSpheres_), vector_of_translation{
     Point<DIM> { } } {
     this->theSpheres = theSpheres_;
@@ -18,7 +18,7 @@ inline SphereManipulator<DIM>::SphereManipulator(
 template<unsigned DIM>
 template<class T>
 inline SphereManipulator<DIM>::SphereManipulator(
-    const AlgoInterface<DIM, T>& myAlgo):
+    const AlgoInterface<DIM, T>& myAlgo) :
     SphereManipulator<DIM>(myAlgo.getSpheres(), myAlgo.getLength()) {}
 
 template<unsigned DIM>
@@ -72,7 +72,7 @@ inline double SphereManipulator<DIM>::distanceToFaceS(
     double dist = numeric_limits<double>::max();
     for (size_t i = 0; i < DIM; i++) {
         dist = min(dist, sphere.center[i]);						// lower face
-        dist = min(dist, abs(torus.get()->L[i] - sphere.center[i])); // upper face
+        dist = min(dist, abs(torus.get()->L[i] - sphere.center[i]));  // upper face
     }
     return dist;
 }
@@ -81,7 +81,7 @@ template<unsigned DIM>
 inline double SphereManipulator<DIM>::distanceToEdgeS(
     const Sphere<DIM>& sphere) const {
     double dist = numeric_limits<double>::max();			// result
-    Point < 2 > pt_loc; // 2D representation of the vector from edge to the center
+    Point < 2 > pt_loc;  // 2D representation of the vector from edge to the center
     double distance_loc;			// desired distance
     for (size_t i = 0; i < DIM; i++) {					// choose the 1st face
         for (size_t j = i + 1; j < DIM; j++) {			// choose the 2nd face
@@ -105,8 +105,8 @@ inline double SphereManipulator<DIM>::distanceToEdgeS(
 template<unsigned DIM>
 inline double SphereManipulator<DIM>::random_search(size_t nb_tries) {
     upper_bound_on_best_distmin();
-    Point<DIM> vector_translate { };
-    Point<DIM> best_vector { };
+    Point<DIM> vector_translate{ };
+    Point<DIM> best_vector{ };
     double distance = 0;
     double distmin = 0;
     for (size_t i = 0; i < nb_tries; i++) {
@@ -132,28 +132,28 @@ inline double SphereManipulator<DIM>::random_search(size_t nb_tries) {
 
 template<unsigned DIM>
 inline double SphereManipulator<DIM>::upper_bound_on_best_distmin() {
-    Point<DIM> best_vector; // candidate best_vector
+    Point<DIM> best_vector;  // candidate best_vector
     double distance_to_faces = numeric_limits<double>::max();
     for (size_t coord = 0; coord < DIM; coord++) {
-        vector<double> table_extrema { };
-        vector<double> table_steps { };
-        vector < size_t > table_indices { };
+        vector<double> table_extrema{ };
+        vector<double> table_steps{ };
+        vector < size_t > table_indices{ };
         for (size_t i = 0; i < this->theSpheres.size(); i++) {
             auto sphere = this->theSpheres[i];
-            table_extrema.push_back(sphere.center[coord] - sphere.radius); // beware, not necessarily in [0,L]
-            table_extrema.push_back(sphere.center[coord] + sphere.radius); // beware, not necessarily in [0,L]
+            table_extrema.push_back(sphere.center[coord] - sphere.radius);  // beware, not necessarily in [0,L]
+            table_extrema.push_back(sphere.center[coord] + sphere.radius);  // beware, not necessarily in [0,L]
         }
         for (size_t i = 0; i < table_extrema.size(); i++) {
             geomTools::projection_periodic_1D(table_extrema[i],
                 getLength()[coord]);  // get back to [0,L]
             table_indices.push_back(i);
         }
-        sort(table_extrema.begin(), table_extrema.end()); // sorts the extrema
+        sort(table_extrema.begin(), table_extrema.end());  // sorts the extrema
         for (size_t i = 0; i < table_extrema.size() - 1; i++) {
             table_steps.push_back(table_extrema[i + 1] - table_extrema[i]);
         }
         table_steps[table_extrema.size() - 1] = getLength()[coord]
-            + table_extrema[0] - table_extrema[table_extrema.size() - 1]; // periodicity
+            + table_extrema[0] - table_extrema[table_extrema.size() - 1];  // periodicity
         sort(table_indices.begin(), table_indices.end(),
             [&](size_t k, size_t l) {
                 return table_steps[k] > table_steps[l];
@@ -163,13 +163,12 @@ inline double SphereManipulator<DIM>::upper_bound_on_best_distmin() {
         if (table_indices[i] != table_extrema.size() - 1) {
             best_vector[coord] = 0.5
                 * (table_extrema[table_indices[i]]
-                    + table_extrema[table_indices[i] + 1]); // in the middle!
-        }
-        else {
+                    + table_extrema[table_indices[i] + 1]);  // in the middle!
+        } else {
             best_vector[coord] = 0.5
                 * (table_extrema[0]
                     + table_extrema[table_extrema.size() - 1]
-                    + getLength()[coord]); // in the middle!
+                    + getLength()[coord]);  // in the middle!
         }
         translate(best_vector);
         distance_to_faces = min(0.5 * table_steps[table_indices[0]],
@@ -188,7 +187,7 @@ inline double SphereManipulator<DIM>::distanceToCornerS(
     const Sphere<DIM>& sphere) const {
     double dist = numeric_limits<double>::max();
     if constexpr (DIM == 3) {
-        Point <DIM> corner = { 0, 0, 0 }; // there is only 1 corner with periodicity!
+        Point <DIM> corner = { 0, 0, 0 };  // there is only 1 corner with periodicity!
         dist = abs(
             sphere.radius
             - sqrt(
@@ -202,14 +201,13 @@ template<unsigned DIM>
 inline bool SphereManipulator<DIM>::cornerWithinSphere(
     const Sphere<DIM>& sphere, double margin) const {
     if constexpr (DIM == 3) {
-        ; // there is only 1 corner with periodicity!
+        ;  // there is only 1 corner with periodicity!
         return (sphere.radius + margin
             >= sqrt(
                 torus.get()->distanceCarre(sphere.center,
                     Point <DIM> {0, 0, 0})));
-    }
-    else {
+    } else {
         return false;
     }
 }
-} // namespace sac_de_billes
+}  // namespace sac_de_billes

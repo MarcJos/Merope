@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef INTERFACESTRUCTURE_HXX_
-#define INTERFACESTRUCTURE_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -14,6 +13,7 @@
 #include "../MultiInclusions/SphereSeeds.hxx"
 #include "../MesoStructure/Structure.hxx"
 #include "../Obsolete_MesoStructure/MicroType.hxx"
+#include "../../../AlgoPacking/src/AuxiFunctions.hxx"
 
 #include "../MeropeNamespace.hxx"
 
@@ -21,10 +21,11 @@
 namespace merope {
 
 template<unsigned short DIM>
-class Pre_InterfaceMultiInclusions:
+class Pre_InterfaceMultiInclusions :
     public MicroType,
     public SphereSeeds<DIM>,
-    public WithAspratio<DIM> {
+    public WithAspratio<DIM>,
+    private auxi_function::Deprecated {
 public:
     //! constructor
     Pre_InterfaceMultiInclusions();
@@ -35,7 +36,7 @@ public:
 };
 
 template<unsigned short DIM>
-class InterfaceMultiInclusions: public Pre_InterfaceMultiInclusions<DIM> {
+class InterfaceMultiInclusions final : public Pre_InterfaceMultiInclusions<DIM> {
 public:
     //! constructor
     InterfaceMultiInclusions();
@@ -58,7 +59,7 @@ private:
 
 
 template<unsigned short DIM>
-class InterfaceStructure: public Colorize {
+class InterfaceStructure : public Colorize, private auxi_function::Deprecated {
 public:
     //! constructor
     InterfaceStructure();
@@ -118,9 +119,9 @@ private:
     PhaseType temporaryErosionPhase() const;
 };
 
-} // namespace merope
+}  // namespace merope
 
 
 #include "../Obsolete_MesoStructure/InterfaceStructure.ixx"
 
-#endif /* INTERFACESTRUCTURE_HXX_ */
+

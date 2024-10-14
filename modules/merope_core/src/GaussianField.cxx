@@ -33,4 +33,4 @@ vector<double> gaussianField::createField(const SimpleGaussianField<2>& gaussian
     return createField_T<2, FFTScalarField>(gaussianField, grid, size_);
 }
 
-} // namespace merope
+}  // namespace merope

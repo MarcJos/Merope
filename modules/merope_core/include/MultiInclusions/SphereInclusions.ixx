@@ -2,8 +2,7 @@
 //!
 //! \brief
 
-#ifndef SPHEREINCLUSIONS_IXX_
-#define SPHEREINCLUSIONS_IXX_
+#pragma once
 
 
 #include "../MeropeNamespace.hxx"
@@ -46,7 +45,7 @@ inline void SphereInclusions<DIM>::covDirection(size_t direction,
     }
 }
 
-} // namespace merope
+}  // namespace merope
 
 
-#endif /* SPHEREINCLUSIONS_IXX_ */
+

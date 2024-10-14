@@ -35,22 +35,25 @@ multiInclusions.setInclusions(polyCrystal)
 multiInclusions.changePhase(multiInclusions.getAllIdentifiers(),multiInclusions.getAllIdentifiers())
 
 
-grid = merope.Voxellation_3D(multiInclusions)
-grid.setPureCoeffs([1,2,3, 4, 5, 6, 7, 8, 9])
-grid.setVoxelRule(merope.VoxelRule.Center)
-grid.setHomogRule(merope.HomogenizationRule.Voigt)
-grid.proceed([n3D,n3D,n3D])
-grid.printFile("Zone.vtk","Coeffs.txt")
+structure = merope.Structure_3D(multiInclusions)
+
+gridParameters = merope.vox.create_grid_parameters_N_L_3D([n3D,n3D,n3D], L)
+grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Center)
+
+my_printer = merope.vox.vtk_printer_3D()
+my_printer.printVTK(grid, "Zone.vtk")
 
 print(time.time() - tic0)
 tic0 = time.time()
 
-grid = merope.Voxellation_3D(multiInclusions)
-grid.setPureCoeffs([1,2,3, 4, 5, 6, 7, 8, 9])
-grid.setVoxelRule(merope.VoxelRule.Average)
-grid.setHomogRule(merope.HomogenizationRule.Voigt)
-grid.proceed([n3D,n3D,n3D])
-grid.printFile("Zone_Voigt.vtk","Coeffs_Voigt.txt")
+structure = merope.Structure_3D(multiInclusions)
+
+grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Average)
+coefficients = [1,2,3, 4, 5, 6, 7, 8, 9]
+grid.apply_homogRule(merope.HomogenizationRule.Voigt, coefficients)
+
+my_printer = merope.vox.vtk_printer_3D()
+my_printer.printVTK_segmented(grid, "Zone_Voigt.vtk","Coeffs_Voigt.txt")
 
 print(time.time() - tic0)
 tic0 = time.time()
@@ -61,8 +64,10 @@ polyX.mainInclusions.setTypeCrystal(merope.TypeCrystal.Laguerre)
 polyX.mainInclusions.fromFile("Seeds.txt")
 
 # Grid
-g3D = merope.Voxellation_3D(polyX.build())
-g3D.proceed([n3D, n3D, n3D])
-g3D.printFile("Cristal.vtk", "Coeffs_0.txt")
+structure = polyX.build()
+grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Center)
+
+my_printer = merope.vox.vtk_printer_3D()
+my_printer.printVTK(grid, "Cristal.vtk")
 
 print(time.time() - tic0)

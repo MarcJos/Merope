@@ -50,5 +50,5 @@ std::function<double(const vector<double>&, const vector<double>&)> getHomogRule
     else  throw invalid_argument(__PRETTY_FUNCTION__);
 }
 
-} // namespace homogenization
-} // namespace merope
+}  // namespace homogenization
+}  // namespace merope

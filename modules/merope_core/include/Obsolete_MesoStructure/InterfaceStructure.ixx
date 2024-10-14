@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
 
-#ifndef INTERFACESTRUCTURE_IXX_
-#define INTERFACESTRUCTURE_IXX_
+#pragma once
 
 #include "../MeropeNamespace.hxx"
 
@@ -76,7 +75,7 @@ inline MultiInclusions<DIM> InterfaceMultiInclusions<DIM>::buildSimple() {
     } else if (this->typeCrystal == TypeCrystal::Laguerre
         or this->typeCrystal == TypeCrystal::Voronoi) {
         if (this->typeCrystal == TypeCrystal::Voronoi) {
-            for (auto& s : this->theSpheres) { // all the spheres shoud have radius 1
+            for (auto& s : this->theSpheres) {  // all the spheres shoud have radius 1
                 s.radius = 1.;
             }
         }
@@ -315,7 +314,7 @@ double InterfaceStructure<DIM>::erosionWidth2frac() {
     // Voir les fonctions phi2D0(x) et phi3D0(x) dans le fichier /home/mi234124/Travail/PolyErode/plot.gp
 }
 
-} // namespace merope
+}  // namespace merope
 
 
-#endif /* INTERFACESTRUCTURE_IXX_ */
+

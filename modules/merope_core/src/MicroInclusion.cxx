@@ -46,5 +46,5 @@ vector<smallShape::LayerInstructions> smallShape::auxi_layerInstructions::buildI
     return layerInstructions;
 }
 
-} // namespace merope
+}  // namespace merope
 

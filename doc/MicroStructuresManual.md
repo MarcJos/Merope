@@ -3,7 +3,7 @@
 
 **Remark** : All the classes and functions can be subscripted `_3D` or `_2D` depending on the dimension of the considered space.
 
-This page is devoted to the abstract framework hidden in Mérope. For concrete examples, please have a look at the [gallery](/doc/gallery.md).
+This page is devoted to the abstract framework hidden in Mérope. For concrete examples, please have a look at the [gallery](/doc/Gallery.md).
 
 # Inclusion-based structures
 
@@ -243,6 +243,9 @@ The *identifiers* begin with 0 and ends with identifier (N-1), for N=number of m
 **Main methods** :
 - `MultiInclusions_3D()`: trivial constructor.
 - `setInclusions(primitiveInclusions)` : the microstructure is made of inclusions, given by the object `primitiveInclusions`, which is of type `SphereInclusions_3D`, `LaguerreTess_3D`, `PolyInclusions_3D` or `SpheroPolyInclusions_3D`.
+- `enlarge(identifiers, width)` : enlarge each microInclusion designated by the identifier list.
+  - `identifiers` : list of int, 
+  - `width` : list of double (or a single double).
 - `addLayer(identifiers, newPhase, width)` : add a new layer to microInclusions designated by the identifier list.
   - `identifiers` : list of int, 
   - `newPhase`: list of int (or a single int),
@@ -342,13 +345,31 @@ graph TB
 
 ## Primitives
 
+### Interface to lambda function
+
+The user may appeal directly to Python functions to impose covariance and/or nonlinear transforms on fields.
+Nevertheless, the mixture of Python, MKL and OpenMP does not work properly.
+Hence, the strategy is to wrap the lambda function into C function pointer which represents a function $\mathbb{R}^d \rightarrow \mathbb{\R}$, and to give this pointer to the Mérope classes.  
+
+This is performed by means of the `Interf_FuncPointer` class, using `Numba`. See [prescribedField.py](tests/microstructures/prescribedField/prescribedField.py) for an example.
+In the sequel, objects `Interf_FuncPointer` can be used as a wrapper for lambda functions.
+
+**Methods**
+- `Interf_FuncPointer(C_address, [d, 1])` represents a function $f :\mathbb{R}^{d} \rightarrow \mathbb{R}$. 
+Here, `C_address` is the pointer adress of a C function. (See the code here for obtaining such an address [prescribedField.py](tests/microstructures/prescribedField/prescribedField.py) via numba.)
+
+:warning: **The user should be very cautious** when defining `Interf_FuncPointer`. Since it relies on a raw pointer, it is a very fragile feature and may lead to undefined behaviour when used uncautiously.  
+
+:warning: Mérope may only accept pure Python lambda function when compiled without OpenMP.
+
+
 ### Gaussian Fields
 
 The aim is to build stationary Gaussian fields $g(x)$ on the periodic cuboid, of zero mean, and of covariance function $c(x-y) = \langle g(y)g(y) \rangle$. On top of that, we apply an anamorphosis to retrieve a coefficient field $a(x) = A(g(x))$.  
 We refer to [Gaussian random functions, Lifshits, 1995](https://link.springer.com/book/10.1007/978-94-015-8474-6) for the theory of Gaussian fields.
 
 **Methods**
-- `gaussianField.GaussianField_3D(covariance, nonlinear_transform)` : constructor for a `covariance` $c :\mathbb{R}^d \rightarrow \mathbb{R}$, and the `nonlinear_transform` $A : \mathbb{R} \rightarrow \mathbb{R}$. The parameters are lambda functions.
+- `gaussianField.GaussianField_3D(covariance, nonlinear_transform)` : constructor for a `covariance` $c :\mathbb{R}^d \rightarrow \mathbb{R}$, and the `nonlinear_transform` $A : \mathbb{R} \rightarrow \mathbb{R}$. The parameters are lambda functions or `Interf_FuncPointer`.
 - `gaussianField_3D.seed` : direct access to the seed property, for controlling the randomness of the field.
 
 :warning: The analytical covariance that is imposed is **only approximately** the numerical covariance of the Gaussian field. To plot the numerical covariance, you may consider the class described below `NumericalCovariance_3D`.
@@ -357,20 +378,22 @@ We refer to [Gaussian random functions, Lifshits, 1995](https://link.springer.co
 
 This class is intended to plot the actual covariance of the discretized Gaussian field, which correspond to the class `GaussianField_3D`. 
 
-***Methods***
-- `gaussianField.NumericalCovariance_3D(covariance)` : constructor for a Covariance from a lambda function `covariance` $c :\mathbb{R}^d \rightarrow \mathbb{R}$.
+**Methods**
+- `gaussianField.NumericalCovariance_3D(covariance)` : constructor for a Covariance from an `Interf_FuncPointer` `covariance` $c :\mathbb{R}^d \rightarrow \mathbb{R}$.
 
 ### Scalar Fields (defined by a function f(x))
 
 This class contains a function $f$ depending on the spatial variable $x$.
 
 **Methods**
-- `merope.ScalarField_3D(lambdafunction)` when `lambdafunction` is a lambda function taking a 3D-vector argument and yielding a `double`
+- `merope.ScalarField_3D(lambdafunction)` when `lambdafunction` is an `Interf_FuncPointer` or a lambda function taking a 3D-vector argument and yielding a `double`.
 
 ### Discretized Grid Field
 
 A representation of the P0 discretization of a field on a given cartesian Grid.
-Such an object can be obtained from the method `Voxellation\_3D.getField()`.
+Such an object can be obtained from the methods:
+- `get_PureRealField()` of `merope.vox.GridRepresentation_3D`
+- `getField()` of `merope.Voxellation_3D` (*deprecated*)
 
 ### CartesianField
 

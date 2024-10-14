@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief Discrete periodical Geometries
+//! \briefDiscrete periodical Geometries
 //
 
-#ifndef _VTKFILEGRID_IXX
-#define _VTKFILEGRID_IXX 1
+#pragma once
 
 #include "../VTKinout/VTKStream.hxx"
 
@@ -21,8 +20,7 @@ void VTKRead::readMat(std::vector<T>& tab) {
             ++i) {
             *this >> *i;
         }
-    }
-    else {
+    } else {
         for (typename std::vector<T>::iterator i = tab.begin(); i != tab.end();
             ++i) {
             read((char*)&(*i), sizeof(T));
@@ -31,7 +29,7 @@ void VTKRead::readMat(std::vector<T>& tab) {
     }
 }
 
-} // namespace merope
+}  // namespace merope
 
 
-#endif // _VTKFILEGRID_IXX
+

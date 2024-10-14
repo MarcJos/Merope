@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief For time testing.
+//! \briefFor time testing.
 //! Comparison with VER in ver/BacASable/Evalue_Temps_VER_TMFFT
-#ifndef FOR_TESTING_HXX_
-#define FOR_TESTING_HXX_
+#pragma once
 
 
 #include "StdHeaders.hxx"
@@ -636,7 +635,6 @@ inline void ExclusionDistance() {
 inline void PickOnSphere() {
     size_t seed = 1;
     mt19937 engine(seed);
-    uniform_real_distribution<> randomReal(0., 1.);
     size_t i_max = 1000;
     double L_0 = 4.;
     constexpr unsigned short DIM = 3;
@@ -644,7 +642,7 @@ inline void PickOnSphere() {
     vector<Sphere<DIM>> theSpheres{};
     for (size_t i = 0; i < i_max; i++) {
         Sphere<DIM> sph{};
-        sph.center = randomShooter::pickOnSphere<DIM>(engine, randomReal);
+        sph.center = randomShooter::pickOnSphere<DIM>(engine);
         for (auto& coord : sph.center) {
             coord += 0.5 * L_0;
         }
@@ -673,10 +671,10 @@ inline void FillMaxRSA() {
 
 inline void FillMaxRSA_2() {
     cerr << "Begin Testing " << __PRETTY_FUNCTION__ << endl;
-    auto sv = 0; // Random number generations seed for seperating spheres positionning
-    auto N = 20; // Nombre de grains
-    double r = 150; // Rayons des grains
-    double l2D = r * sqrt(m_PI * N / 0.54689); // Dimension du VER 2D (carrÃ©)
+    auto sv = 0;  // Random number generations seed for seperating spheres positionning
+    auto N = 20;  // Nombre de grains
+    double r = 150;  // Rayons des grains
+    double l2D = r * sqrt(m_PI * N / 0.54689);  // Dimension du VER 2D (carrÃ©)
     Point<2> L = { l2D, l2D };
     double mindist = 0;
     auto theSpheres = algoSpheres::fillMaxRSA<2>(AmbiantSpace::NameShape::Tore, L, N, sv, mindist);
@@ -747,7 +745,7 @@ inline void GeomTests() {
     }
 }
 
-} // namespace algoRSA_aux_test
-} // namespace sac_de_billes
+}  // namespace algoRSA_aux_test
+}  // namespace sac_de_billes
 
-#endif /* FOR_TESTING_HXX_ */
+

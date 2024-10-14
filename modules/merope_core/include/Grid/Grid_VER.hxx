@@ -1,11 +1,10 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
 //!
 
-#ifndef GRID_GRID_VER_HXX_
-#define GRID_GRID_VER_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -22,12 +21,12 @@
 
 
 namespace merope {
-namespace vox {
 
-template<unsigned short DIM>
-class Voxellation;
-}
-
+// for linearizing a integer multi-index (i[0], i[1], i[2]) into an grid of dimensions (dims[0], dims[1], dims[2]) into a single index
+enum class IndexConvention {
+    AMITEX,  // convention used by AMITEX:  i[0] + (i[1] + i[2] * dims[1]) * dims[0]
+    Merope    // convention used by Merope or Mérope  i[2] + (i[1] + i[0] * dims[1]) * dims[2]
+};
 
 class Grid_VER : public Grid {
 public:
@@ -40,9 +39,6 @@ public:
     //! \param tf: TIFF File
     //! \param dx: Grid step
     Grid_VER(TIFFRead& tf, double);
-    //! Print the internal variables
-    //! \param os: Output stream
-    Grid_VER(const vox::Voxellation<3>& voxellisation);
 
     array<size_t, 3> nbNodes;
     vector<double> L;
@@ -67,13 +63,17 @@ public:
     void set_L(array<double, DIM> L_);
 
     //! fixme
-    template<unsigned short DIM>
+    template<unsigned short DIM, IndexConvention indexConvention = IndexConvention::Merope>
     size_t get_linear_index(const array<size_t, DIM>& ijk) const;
     //! fixme
     size_t get_linear_index(size_t i, size_t j, size_t k) const;
     //! fixme
     template<unsigned short DIM>
     array<size_t, DIM> get_coord_index(size_t i) const;
+    //! @tparam indexConvention : way of flattening 3D indices into a single index
+    //! @return : a vector of {zones}, each zone containing all the indices of voxels of the same type
+    template<unsigned short DIM, IndexConvention indexConvention>
+    vector<vector<size_t>> get_phase_list() const;
 
 private:
     //! fixme
@@ -100,12 +100,12 @@ void symmetrize(string inputFileName, string outputFileName, array<size_t, DIM> 
 namespace aux {
 //! see Grid_VER::symmetrize
 size_t symmetriseAuxi(size_t N1, size_t i, size_t N2);
-} // namespace aux
+}  // namespace aux
 
-} // namespace vox
-} // namespace merope
+}  // namespace vox
+}  // namespace merope
 
 
 #include "../Grid/Grid_VER.ixx"
 
-#endif /* GRID_GRID_VER_HXX_ */
+

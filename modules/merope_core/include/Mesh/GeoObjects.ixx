@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MESH_GEOOBJECTS_IXX_
-#define MESH_GEOOBJECTS_IXX_
+#pragma once
 
 #include "../MeropeNamespace.hxx"
 
@@ -107,14 +106,14 @@ inline void geoObjects::removeObjectDownwards(Identifier idObject, DICT_THINGS& 
         auto& leaf = dictLeaves.at(abs(id_leave));
         leaf.removeRoot(idObject);
     }
-    dictThings.erase(idObject); // suppress the thing to be replaced
+    dictThings.erase(idObject);  // suppress the thing to be replaced
 }
 
 
 template<class OBJ>
 inline geoObjects::AreSame geoObjects::areSame(const OBJ& obj1, const OBJ& obj2) {
     //! Edge or PerSurface
-    if constexpr (std::is_same<OBJ, Edge>::value or std::is_same<OBJ, PerSurface<3>>::value) {
+    if constexpr (std::is_same_v<OBJ, Edge> or std::is_same_v<OBJ, PerSurface<3>>) {
         // DEBUG
         obj1.bugTest();
         obj2.bugTest();
@@ -129,10 +128,10 @@ inline geoObjects::AreSame geoObjects::areSame(const OBJ& obj1, const OBJ& obj2)
         }
     }
     //! CurveLoop, Surface, SurfaceLoop, Solid
-    else if constexpr (std::is_same<OBJ, CurveLoop>::value
-        or std::is_same<OBJ, Surface>::value
-        or std::is_same<OBJ, SurfaceLoop>::value
-        or std::is_same<OBJ, Solid>::value) {
+    else if constexpr (std::is_same_v<OBJ, CurveLoop>
+        or std::is_same_v<OBJ, Surface>
+        or std::is_same_v<OBJ, SurfaceLoop>
+        or std::is_same_v<OBJ, Solid>) {
         auto leaves1 = obj1.leaves, leaves2 = obj2.leaves;
         std::sort(leaves1.begin(), leaves1.end());
         std::sort(leaves2.begin(), leaves2.end());
@@ -149,7 +148,7 @@ inline geoObjects::AreSame geoObjects::areSame(const OBJ& obj1, const OBJ& obj2)
         return AreSame::Different;
     }
     //! PerPoint
-    else if constexpr (std::is_same<OBJ, PerPoint>::value) {
+    else if constexpr (std::is_same_v<OBJ, PerPoint>) {
         return static_cast<AreSame>(std::find_first_of(obj1.leaves.begin(), obj1.leaves.end(), obj2.leaves.begin(), obj2.leaves.end()) != obj1.leaves.end());
     }
     return AreSame::Different;
@@ -228,8 +227,8 @@ inline vector<typename DICT_THINGS::mapped_type> geoObjects::findSingular(
     return vecSingularThings;
 }
 
-} //namespace mesh
-} // namespace merope
+}  // namespace mesh
+}  // namespace merope
 
 
-#endif /* MESH_GEOOBJECTS_IXX_ */
+

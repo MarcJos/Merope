@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GAUSSIANFIELD_IXX_
-#define GAUSSIANFIELD_IXX_
+#pragma once
 
 
 
@@ -43,7 +42,7 @@ vector<double> createField_T(const NumericalCovariance<DIM>& covariance,
     return result;
 }
 
-} //namespace gaussianField
-} // namespace merope
+}  // namespace gaussianField
+}  // namespace merope
 
-#endif /* GAUSSIANFIELD_IXX_ */
+

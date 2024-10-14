@@ -2,9 +2,8 @@
 //!
 //! \brief
 //
-#ifndef MESH_SAMETHINGS_IXX_
-#define MESH_SAMETHINGS_IXX_
 
+#pragma once
 #include "../MeropeNamespace.hxx"
 
 
@@ -67,9 +66,8 @@ inline vector<SameThings<Identifier>> replaceGraph(const vector<SameThings<THING
     return replacementList;
 }
 
-}// namespace auxi
-}// namespace sameThings
-}// namespace mesh
-} // namespace merope
+}  // namespace auxi
+}  // namespace sameThings
+}  // namespace mesh
+}  // namespace merope
 
-#endif /* MESH_SAMETHINGS_IXX_ */

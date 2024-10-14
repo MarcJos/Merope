@@ -1,12 +1,11 @@
 //! Copyright : see license.txt
 //!
-//! \brief Special class for providing clever access to corners, knowing the relative position of the sphere
+//! \briefSpecial class for providing clever access to corners, knowing the relative position of the sphere
 //! w.r.t. the cube, in order to see whether it intersects it or not.
 //!
 //! \fixme : try to make it less messy.
 
-#ifndef PATH_HXX_
-#define PATH_HXX_
+#pragma once
 
 #include "StdHeaders.hxx"
 
@@ -22,9 +21,9 @@ class Path {
     Path& operator=(Path&&) = delete;
     Path& operator=(const Path&) = delete;
     Path();
+
 public:
     static const Path& get();
-public:
     // get all the path for neighboring cubes
     template<unsigned DIM, size_t NB_NGHB>
     const array<array<int, DIM>, nbSubcubes<DIM>(NB_NGHB)>& pathForNeighbors() const;
@@ -35,13 +34,13 @@ public:
     //! 27 possibilities of relative position wrt a cube
     const array<array<int, 3>, 27> CORNER_27_DIRS;
     //! efficient access to corners stored in pathFor27Corners
-    const vector<array<unsigned short, 3>>& myCornersEfficient(int indexPosRelative) const;
+    const vector<array<unsigned short, 3>>& myCornersEfficient(size_t indexPosRelative) const;
     //! backward transformation from spatial corner localization to index referring to pathFor27Corners.
     template<unsigned short DIM>
-    int fromCorner2Index(array<int, DIM> posRelative) const;
+    size_t fromCorner2Index(array<int, DIM> posRelative) const;
 
 private:
-    static constexpr int NB_NEIB_MAX = 5;
+    static constexpr size_t NB_NEIB_MAX = 5;
     static constexpr array<int, 7> IX = { 0, 1, -1, 2, -2, 3, -3 };
     //! precomputed pathForNeighbors
     const array<array<int, 3>, nbSubcubes<3>(5)> pathNghb_3D_5;
@@ -57,7 +56,7 @@ private:
     array<array<int, DIM>, nbSubcubes<DIM>(NB_NGHB)> createParcours();
     //! 27 possibilities of relative position wrt a cube
     //! for each index : -1 < 0 = same plane < 1
-    array<array<int, 3>, 27> create27Directions();
+    array<array<int, 3>, 27> create27Directions() const;
     //! Creates the vector containing the relevant corners
     //! that shall be tested by a sphere positionned with a relative position relPose
     vector<vector<array<unsigned short, 3>>> build27Corners();
@@ -79,10 +78,10 @@ private:
     vector<array<unsigned short, DIM>> storage_tab_corner;
 };
 
-} // namespace  path
+}  // namespace  path
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
 #include "Path.ixx"
 
-#endif /* PATH_HXX_ */
+

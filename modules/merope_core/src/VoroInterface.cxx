@@ -6,13 +6,9 @@
 
 #include "Geometry/GeomTools.hxx"
 
-#if defined(_WIN32) || defined(WIN32) // ugly for Eclipse
-#include "../../voro-plus-plus/src/container.hh"
-#include "../../voro-plus-plus/src/pre_container.hh"
-#else
 #include "container.hh"
 #include "pre_container.hh"
-#endif
+#include "wall.hh"
 
 #include "Voronoi/VoroInterface.hxx"
 
@@ -22,21 +18,6 @@
 
 namespace merope {
 namespace voroInterface {
-
-template<>
-VoroInterface<3>::VoroInterface(array<double, 3> L,
-    const vector<Sphere<3>>& centerTessels) :
-    InsideTorus<3>(L),
-    PreparedVoroppContainer(centerTessels, L), virtualLength{ L } {
-}
-
-template<>
-VoroInterface<2>::VoroInterface(array<double, 2> L,
-    const vector<Sphere<2>>& centerTessels) :
-    InsideTorus<2>(L),
-    PreparedVoroppContainer(voroInterface_aux::extendDimension(centerTessels, voroInterface_aux::virtualLength<2>(L)), voroInterface_aux::virtualLength<2>(L))
-    , virtualLength{ voroInterface_aux::virtualLength<2>(L) } {
-}
 
 vector<Point<3> > voroInterface_aux::breakList(const vector<double>& v) {
     size_t s = v.size();
@@ -107,13 +88,17 @@ vector<Point<3>> voroInterface_aux::getNormals(voro::voronoicell_neighbor* cell)
         return vector<Point<3>>{};
     }
     //
-    vector<double> vecTransfer{ }; //used to get the information from voro++
+    vector<double> vecTransfer{ };  // used to get the information from voro++
     cell->normals(vecTransfer);
     return voroInterface_aux::breakList(vecTransfer);
 }
 
 Point<3> voroInterface_aux::extendDimension(const Point<2>& oldPoint, const array<double, 3>& L) {
     return Point<3>{oldPoint[0], oldPoint[1], 0.5 * L[2]};
+}
+
+array<bool, 3> voroInterface_aux::extendPeriodicity(const array<bool, 2>& oldPeriodicity) {
+    return { oldPeriodicity[0], oldPeriodicity[1], true };
 }
 
 vector<Sphere<3>> voroInterface_aux::extendDimension(const vector<Sphere<2>>& oldSpheres, const array<double, 3>& L) {
@@ -162,10 +147,10 @@ vector<vector<Identifier>> voroInterface_aux::getFacesToVertices(
     cell->face_vertices(face2vertices);
     //! convert the information
     vector<vector<Identifier>> result{};
-    size_t i = 0; // index of the face
-    size_t k = 0; // position of the reading head in face2vertices
+    size_t i = 0;  // index of the face
+    size_t k = 0;  // position of the reading head in face2vertices
     while (k < face2vertices.size()) {
-        size_t jmax = face2vertices[k]; k++; // read the nb of vertices in the face
+        size_t jmax = face2vertices[k]; k++;  // read the nb of vertices in the face
         result.push_back(vector<Identifier>(jmax));
         for (size_t j = 0; j < jmax; j++) {
             result[i][j] = face2vertices[k]; k++;
@@ -234,7 +219,7 @@ SingleCell::SingleCell(Identifier identifier_, const Point<3>& center_,
     const vector<Identifier>& neighbors_) :
     identifier{ identifier_ }, center(center_), vertices(vertices_), faceNormal(faceNormal_), faceVertices(faceVertices_),
     neighbors(neighbors_) {
-    correctNormals(); // for avoiding 0 normals
+    correctNormals();  // for avoiding 0 normals
 }
 
 vector<double> compute_volumes(const vector<Sphere<3>>& centerTessels,
@@ -296,7 +281,7 @@ void ListOfVoroppCells::build() {
     if (vl.start()) do {
         ijk = vl.ijk;
         q = vl.q;
-        int index = voropp_container->id[ijk][q]; // index of the polyhedron
+        int index = voropp_container->id[ijk][q];  // index of the polyhedron
         vec_cells[index] = new voro::voronoicell_neighbor{};
         if (not voropp_container->compute_cell(*(vec_cells[index]), vl)) {
             vec_cells[index] = nullptr;
@@ -304,9 +289,11 @@ void ListOfVoroppCells::build() {
     } while (vl.inc());
 }
 
+// PreparedVoroppContainer
+
 PreparedVoroppContainer::PreparedVoroppContainer(const vector<Sphere<3>>& centerTessels, array<double, 3> L,
     array<bool, 3> periodicity)
-    : voropp_container{ nullptr } {
+    : voropp_container{ nullptr }, voropp_wall_ptr{ nullptr } {
     voro::pre_container_poly precont(0., L[0], 0., L[1], 0., L[2],
         periodicity[0], periodicity[1], periodicity[2]);
     // Place the centers
@@ -324,7 +311,12 @@ PreparedVoroppContainer::PreparedVoroppContainer(const vector<Sphere<3>>& center
     precont.setup(*voropp_container);
 }
 
-} // namespace voroInterface
-} // namespace merope
+void PreparedVoroppContainer::addWallCylinder(double xc_, double yc_, double zc_, double xa_, double ya_, double za_, double rc_) {
+    voropp_wall_ptr.reset(new voro::wall_cylinder(xc_, yc_, zc_, xa_, ya_, za_, rc_));
+    voropp_container->add_wall(voropp_wall_ptr.get());
+}
+
+}  // namespace voroInterface
+}  // namespace merope
 
 

@@ -20,6 +20,7 @@ Mérope needs :
 - the MKL library,
 - gcc 10.2+ with g++,
 - openmp,
+- numba,
 - git.
 
 For compiling, you should have access to repositories containing `pybind11` and `voro++`, and dowload them. Please modify if necessary [Install_environment.sh](Installation/Install_environment.sh).
@@ -40,6 +41,8 @@ Moreover, for running, Mérope can be used in combination with the following app
 :warning: all the loadings should be done successfully (**no password error**), otherwise, it should be redone.
 - install :  
 `bash Installation/Procedure_install_Merope.sh`
+
+:warning: On the personal Ubuntu machines, the package [https://packages.ubuntu.com/jammy/libomp-dev](https://packages.ubuntu.com/jammy/libomp-dev) should be downladed first.
 
 ### From outside the CEA
 - get associated projects/prerequisites :  
@@ -74,6 +77,7 @@ If the installation fails, it is likely that some of the system prerequisite are
 - pip3 install vtk
 - pip3 install numpy
 - apt -yqq update && apt -yqq install doxygen
+- pip3 install numba
 
 
 
@@ -91,3 +95,8 @@ If the installation fails, it is likely that some of the system prerequisite are
 
 :warning: OneMKL library could be replaced by FFTW when compiling and linking. [https://www.smcm.iqfr.csic.es/docs/intel/mkl/mkl_manual/appendices/mkl_appG_FFTW3_Intro.htm](https://www.smcm.iqfr.csic.es/docs/intel/mkl/mkl_manual/appendices/mkl_appG_FFTW3_Intro.htm)
 Nevertheless, please consider that FFTW is under GPL licence, which is not compatible with the licence of Mérope.
+
+In case the user has no access to Numba, it is possible to disable the OpenMP compilation for Fields objects by using  
+`cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$mon_adresse`  
+(see [Procedure_install_Merope.sh](Installation/Procedure_install_Merope.sh)).
+

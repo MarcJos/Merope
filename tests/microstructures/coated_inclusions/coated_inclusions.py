@@ -59,6 +59,8 @@ structure2 = merope.Structure_3D(mIncl2)
 structureFinale = merope.Structure_3D(structure1, structure2, structureMask)
 
 # Print
-grid = merope.Voxellation_3D(structureFinale)
-grid.proceed([n3D,n3D,n3D])
-grid.printFile("Zone_struct_finale.vtk","Coeffs_finale.txt")
+gridParameters = merope.vox.create_grid_parameters_N_L_3D([n3D,n3D,n3D], L)
+grid = merope.vox.GridRepresentation_3D(structureFinale, gridParameters, merope.vox.VoxelRule.Center)
+
+my_printer = merope.vox.vtk_printer_3D()
+my_printer.printVTK(grid, "Zone_struct_finale.vtk")

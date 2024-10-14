@@ -3,10 +3,10 @@
 //! \brief
 
 #pragma once
+#include <math.h>
 #include <iostream>
 #include <numeric>
 #include <vector>
-#include <math.h>
 
 namespace optimization {
 
@@ -63,17 +63,16 @@ private:
 
 namespace auxi {
 //! @return the coefficient in gradient descent computed by Barzilai-Borwein
-//! @tparam VECTOR 
-//! @param x_n 
-//! @param x_n_1 
-//! @param nabla_f 
-//! @param nabla_f_1 
+//! @param x_n
+//! @param x_n_1
+//! @param nabla_f
+//! @param nabla_f_1
 template<class VECTOR>
 double compute_alpha_n(const VECTOR& x_n, const VECTOR& x_n_1, const VECTOR& nabla_f, const VECTOR& nabla_f_1);
-} // namespace  auxi
+}  // namespace  auxi
 
-} // namespace Barzilai_Borwein
+}  // namespace Barzilai_Borwein
 
-} // namespace  optimization
+}  // namespace  optimization
 
 #include "BarzilaiBorwein.ixx"

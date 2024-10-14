@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MEROPE_CORE_SRC_GEOMETRY_AUXICONVEXPOLYHEDRON_HXX_
-#define MEROPE_CORE_SRC_GEOMETRY_AUXICONVEXPOLYHEDRON_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -24,8 +23,8 @@ vector<HalfSpace<DIM>> facesFromVertices(const vector<Point<DIM>>& renormalized_
 template<unsigned short DIM>
 vector<Segment<DIM>> edgesFromVertices(const vector<Point<DIM>>& renormalized_vertices, const vector<vector<long>>& face_indices);
 
-} // namespace merope
+}  // namespace merope
 
 #include "AuxiConvexPolyhedron.ixx"
 
-#endif /* MEROPE_CORE_SRC_GEOMETRY_AUXICONVEXPOLYHEDRON_HXX_ */
+

@@ -2,15 +2,28 @@
 //!
 //! \brief
 
-#ifndef VOROINTERFACE_IXX_
-#define VOROINTERFACE_IXX_
+#pragma once
 
 
 #include "../MeropeNamespace.hxx"
 
-
 namespace merope {
 namespace voroInterface {
+
+template<>
+inline VoroInterface<3>::VoroInterface(array<double, 3> L, const vector<Sphere<3>>& centerTessels, array<bool, 3> periodicity) :
+    InsideTorus<3>(L),
+    PreparedVoroppContainer(centerTessels, L, periodicity), virtualLength{ L } {
+}
+
+template<>
+inline VoroInterface<2>::VoroInterface(array<double, 2> L,
+    const vector<Sphere<2>>& centerTessels, array<bool, 2> periodicity) :
+    InsideTorus<2>(L),
+    PreparedVoroppContainer(voroInterface_aux::extendDimension(centerTessels, voroInterface_aux::virtualLength<2>(L)), voroInterface_aux::virtualLength<2>(L), voroInterface_aux::extendPeriodicity(periodicity))
+    , virtualLength{ voroInterface_aux::virtualLength<2>(L) } {
+}
+
 
 template<unsigned short DIM>
 int VoroInterface<DIM>::findTessel(const Point<DIM>& pt) {
@@ -26,6 +39,16 @@ int VoroInterface<DIM>::findTessel(const Point<DIM>& pt) {
 template<unsigned short DIM>
 void VoroInterface<DIM>::drawGnuPlot(string fileName) {
     voropp_container->draw_cells_gnuplot(fileName.c_str());
+}
+
+template<unsigned short DIM>
+void VoroInterface<DIM>::drawCellsPov(string fileName) {
+    voropp_container->draw_cells_pov(fileName.c_str());
+}
+
+template<unsigned short DIM>
+void VoroInterface<DIM>::printCustom(string format, string fileName) {
+    voropp_container->print_custom(format.c_str(), fileName.c_str());
 }
 
 template<unsigned short DIM>
@@ -56,18 +79,24 @@ inline vector<SingleCell> VoroInterface<DIM>::getSingleCells() {
     return polyhedrons;
 }
 
+
+template<unsigned short DIM>
+void VoroInterface<DIM>::addWallCylinder(double xc_, double yc_, double zc_, double xa_, double ya_, double za_, double rc_) {
+    PreparedVoroppContainer::addWallCylinder(xc_, yc_, zc_, xa_, ya_, za_, rc_);
+}
+
 template<unsigned short DIM>
 void VoroInterface<DIM>::addInclusion(double* pp, int index,
     voro::voronoicell_neighbor* c,
     vector<smallShape::ConvexPolyhedronInc<DIM>>& polyhedrons) {
-    vector<HalfSpace<DIM>> faces = voroInterface_aux::getFaces<DIM>(c); // the faces
-    Point<DIM> center; // center of the polyhedron
-    Cuboid<DIM> cuboid = voroInterface_aux::getCuboid<DIM>(c, center); // the surrounding cuboid
+    vector<HalfSpace<DIM>> faces = voroInterface_aux::getFaces<DIM>(c);  // the faces
+    Point<DIM> center;  // center of the polyhedron
     if constexpr (DIM == 3) {
         center = { pp[0], pp[1], pp[2] };
     } else  if constexpr (DIM == 2) {
         center = { pp[0], pp[1] };
     }
+    Cuboid<DIM> cuboid = voroInterface_aux::getCuboid<DIM>(c);  // the surrounding cuboid
     //
     for (size_t i = 0; i < DIM; i++) {
         cuboid.x_min[i] += center[i];
@@ -81,7 +110,7 @@ void VoroInterface<DIM>::addInclusion(double* pp, int index,
 template<unsigned short DIM>
 void VoroInterface<DIM>::addCell(double* pp, int index,
     voro::voronoicell_neighbor* c, vector<SingleCell>& polyhedrons) {
-    Point<DIM> center; // center of the polyhedron
+    Point<DIM> center;  // center of the polyhedron
     if constexpr (DIM == 3) {
         center = { pp[0], pp[1], pp[2] };
     } else  if constexpr (DIM == 2) {
@@ -105,9 +134,9 @@ Point<3> voroInterface_aux::virtualLength(Point<DIM> L) {
 
 
 template<unsigned short DIM>
-Cuboid<DIM> voroInterface_aux::getCuboid(voro::voronoicell_neighbor* cell, const Point<DIM>& center) {
+Cuboid<DIM> voroInterface_aux::getCuboid(voro::voronoicell_neighbor* cell) {
     if (not cell) {
-        return Cuboid<DIM>(center, center);
+        return Cuboid<DIM>(create_array<DIM>(0.), create_array<DIM>(0.));
     }
     //
     static_assert(DIM == 2 or DIM == 3);
@@ -151,7 +180,7 @@ void loop_on_voroppcontainer(voro::container_poly* voropp_container, Func my_fun
     if (vl.start()) do {
         ijk = vl.ijk;
         q = vl.q;
-        int index = voropp_container->id[ijk][q]; // index of the polyhedron
+        int index = voropp_container->id[ijk][q];  // index of the polyhedron
         pp = voropp_container->p[ijk] + voropp_container->ps * q;
         if (voropp_container->compute_cell(c, vl)) {
             my_function(pp, index, &c);
@@ -161,8 +190,8 @@ void loop_on_voroppcontainer(voro::container_poly* voropp_container, Func my_fun
     } while (vl.inc());
 }
 
-} // namespace voroInterface
-} // namespace merope
+}  // namespace voroInterface
+}  // namespace merope
 
 
-#endif /* VOROINTERFACE_IXX_ */
+

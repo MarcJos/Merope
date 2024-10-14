@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GRID_PREGRID_IXX_
-#define GRID_PREGRID_IXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/Loops.hxx"
 
@@ -45,21 +44,11 @@ inline void vox::With_dx<DIM>::setDx(const array<double, DIM>& dx_) {
 }
 
 
-// PreGrid<DIM>
-
-template<unsigned short DIM>
-inline void vox::PreGrid<DIM>::set_nbNodes_L(const array<size_t, DIM>& nbNodes_,
-    const array<double, DIM>& L_) {
-    this->setLength(L_);
-    this->setNbNodes(nbNodes_);
-    this->setDx(vox::get_dx_from<DIM>(nbNodes_, L_));
-}
-
-// PreSubGrid
+// GridParameters
 
 
 template<unsigned short DIM>
-inline void vox::PreSubGrid<DIM>::set_nbNodes_L(
+inline void vox::GridParameters<DIM>::set_nbNodes_L(
     const array<size_t, DIM>& nbNodes_, const array<double, DIM>& L_) {
     this->setLength(L_);
     this->setNbNodes(nbNodes_);
@@ -68,20 +57,28 @@ inline void vox::PreSubGrid<DIM>::set_nbNodes_L(
 }
 
 template<unsigned short DIM>
-inline vox::PreSubGrid<DIM>::PreSubGrid(array<size_t, DIM> nbNodes_, array<double, DIM> dx_):
+inline vox::GridParameters<DIM>::GridParameters(array<size_t, DIM> nbNodes_, array<double, DIM> dx_) :
     InsideTorus<DIM>(get_L_from<DIM>(nbNodes_, dx_)),
     SubArrayDimensions<DIM>(nbNodes_),
     With_dx<DIM>(dx_) {
     this->set_nbNodes_L(nbNodes_, vox::get_L_from<DIM>(nbNodes_, dx_));
 }
 
-// homogenization
+//
+template<unsigned short DIM>
+vox::GridParameters<DIM> vox::create_grid_parameters_N_L(array<size_t, DIM> nbNodes, array<double, DIM> L) {
+    return vox::create_grid_parameters_N_L<DIM>(nbNodes, create_array<DIM, size_t>(0), nbNodes, L);
+};
 
 template<unsigned short DIM>
-inline vector<array<long, DIM> > vox::auxi::smallGrid(const Cuboid<DIM>& cuboid, const PreGrid<DIM>& grid) {
-    array<array<long, 2>, DIM> limits = computeGridLimits<DIM>(cuboid, grid);
-    return getAllIndices<DIM, long>(limits);
-}
+vox::GridParameters<DIM> vox::create_grid_parameters_N_L(array<size_t, DIM> nbNodes, array<size_t, DIM> nMin, array<size_t, DIM> nMax, array<double, DIM> L) {
+    GridParameters<DIM> res(nbNodes, L);
+    res.set_nbNodes_L(nbNodes, L);
+    res.setSubGridIndices(nMin, nMax);
+    return res;
+};
+
+// homogenization
 
 template<unsigned short DIM>
 inline array<array<long, 2>, DIM> vox::auxi::computeGridLimits(
@@ -97,11 +94,10 @@ inline array<array<long, 2>, DIM> vox::auxi::computeGridLimits(
 
 template<unsigned short DIM>
 inline vector<array<array<long, 2>, DIM> > vox::auxi::intersectGridLimits(const array<array<long, 2>, DIM>& gridLimits,
-    const PreSubGrid<DIM>& preSubGrid) {
+    const GridParameters<DIM>& preSubGrid) {
     if (preSubGrid.doesCoverTorus()) {
         return vector<array<array<long, 2>, DIM>> {gridLimits};
-    }
-    else {
+    } else {
         array<vector<array<long, 2>>, DIM> indicesLimits;
         for (size_t i = 0; i < DIM; i++) {
             indicesLimits[i] = vox::auxi::auxi_intersectGridLimits(gridLimits[i], preSubGrid.getNbNodeBigGrid()[i], preSubGrid.getNMin()[i], preSubGrid.getNMax()[i]);
@@ -131,6 +127,6 @@ inline vector<array<long, 2>>  vox::auxi::auxi_intersectGridLimits(
     return result;
 }
 
-} // namespace merope
+}  // namespace merope
 
-#endif /* GRID_PREGRID_IXX_ */
+

@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MEROPE_CORE_SRC_FIELD_CARTESIANFIELD_HXX_
-#define MEROPE_CORE_SRC_FIELD_CARTESIANFIELD_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -64,8 +63,8 @@ private:
     TypeField typeField;
 };
 
-} // namespace merope
+}  // namespace merope
 
 #include "../Field/CartesianField.ixx"
 
-#endif /* MEROPE_CORE_SRC_FIELD_CARTESIANFIELD_HXX_ */
+

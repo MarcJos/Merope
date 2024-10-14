@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MEROPE_CORE_SRC_PHYSICS_HOMOGENIZATION_HXX_
-#define MEROPE_CORE_SRC_PHYSICS_HOMOGENIZATION_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -35,10 +34,10 @@ double homog(const vector<double>& fracVol, const vector<double>& coeff);
 //! chooses between the rules. Not compile-time.
 std::function<double(const vector<double>&, const vector<double>&)> getHomogRule(Rule rule);
 
-} // namespace homogenization
-} // namespace merope
+}  // namespace homogenization
+}  // namespace merope
 
 
 #include "../Physics/Homogenization.ixx"
 
-#endif /* MEROPE_CORE_SRC_PHYSICS_HOMOGENIZATION_HXX_ */
+

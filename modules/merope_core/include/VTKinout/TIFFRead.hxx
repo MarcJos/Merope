@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief Medium from a TIFF File
+//! \briefMedium from a TIFF File
 //
 
-#ifndef _TIFFREAD_HXX
-#define _TIFFREAD_HXX 1
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -21,8 +20,8 @@ namespace merope {
 #define TIFFTAG_STRIPBYTECOUNTS 279 // Bytes counts for strips
 
 //! TIFF file 8 Bit
-class TIFFRead: public std::ifstream {
-    bool isMM; // Détection du Big Endian
+class TIFFRead : public std::ifstream {
+    bool isMM;  // Détection du Big Endian
     // Directory Entry
     struct DE {
         unsigned short tag, type;
@@ -55,8 +54,8 @@ private:
     void Header();
 };
 
-} // namespace merope
+}  // namespace merope
 
 
-#endif /* _TIFFREAD_HXX */
+
 

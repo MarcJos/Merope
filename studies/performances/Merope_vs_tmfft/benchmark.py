@@ -51,9 +51,11 @@ def testVoxel(nbThreads, L0, nVox0, use_tmfft = True):
     mIncl.setTypeCrystal(merope.TypeCrystal.Voronoi)
     mIncl.setSpheres(theSpheres)
     mIncl.setLength(L)
-    
-    voxMerope = merope.Voxellation_3D(mIncl.build())
-    voxMerope.proceed(nVox)
+        
+    structure_temp = merope.Structure_3D(mIncl.build())
+
+    gridParameters = merope.vox.create_grid_parameters_N_L_3D(nVox, L)
+    grid = merope.vox.GridRepresentation_3D(structure_temp, gridParameters, merope.vox.VoxelRule.Center)
     
     tic = time.time() -tic0
     timeList.append(tic)

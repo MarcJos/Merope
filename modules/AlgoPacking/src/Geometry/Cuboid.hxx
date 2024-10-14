@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef ALGOPACKING_SRC_GEOMETRY_CUBOID_HXX_
-#define ALGOPACKING_SRC_GEOMETRY_CUBOID_HXX_
+#pragma once
 
 #include "../StdHeaders.hxx"
 
@@ -21,10 +20,11 @@ struct Cuboid {
     Point<DIM> x_max;
     //! The space is dilated through (x_1,x_2,x_3) -> (lambda_1 x_1, lambda_2 x_2, lambda_3 x_3)
     void linearTransform(const Point<DIM>& linTransform);
+    void enlarge(double width);
 };
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
 #include "../Geometry/Cuboid.ixx"
 
-#endif /* ALGOPACKING_SRC_GEOMETRY_CUBOID_HXX_ */
+

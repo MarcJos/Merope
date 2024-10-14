@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef ALGOWP_HXX_
-#define ALGOWP_HXX_
+#pragma once
 
 #include "StdHeaders.hxx"
 
@@ -52,6 +51,7 @@ public:
     void add(size_t index1, size_t index2);
     // setter
     void setListOfPairs(vector<algoWP_aux::Pair>&& a_listOfPairs);
+
 private:
     //! for the building steps
     vector<algoWP_aux::Pair> listOfPairs;
@@ -65,7 +65,7 @@ private:
     //! build the lists listOf
     void buildLists();
 };
-} // namespace algoWP_aux
+}  // namespace algoWP_aux
 
 template<unsigned short DIM>
 class WPGrid : public algoRSA_aux::MotherGrid<DIM> {
@@ -129,6 +129,7 @@ public:
     AmbiantSpace::BigShape<DIM>* bigShape;
     //! \return the type of the algorithm
     algoSpheres::TypeAlgo getTypeAlgo() const { return algoSpheres::TypeAlgo::WP; }
+
 private:
     //! radius generator
     algoRSA_aux::RadiusGenerator<DIM>* radiusGen;
@@ -160,13 +161,13 @@ inline double deltaij(const AmbiantSpace::BigShape<DIM>* bigShape,
     return deltaij(sph1, sph2,
         sqrt(bigShape->distanceCarre(sph1.center, sph2.center)));
 }
-} // namespace algoWP_aux
+}  // namespace algoWP_aux
 
 template<unsigned short DIM>
 using AlgoWP = AlgoInterface<DIM, algoWP_aux::AlgoWP_Template<DIM>>;
 
-} //namespace sac_de_billes
+}  // namespace sac_de_billes
 
 #include "AlgoWP.ixx"
 
-#endif /* ALGOWP_HXX_ */
+

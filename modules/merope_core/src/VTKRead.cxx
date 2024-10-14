@@ -1,6 +1,6 @@
 //! Copyright : see license.txt
 //!
-//! \brief Reader for a periodic discrete medium
+//! \briefReader for a periodic discrete medium
 //! given by a VTK File (DATASET STRUCTURED_POINTS)
 //!
 //!
@@ -50,7 +50,8 @@ VTKRead::VTKRead(const char* const fname) :
     }
     if ("ASCII" == string(line))
         isFor = true;
-    else isFor = false;
+    else
+        isFor = false;
 
     // VTK dataset Type
     getline(line, VTK_LINE_MAX);
@@ -275,7 +276,6 @@ void VTKRead::gatherL(const char* const strainN, const char* const stressN) {
             }
             ++c;
         }
-
         // Strain
         else if ("EXX" == c->name) {
             c2.name = strainN;
@@ -401,4 +401,4 @@ const vector<Comp>& VTKRead::getCmps() const {
     return cmps;
 }
 
-} // namespace merope
+}  // namespace merope

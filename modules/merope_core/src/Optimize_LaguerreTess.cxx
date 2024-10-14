@@ -87,7 +87,7 @@ void algo_fit_volumes_3D::verbose_output(std::ostream& f, const auto& algo) {
 
 vector<double> auxi::get_radii_out_of_weights(const vector<double>& w_i) {
     double minimum = *(std::min_element(w_i.begin(), w_i.end()));
-    double shift_w = max(-minimum, 0.); // shift negative values for w_i
+    double shift_w = max(-minimum, 0.);  // shift negative values for w_i
     vector<double> radii(w_i.size());
     for (size_t i = 0; i < radii.size(); i++) {
         radii[i] = sqrt(max(shift_w + w_i[i], 0.));
@@ -123,6 +123,6 @@ bool auxi::preconditions(const vector<Sphere<3>>& centerTessels, const Point<3>&
     return true;
 }
 
-} // namespace  optimizeLaguerreTess
+}  // namespace  optimizeLaguerreTess
 
-} // namespace  merope
+}  // namespace  merope

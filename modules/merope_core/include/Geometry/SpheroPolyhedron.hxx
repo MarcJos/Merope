@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef ALGOPACKING_SRC_GEOMETRY_SPHEROPOLYHEDRON_HXX_
-#define ALGOPACKING_SRC_GEOMETRY_SPHEROPOLYHEDRON_HXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 
@@ -33,13 +32,13 @@ public:
     //! \return the tangent space to the spheroPolyhedron clostest to the point vector_from_center_to_point
     //! \warning : in local coordinates
     HalfSpace<DIM> closestTangentSpace(Point<DIM> vector_from_center_to_point) const;
+
     //! getter
     const vector<Sphere<DIM>>& boundarySpheres() const { return this->boundarySpheres_; }
     //! getter
-    double minkowskiRadius() const { return this->minkowskiRadius_; }
+    double getMinkowskiRadius() const { return this->minkowskiRadius_; }
     //! get the underlying vertices
     vector<Point<DIM>> getVertices() const;
-
     //! getter
     const vector<HalfSpace<DIM> >& getInnerPolyhedron() const { return innerPolyhedron; }
     //! getter
@@ -47,7 +46,7 @@ public:
     //! getter
     const Point<DIM>& getCenter() const { return center; }
     //! getter
-    double getMinkowskiRadius() const { return minkowskiRadius_; }
+    PhaseType getPhase()const { return phase; };
 
 private:
     //! Minkowski radius.
@@ -64,7 +63,7 @@ private:
     //! border polyhedrons
     vector<vector<HalfSpace<DIM>>> boundaryPolyhedrons;
     //! if dimension = 3 borderCylidners
-    typename std::conditional<DIM == 2, bool, vector<Cylinder<DIM>>>::type boundaryCylinders;
+    typename std::conditional_t<DIM == 3, vector<Cylinder<3>>, bool> boundaryCylinders;
     //! border balls
     vector<Sphere<DIM>> boundarySpheres_;
 
@@ -74,8 +73,8 @@ private:
     bool insidePolyhedralPart(const Point<DIM>& vector_from_center_to_point) const;
 };
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
 #include "../Geometry/SpheroPolyhedron.ixx"
 
-#endif /* ALGOPACKING_SRC_GEOMETRY_SPHEROPOLYHEDRON_HXX_ */
+

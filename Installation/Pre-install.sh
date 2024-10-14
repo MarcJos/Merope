@@ -12,11 +12,8 @@ source Installation/Install_environment.sh
 cd modules
 
 ## get  pybind11
-cd merope_core/Interface_python
-rm -rf pybind11
 git clone $MEROPE_PYBIND_REPO pybind11
-cd ../../
-cp -r merope_core/Interface_python/pybind11 AlgoPacking/Interface_python/
+# get eigen
 git clone $EIGEN_REPO local_eigen
 cp -r local_eigen/Eigen .
 rm -rf local_eigen

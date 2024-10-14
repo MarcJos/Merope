@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
 
-#ifndef GEOMTOOLS_IXX_
-#define GEOMTOOLS_IXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 
@@ -56,7 +55,7 @@ inline geomTools::Intersection_LineConvex geomTools::computeIntersection(const H
         sumOther -= halfSpace.vec()[i] * x1x2[i];
     }
     //! fixme : magical constant
-    if (abs(halfSpace.vec()[DIM - 1]) < geomTools::EPSILON_S) { // consider that last coordinate of vec is 0
+    if (abs(halfSpace.vec()[DIM - 1]) < geomTools::EPSILON_S) {  // consider that last coordinate of vec is 0
         z = numeric_limits<double>::max();;
         if (sumOther > 0) {
             return Intersection_LineConvex::All;
@@ -95,16 +94,23 @@ template<unsigned short DIM>
 inline double geomTools::fracVolIntersection(
     const vector<HalfSpace<DIM>>& faces,
     const Point<DIM>& centerPoly_to_origVoxel,
-    const Point<DIM>& cubeLength) {
-    double volFrac = 1.; // volume fraction
-    Point <DIM> linTransform; // inverse of cubeLength
+    const Point<DIM>& cubeLength,
+    Point<DIM>& vector_intersect) {
+    double volFrac = 1.;  // volume fraction
+    Point <DIM> linTransform;  // inverse of cubeLength
     for (size_t i = 0; i < DIM; i++) {
         linTransform[i] = 1. / cubeLength[i];
     }
+    double multinf = 1;
     for (auto face : faces) {
-        face.c() -= geomTools::prodScal<DIM>(centerPoly_to_origVoxel, face.vec()); // the center of the voxel becomes the new origin
+        face.c() -= geomTools::prodScal<DIM>(centerPoly_to_origVoxel, face.vec());  // the center of the voxel becomes the new origin
         linearTransform::proceed <DIM>(face, linTransform);
-        volFrac *= geomTools::fracVolIntersection<DIM>(face);
+        double multiply = geomTools::fracVolIntersection<DIM>(face);
+        volFrac *= multiply;
+        if (multiply < multinf) {
+            vector_intersect = face.vec();
+            multinf = multiply;
+        }
         if (volFrac < geomTools::EPSILON) {
             return 0.;
         }
@@ -116,22 +122,51 @@ template<unsigned short DIM>
 inline double geomTools::fracVolIntersection(HalfSpace<DIM> face,
     const Point<DIM>& centerPoly_to_origVoxel,
     const Point<DIM>& cubeLength) {
-    face.c() -= geomTools::prodScal<DIM>(centerPoly_to_origVoxel, face.vec()); // the center of the voxel becomes the new origin
+    face.c() -= geomTools::prodScal<DIM>(centerPoly_to_origVoxel, face.vec());  // the center of the voxel becomes the new origin
     return geomTools::fracVolIntersection<DIM>(cubeLength, face);
+}
+
+template<unsigned short DIM>
+double geomTools::fracVolIntersection(const Cylinder<3>& cylinder,
+    const Point<3>& centerCyl_to_origVoxel,
+    const Point<3>& cubeLength,
+    Point<3>& vector_intersect) {
+    static_assert(DIM == 3);
+    // reference is center of cylinder
+    // principle : cylinder wrt a point is 3 planes:
+    // upper, lower planes
+    // lateral plane
+    auto axis_vec = cylinder.axis[1] - cylinder.axis[0];
+    auto axis_normal = RenormPoint<DIM>(axis_vec).getPoint();
+    vector<HalfSpace<DIM>> halfspaces_3{};
+    // upper part of cylinder
+    halfspaces_3.emplace_back(axis_normal, 0.5 * axis_vec);
+    // lower part of cylinder
+    halfspaces_3.emplace_back(-axis_normal, (-0.5) * axis_vec);
+    // side part of cylinder
+    auto centerCyl_to_centerVoxel = centerCyl_to_origVoxel + 0.5 * cubeLength;
+    auto lateral_vec =
+        (centerCyl_to_centerVoxel - geomTools::prodScal<DIM>(centerCyl_to_centerVoxel, axis_normal) * axis_normal);
+    geomTools::renormalize<DIM>(lateral_vec);
+    halfspaces_3.emplace_back(lateral_vec, cylinder.radius * lateral_vec);
+    return geomTools::fracVolIntersection<DIM>(halfspaces_3, centerCyl_to_origVoxel, cubeLength, vector_intersect);
 }
 
 template<unsigned short DIM>
 inline double sac_de_billes::geomTools::fracVolIntersection(
     const SpheroPolyhedron<DIM>& sphP,
     const Point<DIM>& centerPoly_to_origVoxel,
-    const Point<DIM>& cubeLength) {
-    return fracVolIntersection<DIM>(sphP.closestTangentSpace(centerPoly_to_origVoxel + 0.5 * cubeLength), centerPoly_to_origVoxel, cubeLength);
+    const Point<DIM>& cubeLength,
+    Point<DIM>& vector_intersect) {
+    auto hspace = sphP.closestTangentSpace(centerPoly_to_origVoxel + 0.5 * cubeLength);
+    vector_intersect = hspace.vec();
+    return fracVolIntersection<DIM>(hspace, centerPoly_to_origVoxel, cubeLength);
 }
 
 template<unsigned short DIM>
 inline double geomTools::fracVolIntersection(const Point<DIM>& cubeLength,
     HalfSpace<DIM> halfspace) {
-    Point <DIM> linTransform; // inverse of cubeLength
+    Point <DIM> linTransform;  // inverse of cubeLength
     for (size_t i = 0; i < DIM; i++) {
         linTransform[i] = 1. / cubeLength[i];
     }
@@ -213,12 +248,22 @@ inline double geomTools::fracVolIntersect::auxi(const HalfSpace<DIM>& hspace) {
     for (size_t i = 0; i < Corners_of_Cubes::TabCorner<DIM>().size(); i++) {
         double temp = hspace.c() - prodScal < DIM
         >(hspace.vec(), Corners_of_Cubes::TabCorner<DIM>()[i]);
-        temp = (temp > 0) ? temp : 0; //positive part
+        temp = (temp > 0) ? temp : 0;  //positive part
         volume += Corners_of_Cubes::Indices_TabCorner<DIM>()[i]
             * auxi_function::puissance <DIM>(temp);
     }
     return volume;
 }
+
+template<unsigned short DIM, class SOLID>
+Point<DIM> geomTools::get_center(const SOLID& solid) {
+    if constexpr (std::is_same_v<Cylinder<3>, SOLID>) {
+        return solid.axis.middle();
+    } else {
+        return solid.center;
+    }
+}
+
 
 // Corners of Cubes
 
@@ -241,7 +286,7 @@ constexpr const array<short, auxi_Corner_of_Cubes::NumberOfCorners<DIM>()>& Corn
     else throw logic_error(__PRETTY_FUNCTION__);
 }
 
-}//namespace sac_de_billes
+}  // namespace sac_de_billes
 
 
-#endif /* GEOMTOOLS_IXX_ */
+

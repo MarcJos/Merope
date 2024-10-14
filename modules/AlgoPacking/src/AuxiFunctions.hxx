@@ -2,8 +2,7 @@
 //!
 //! \brief
 //
-#ifndef AUXIFUNCTIONS_HXX_
-#define AUXIFUNCTIONS_HXX_
+#pragma once
 
 #include "StdHeaders.hxx"
 
@@ -11,6 +10,16 @@ namespace sac_de_billes {
 using namespace std;
 
 namespace auxi_function {
+
+class Deprecated {
+public:
+        Deprecated() {
+                std::cerr << "This class is deprecated!" << std::endl;
+                std::cerr << "Its use is not advised; please read the documentation." << std::endl;
+        }
+        ~Deprecated() {}
+};
+
 
 // \return the product of all the values present in the table
 //! \param C : an object one can iterate on
@@ -74,10 +83,19 @@ void for_constexpr(Func f);
 template<class VECTOR>
 void circulate(VECTOR& vect, long step);
 
-} // namespace auxi_function
-} // namespace sac_de_billes
+inline int get_num_threads() {
+        int result = 0;
+#pragma omp parallel
+#pragma omp master
+        result = omp_get_num_threads();
+        return result;
+}
+
+
+}  // namespace auxi_function
+}  // namespace sac_de_billes
 
 
 #include "AuxiFunctions.ixx"
 
-#endif /* AUXIFUNCTIONS_HXX_ */
+

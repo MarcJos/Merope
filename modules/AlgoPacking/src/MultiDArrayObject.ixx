@@ -2,8 +2,7 @@
 //!
 //! \brief
 
-#ifndef MULTIDARRAYOBJECT_IXX
-#define MULTIDARRAYOBJECT_IXX
+#pragma once
 
 
 #include "Voxel.hxx"
@@ -21,7 +20,7 @@ inline void MultiDArrayObject<DIM, VOXEL_TYPE, ARRAY_DIMENSION>::fillAll(VOXEL_T
 template<unsigned short DIM, class VOXEL_TYPE, class ARRAY_DIMENSION>
 template<class INDEX_TYPE>
 inline void MultiDArrayObject<DIM, VOXEL_TYPE, ARRAY_DIMENSION>::fillCuboid(const array<array<INDEX_TYPE, 2>, DIM>& limits, const VOXEL_TYPE& data) {
-    static_assert(std::is_same<INDEX_TYPE, size_t>::value or std::is_same<INDEX_TYPE, long>::value);
+    static_assert(std::is_same_v<INDEX_TYPE, size_t> or std::is_same_v<INDEX_TYPE, long>);
     //
     if constexpr (this->isSubArray) {
         if (this->getArrayDimensions().doesCoverTorus()) {
@@ -30,39 +29,32 @@ inline void MultiDArrayObject<DIM, VOXEL_TYPE, ARRAY_DIMENSION>::fillCuboid(cons
         }
     }
     //
-    if constexpr (std::is_same<INDEX_TYPE, long>::value) { // beware of periodic replica
+    if constexpr (std::is_same_v<INDEX_TYPE, long>) {  // beware of periodic replica
         auto cuboidList = auxi::getCuboidList<DIM>(limits, this->arrayDim.getNbNodeBigGrid());
         for (const array<array<size_t, 2>, DIM>& cuboid : cuboidList) {
             fillCuboid<size_t>(cuboid, data);
         }
-    }
-    else if constexpr (std::is_same<INDEX_TYPE, size_t>::value) {
+    } else if constexpr (std::is_same_v<INDEX_TYPE, size_t>) {
         vox::auxi::loopOnIndex<DIM>(limits, this->arrayDim.getNbNodeBigGrid(), [this, &data](size_t linearIndex) {
             this->fillVoxelLinear(linearIndex, data);
             });
-        /* equivalent but slower form
-        for(const auto& ijk : getAllIndices<DIM, INDEX_TYPE>(limits)){
-            fillVoxel(ijk, data);
-        }
-        */
     }
 }
 
 template<unsigned short DIM, class VOXEL_TYPE, class ARRAY_DIMENSION>
 template<class INDEX_TYPE>
 inline void MultiDArrayObject<DIM, VOXEL_TYPE, ARRAY_DIMENSION>::fillSlice(array<INDEX_TYPE, DIM> ijk, array<INDEX_TYPE, 2> limits, const VOXEL_TYPE& data) {
-    static_assert(std::is_same<INDEX_TYPE, size_t>::value or std::is_same<INDEX_TYPE, long>::value);
+    static_assert(std::is_same_v<INDEX_TYPE, size_t> or std::is_same_v<INDEX_TYPE, long>);
     //////////////////
-    ijk[DIM - 1] = 0; // unimportant coordinate
+    ijk[DIM - 1] = 0;  // unimportant coordinate
     //////////////////
-    if constexpr (std::is_same<INDEX_TYPE, long>::value) { // beware of periodic replica
+    if constexpr (std::is_same_v<INDEX_TYPE, long>) {  // beware of periodic replica
         array<size_t, DIM> ijkNew = vox::auxi::project_index_periodic<DIM>(ijk, this->arrayDim.getNbNodeBigGrid());
         vector<array<size_t, 2>> allSegments = vox::auxi::getSegmentsFromPeriodic(limits, this->arrayDim.getNbNodeBigGrid()[DIM - 1]);
         for (const auto& seg : allSegments) {
             fillSlice<size_t>(ijkNew, seg, data);
         }
-    }
-    else if constexpr (std::is_same<INDEX_TYPE, size_t>::value) {
+    } else if constexpr (std::is_same_v<INDEX_TYPE, size_t>) {
         // in case of an extracted subgrid
         if constexpr (this->isSubArray) {
             if (not this->getArrayDimensions().doesCoverTorus()) {
@@ -91,13 +83,11 @@ inline size_t MultiDArrayObject<DIM, VOXEL_TYPE, ARRAY_DIMENSION>::get_linear_in
     if constexpr (this->isSubArray) {
         if (this->getArrayDimensions().doesCoverTorus()) {
             return auxi::get_linear_index<DIM>(ijk, this->arrayDim.getNbNodeSubGrid());
-        }
-        else {
+        } else {
             auto ijkTilde = renormalize_index(ijk);
             return auxi::get_linear_index<DIM>(ijkTilde, this->arrayDim.getNbNodeSubGrid());
         }
-    }
-    else {
+    } else {
         return auxi::get_linear_index<DIM>(ijk, this->arrayDim.getNbNodeSubGrid());
     }
 }
@@ -179,7 +169,7 @@ inline void vox::auxi::loopOnIndex(const array<array<size_t, 2>, DIM>& limits, c
         size_t limits_2_0 = limits[2][0];
         size_t limits_2_1 = limits[2][1];
 
-        array<size_t, DIM> ijk {limits[0][0], limits[1][0], limits[2][0]};
+        array<size_t, DIM> ijk{ limits[0][0], limits[1][0], limits[2][0] };
         size_t linearIndex = auxi::get_linear_index<DIM>(ijk, nbNodes);
         for (ijk_0 = limits_0_0; ijk_0 < limits_0_1; ijk_0++, linearIndex += increment_0) {
             for (ijk_1 = limits_1_0; ijk_1 < limits_1_1; ijk_1++, linearIndex += increment_1) {
@@ -190,8 +180,7 @@ inline void vox::auxi::loopOnIndex(const array<array<size_t, 2>, DIM>& limits, c
             }
             linearIndex -= (limits_1_1 - limits_1_0) * increment_1;
         }
-    }
-    else if constexpr (DIM == 2) {
+    } else if constexpr (DIM == 2) {
         size_t increment_0 = nbNodes[1];
         constexpr size_t increment_1 = 1;
         size_t ijk_0, ijk_1;
@@ -200,7 +189,7 @@ inline void vox::auxi::loopOnIndex(const array<array<size_t, 2>, DIM>& limits, c
         size_t limits_1_0 = limits[1][0];
         size_t limits_1_1 = limits[1][1];
 
-        array<size_t, DIM> ijk {limits[0][0], limits[1][0]};
+        array<size_t, DIM> ijk{ limits[0][0], limits[1][0] };
         size_t linearIndex = auxi::get_linear_index<DIM>(ijk, nbNodes);
         for (ijk_0 = limits_0_0; ijk_0 < limits_0_1; ijk_0++, linearIndex += increment_0) {
             for (ijk_1 = limits_1_0; ijk_1 < limits_1_1; ijk_1++, linearIndex += increment_1) {
@@ -234,11 +223,9 @@ size_t auxi::get_linear_index(const array<size_t, DIM>& ijk,
     assert(nbNodes.size() >= DIM);
     if constexpr (DIM == 3) {
         return ijk[2] + (ijk[1] + ijk[0] * nbNodes[1]) * nbNodes[2];
-    }
-    else if constexpr (DIM == 2) {
+    } else if constexpr (DIM == 2) {
         return ijk[1] + ijk[0] * nbNodes[1];
-    }
-    else {
+    } else {
         cerr << __PRETTY_FUNCTION__ << endl;
         throw runtime_error("Not programmed");
     }
@@ -284,7 +271,7 @@ inline vector<array<array<size_t, 2>, DIM> > auxi::getCuboidList(
     vector<array<array<size_t, 2>, DIM> > result(numberOfCubes);
     size_t counter = 0;
     ////
-    loop<DIM>(numberOfSegments, [&result, &allSegments, &counter](const array<size_t, DIM> indexSegment) {
+    loop<false, DIM>(numberOfSegments, [&result, &allSegments, &counter](const array<size_t, DIM> indexSegment) {
         for (size_t i = 0; i < DIM; i++) {
             result[counter][i] = allSegments[i][indexSegment[i]];
         }
@@ -293,7 +280,6 @@ inline vector<array<array<size_t, 2>, DIM> > auxi::getCuboidList(
     return result;
 }
 
-} // namespace vox
-} // namespace sac_de_billes
+}  // namespace vox
+}  // namespace sac_de_billes
 
-#endif // MULTIDARRAYOBJECT_IXX

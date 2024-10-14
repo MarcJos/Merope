@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
 
-#ifndef STRUCTURE_IXX_
-#define STRUCTURE_IXX_
+#pragma once
 
-#endif /* STRUCTURE_IXX_ */
+

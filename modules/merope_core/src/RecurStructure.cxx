@@ -26,4 +26,4 @@ std::function<PhaseType(PhaseType, PhaseType)> auxiMicroStructure::replace_by(
     return result;
 }
 
-} // namespace merope
+}  // namespace merope

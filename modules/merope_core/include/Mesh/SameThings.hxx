@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief For merging equal or almost-equal geometrical objects
+//! \briefFor merging equal or almost-equal geometrical objects
 //
-#ifndef MESH_SAMETHINGS_HXX_
-#define MESH_SAMETHINGS_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -85,10 +84,10 @@ private:
     vector<SameThings<IdentifierSort>> getResult() const;
 };
 
-} // namespace auxi
-} // namespace sameThings
-} // namespace mesh
-} // namespace merope
+}  // namespace auxi
+}  // namespace sameThings
+}  // namespace mesh
+}  // namespace merope
 
 #include "../Mesh/SameThings.ixx"
-#endif /* MESH_SAMETHINGS_HXX_ */
+

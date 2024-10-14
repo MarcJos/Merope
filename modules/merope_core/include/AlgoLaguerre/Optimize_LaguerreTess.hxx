@@ -77,11 +77,11 @@ public:
     //! @param max_iter : maximal number of iterations for Barzilai-Borwein
     void proceed(double max_delta_Vol = 1e-8, size_t max_iter = 3000, bool verbose = false);
     //! @brief : const getter
-    std::conditional<DIM == 3, const vector<Sphere<DIM>>&, vector<Sphere<DIM>>>::type getCenterTessels() const;
+    std::conditional_t<DIM == 3, const vector<Sphere<DIM>>&, vector<Sphere<DIM>>> getCenterTessels() const;
     //! @return the maximal error between current volumes and objective volumes
     double maxDeltaVolumes() const;
     //! @return the current volumes
-    std::conditional<DIM == 3, const vector<double>&, vector<double>>::type getCurrentVolumes() const;
+    std::conditional_t<DIM == 3, const vector<double>&, vector<double>> getCurrentVolumes() const;
 private:
     //! @brief engine
     algo_fit_volumes_3D internal_algo;
@@ -105,11 +105,11 @@ vector<double> get_radii_out_of_weights(const vector<double>& w_i);
 bool preconditions(const vector<Sphere<3>>& centerTessels, const Point<3>& L,
     const vector<double>& volumeFractions, double max_delta_Vol);
 
-} // namespace  auxi
+}  // namespace  auxi
 
-} // namespace  optimizeLaguerreTess
+}  // namespace  optimizeLaguerreTess
 
-} // namespace  merope
+}  // namespace  merope
 
 #include "Optimize_LaguerreTess.ixx"
 

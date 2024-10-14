@@ -12,8 +12,13 @@ using namespace sac_de_billes;
 using namespace merope;
 
 int main() {
+    Tests::outputLaminate();
+    //
     testMesh::test5();
     cerr << "testMesh::test5();" << endl;
+    //
+    testMesh::test6();
+    cerr << "testMesh::test6();" << endl;
     //
     Tests::testFields2();
     cerr << "Tests::testFields2();" << endl;

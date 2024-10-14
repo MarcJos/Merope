@@ -50,9 +50,11 @@ for i in range(0,4):
 
 
 # Build the grid
-grid = merope.Voxellation_2D(mIncl)
-grid.setVoxelRule(merope.VoxelRule.Center)
-grid.setHomogRule(merope.HomogenizationRule.Voigt)
-grid.proceed(nVox)
-grid.printFile("Zone.vtk","Coeffs.txt")
+structure = merope.Structure_2D(mIncl)
+
+gridParameters = merope.vox.create_grid_parameters_N_L_2D(nVox, L)
+gridRepresentation = merope.vox.GridRepresentation_2D(structure, gridParameters, merope.vox.VoxelRule.Center)
+
+my_printer = merope.vox.vtk_printer_2D()
+my_printer.printVTK_removeUnusedPhase(gridRepresentation, "Zone.vtk","Coeffs.txt")
 

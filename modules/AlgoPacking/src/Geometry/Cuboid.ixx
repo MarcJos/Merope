@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef ALGOPACKING_SRC_GEOMETRY_CUBOID_IXX_
-#define ALGOPACKING_SRC_GEOMETRY_CUBOID_IXX_
+#pragma once
 
 #include "../Geometry/GeomTools_1.hxx"
 
@@ -13,6 +12,14 @@ inline void Cuboid<DIM>::linearTransform(const Point<DIM>& linTransform) {
     linearTransform::point <DIM>(x_max, linTransform);
     linearTransform::point <DIM>(x_min, linTransform);
 }
+
+template<unsigned short DIM>
+inline void Cuboid<DIM>::enlarge(double width) {
+    for (size_t i = 0; i < DIM; i++) {
+        x_min[i] -= width;
+        x_max[i] += width;
+    }
+}
 }
 
-#endif /* ALGOPACKING_SRC_GEOMETRY_CUBOID_IXX_ */
+

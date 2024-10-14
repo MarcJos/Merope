@@ -1,25 +1,24 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef INTERFACE_IXX_
-#define INTERFACE_IXX_
+#pragma once
 
 namespace sac_de_billes {
 
 template<unsigned short DIM>
 unique_ptr<AlgoPacking<DIM>> algoSpheres::newAlgo(
-        const algoSpheres::TypeAlgo &typeAlgo) {
+    const algoSpheres::TypeAlgo& typeAlgo) {
     unique_ptr < AlgoPacking <DIM>> algo;
     switch (typeAlgo) {
     case algoSpheres::TypeAlgo::RSA:
-        algo = unique_ptr < AlgoPacking <DIM>> (new AlgoRSA<DIM>());
+        algo = unique_ptr < AlgoPacking <DIM>>(new AlgoRSA<DIM>());
         break;
     case algoSpheres::TypeAlgo::WP:
-        algo = unique_ptr < AlgoPacking <DIM>> (new AlgoWP<DIM>());
+        algo = unique_ptr < AlgoPacking <DIM>>(new AlgoWP<DIM>());
         break;
     case algoSpheres::TypeAlgo::BOOL:
-        algo = unique_ptr < AlgoPacking <DIM>> (new AlgoBool<DIM>());
+        algo = unique_ptr < AlgoPacking <DIM>>(new AlgoBool<DIM>());
         break;
     default:
         throw runtime_error(__PRETTY_FUNCTION__);
@@ -29,11 +28,11 @@ unique_ptr<AlgoPacking<DIM>> algoSpheres::newAlgo(
 
 template<unsigned short DIM>
 vector<Sphere<DIM>> algoSpheres::throwSpheres(
-        const algoSpheres::TypeAlgo &typeAlgo, AmbiantSpace::NameShape nameShape,
-        Point<DIM> L, unsigned seed,
-        vector<array<double, 2>> desiredRPhi, vector<PhaseType> tabPhases,
-        double mindist) {
-    auto algo = newAlgo <DIM> (typeAlgo);
+    const algoSpheres::TypeAlgo& typeAlgo, AmbiantSpace::NameShape nameShape,
+    Point<DIM> L, unsigned seed,
+    vector<array<double, 2>> desiredRPhi, vector<PhaseType> tabPhases,
+    double mindist) {
+    auto algo = newAlgo <DIM>(typeAlgo);
     algo->setExclusionDistance(mindist);
     algo->setBigShape(L, nameShape);
     algo->setRadiusGenerator(desiredRPhi, tabPhases);
@@ -44,11 +43,11 @@ vector<Sphere<DIM>> algoSpheres::throwSpheres(
 
 template<unsigned short DIM>
 vector<Sphere<DIM>> algoSpheres::throwSpheres(
-        const algoSpheres::TypeAlgo &typeAlgo, AmbiantSpace::NameShape nameShape,
-        Point<DIM> L, unsigned seed,
-        vector<double> tabRadii, vector<PhaseType> tabPhases,
-        double mindist) {
-    auto algo = newAlgo <DIM> (typeAlgo);
+    const algoSpheres::TypeAlgo& typeAlgo, AmbiantSpace::NameShape nameShape,
+    Point<DIM> L, unsigned seed,
+    vector<double> tabRadii, vector<PhaseType> tabPhases,
+    double mindist) {
+    auto algo = newAlgo <DIM>(typeAlgo);
     auto algo_ptr = algo.get();
     algo_ptr->setExclusionDistance(mindist);
     algo_ptr->setBigShape(L, nameShape);
@@ -60,18 +59,20 @@ vector<Sphere<DIM>> algoSpheres::throwSpheres(
 
 template<unsigned short DIM>
 double algoSpheres::monoDispReferenceRadius(Point<DIM> L,
-        size_t seedsNb, double phi, algoSpheres::TypeAlgo typeAlgo) {
+    size_t seedsNb, double phi, algoSpheres::TypeAlgo typeAlgo) {
     AmbiantSpace::Tore <DIM> torus(L);
     switch (typeAlgo) {
     case algoSpheres::TypeAlgo::RSA:
-    case algoSpheres::TypeAlgo::WP: {
+    case algoSpheres::TypeAlgo::WP:
+    {
         double volumeRef = phi * torus.volume()
-                / (sphereTools::volumeSphere <DIM> (1.) * seedsNb);
+            / (sphereTools::volumeSphere <DIM>(1.) * seedsNb);
         return pow(volumeRef, 1. / DIM);
     }
-    case algoSpheres::TypeAlgo::BOOL: {
+    case algoSpheres::TypeAlgo::BOOL:
+    {
         double volumeRef = -log(1. - phi) * torus.volume()
-                / (sphereTools::volumeSphere <DIM> (1.) * seedsNb);
+            / (sphereTools::volumeSphere <DIM>(1.) * seedsNb);
         return pow(volumeRef, 1. / DIM);
     }
     default:
@@ -81,17 +82,19 @@ double algoSpheres::monoDispReferenceRadius(Point<DIM> L,
 
 template<unsigned short DIM>
 inline size_t algoSpheres::monoDispNbSpheres(Point<DIM> L,
-        double radius, double phi, algoSpheres::TypeAlgo typeAlgo) {
+    double radius, double phi, algoSpheres::TypeAlgo typeAlgo) {
     AmbiantSpace::Tore <DIM> torus(L);
     switch (typeAlgo) {
     case algoSpheres::TypeAlgo::RSA:
-    case algoSpheres::TypeAlgo::WP: {
+    case algoSpheres::TypeAlgo::WP:
+    {
         return static_cast<size_t>(phi * torus.volume()
-                / sphereTools::volumeSphere <DIM> (radius));
+            / sphereTools::volumeSphere <DIM>(radius));
     }
-    case algoSpheres::TypeAlgo::BOOL: {
+    case algoSpheres::TypeAlgo::BOOL:
+    {
         return static_cast<size_t>(-log(1 - phi) * torus.volume()
-                / sphereTools::volumeSphere <DIM> (radius));
+            / sphereTools::volumeSphere <DIM>(radius));
     }
     default:
         throw runtime_error("Unknown TypeAlgo");
@@ -100,11 +103,11 @@ inline size_t algoSpheres::monoDispNbSpheres(Point<DIM> L,
 
 template<unsigned short DIM>
 inline vector<Sphere<DIM>> algoSpheres::fillMaxRSA(
-        AmbiantSpace::NameShape nameShape, Point<DIM> L,
-        size_t NbSpheres, unsigned seed, double mindist) {
+    AmbiantSpace::NameShape nameShape, Point<DIM> L,
+    size_t NbSpheres, unsigned seed, double mindist) {
     double phi = fractionVolThMaxRSA(DIM);
     double radius = monoDispReferenceRadius < DIM
-            > (L, NbSpheres, phi, algoSpheres::TypeAlgo::RSA) - 0.5 * mindist;
+    >(L, NbSpheres, phi, algoSpheres::TypeAlgo::RSA) - 0.5 * mindist;
     if (radius < 0) {
         cerr << __PRETTY_FUNCTION__ << endl;
         throw runtime_error("Radius cannot be negative!");
@@ -116,8 +119,8 @@ inline vector<Sphere<DIM>> algoSpheres::fillMaxRSA(
     while (counter < COUNTER_MAX) {
         vector<double> tabRadii(NbSpheres, radius);
         spheres =
-                throwSpheres < DIM
-                        > (algoSpheres::TypeAlgo::RSA, nameShape, L, seed, tabRadii, tabPhases, mindist);
+            throwSpheres < DIM
+            >(algoSpheres::TypeAlgo::RSA, nameShape, L, seed, tabRadii, tabPhases, mindist);
         if (spheres.size() == NbSpheres) {
             break;
         }
@@ -176,6 +179,6 @@ inline vector<double> algoSpheres::fromCumHisto(algoSpheres::TypeAlgo typeAlgo,
 }
 */
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* INTERFACE_IXX_ */
+

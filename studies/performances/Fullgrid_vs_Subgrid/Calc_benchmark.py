@@ -15,7 +15,7 @@ List_L0 = [32,64,128,256,512,1024]
 List_nSpheres = [10,100,1000,10000]
 FichierSortie = './TimeVox.res'
 off = open(FichierSortie,'w')
-off.write("#nSpheres L0(=nVox0) Time_3D_full Time_3D_SubGrid\n")
+off.write("nbVox0  nSpheres Time_3D_full Time_3D_SubGrid\n")
 
 
 for L0 in List_L0:

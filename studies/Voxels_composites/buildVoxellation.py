@@ -15,8 +15,8 @@ import sac_de_billes
 import merope
 
 import archi_merope as arch
-import amitex_fftp.Lancement_AMITEX as amitex
-import amitex_fftp.Post_traitement as amitex_out
+import interface_amitex_fftp.amitex_wrapper as amitex
+import interface_amitex_fftp.post_processing as amitex_out
 
 from parametrization import *
 
@@ -46,13 +46,18 @@ def geometry():
 
 def createGrid(n, voxelRule, homogRule, multiInclusions):
 # Voxellate
+    structure = merope.Structure_3D(multiInclusions)
     nbVox = [n, n, n]
-    grid = merope.Voxellation_3D(multiInclusions)
-    grid.setVoxelRule(voxelRule)
-    grid.setHomogRule(homogRule)
-    grid.setPureCoeffs(all_lambdas)
-    grid.proceed(nbVox)
-    grid.printFile(GRID_FILE, "Coeffs.txt")
+    
+    gridParameters = merope.vox.create_grid_parameters_N_L_3D(nbVox, L)
+    grid = merope.vox.GridRepresentation_3D(structure, gridParameters, voxelRule)
+    if voxelRule == merope.vox.VoxelRule.Average:
+        grid.apply_homogRule(homogRule, all_lambdas)
+    elif voxelRule == merope.vox.VoxelRule.Center:
+        grid.apply_coefficients(all_lambdas)
+
+    my_printer = merope.vox.vtk_printer_3D()
+    my_printer.printVTK_segmented(grid, GRID_FILE, "Coeffs.txt")
     ###
     os.system("rm -rf "     + arch.resultFolder)
     os.system("mkdir "      + arch.resultFolder)

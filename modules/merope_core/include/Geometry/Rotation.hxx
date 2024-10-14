@@ -2,8 +2,7 @@
 //!
 //! \brief
 
-#ifndef _ROTATION_HXX
-#define _ROTATION_HXX 1
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 
@@ -105,7 +104,7 @@ private:
     void VecProd();
 };
 
-} // namespace merope
+}  // namespace merope
 
-#endif /* _ROTATION_HXX */
+
 

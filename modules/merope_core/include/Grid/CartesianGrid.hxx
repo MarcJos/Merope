@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GRID_CARTESIANGRID_HXX_
-#define GRID_CARTESIANGRID_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -24,14 +23,14 @@ template<unsigned short DIM, class VOXEL_TYPE>
 class CartesianGrid : public MultiDArrayObject<DIM, VOXEL_TYPE, SubArrayDimensions<DIM>> {
 public:
     //! constructor
-    CartesianGrid(PreSubGrid<DIM> gridParameters_) :
+    CartesianGrid(GridParameters<DIM> gridParameters_) :
         MultiDArrayObject<DIM, VOXEL_TYPE, SubArrayDimensions<DIM>>(
             SubArrayDimensions<DIM>(gridParameters_.getNbNodes(), gridParameters_.getNMin(), gridParameters_.getNMax()),
             VOXEL_TYPE{}
         ),
         gridParameters(gridParameters_) {}
     //! getter
-    const PreSubGrid<DIM>& getGridParameters() const { return gridParameters; }
+    const GridParameters<DIM>& getGridParameters() const { return gridParameters; }
     //! getter
     const array<size_t, DIM>& getNbNodeSubGrid() const { return this->getGridParameters().getNbNodeSubGrid(); }
     //! getter
@@ -44,38 +43,18 @@ public:
     const Point<DIM>& getDx() const { return this->getGridParameters().getDx(); }
     //! getter
     const Point<DIM>& getL() const { return this->getGridParameters().getL(); }
+    //! getter
+    template<class INT_TYPE>
+    Point<DIM> getCenterVoxel(const array<INT_TYPE, DIM>& ijk) const;
 
 private:
     //! grid parameters. Never modify by setter!
-    PreSubGrid<DIM> gridParameters;
+    GridParameters<DIM> gridParameters;
 };
-
-template<unsigned short DIM, class VOXEL_TYPE>
-//! general class for cartesian grid of voxels containing an information of a certain type
-//! cannot use subgrid here
-class EfficientCartesianGrid : public MultiDArrayObject<DIM, VOXEL_TYPE, ArrayDimensions<DIM>>,
-    public With_dx<DIM> {
-public:
-    //! @brief 
-    //! @param gridParameters_ : describes dx and nb voxels per edge
-    EfficientCartesianGrid(PreGrid<DIM> gridParameters_) :
-        MultiDArrayObject<DIM, VOXEL_TYPE, ArrayDimensions<DIM>>(
-            ArrayDimensions<DIM>(gridParameters_.getNbNodes()), VOXEL_TYPE{}
-        ),
-        With_dx<DIM>(gridParameters_.getDx()),
-        L(gridParameters_.getL()) {}
-    //! getter
-    const Point<DIM>& getL()const { return L; }
-
-private:
-    //! L
-    Point<DIM> L;
-};
-
 
 } /* namespace vox */
-} // namespace merope
+}  // namespace merope
 
 #include "../Grid/CartesianGrid.ixx"
 
-#endif /* GRID_CARTESIANGRID_HXX_ */
+

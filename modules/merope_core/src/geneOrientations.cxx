@@ -1,6 +1,6 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
 
 
@@ -11,12 +11,13 @@
 
 
 #include "MeropeNamespace.hxx"
+#include "../../merope_core/include/geneOrientations.hxx"
 
 
 namespace merope {
 namespace geneOrientation {
 
-void test() {
+inline void test() {
 	// create source of randomness, and initialize it with non-deterministic seed
 	random_device r;
 	seed_seq seed{ r() };
@@ -43,7 +44,7 @@ void test() {
 	cout << endl;
 }
 
-void EulerToAxis(const double* const ang, double* const vec) {
+inline void EulerToAxis(const double* const ang, double* const vec) {
 	// Premiere colonne de la matrice de passage a
 	vec[0] = cos(ang[2]) * cos(ang[0])
 		- sin(ang[2]) * cos(ang[1]) * sin(ang[0]);
@@ -62,7 +63,7 @@ void EulerToAxis(const double* const ang, double* const vec) {
 	vec[8] = cos(ang[1]);
 }
 
-void checkOrth(const double* const vec) {
+inline void checkOrth(const double* const vec) {
 	double p12 = vec[0] * vec[3] + vec[1] * vec[4] + vec[2] * vec[5];
 	double p13 = vec[0] * vec[6] + vec[1] * vec[7] + vec[2] * vec[8];
 	double p23 = vec[3] * vec[6] + vec[4] * vec[7] + vec[5] * vec[8];
@@ -78,8 +79,7 @@ void checkOrth(const double* const vec) {
 			"Generation d'orientations aleatoires : la norme des vecteurs de la base n'est pas egale a 1\n");
 }
 
-void PremCad(const double* const vec, double* const v) {
-
+inline void PremCad(const double* const vec, double* const v) {
 	// Normalisation du vecteur
 	double n = sqrt(vec[2] * vec[2] + vec[5] * vec[5] + vec[8] * vec[8]);
 	if (vec[2] > 0)
@@ -116,7 +116,7 @@ void PremCad(const double* const vec, double* const v) {
 	}
 }
 
-void printPremCad(const double* const ang, const double* const vec,
+inline void printPremCad(const double* const ang, const double* const vec,
 	ofstream& f) {
 	double v[3];
 	PremCad(vec, v);
@@ -124,13 +124,13 @@ void printPremCad(const double* const ang, const double* const vec,
 		<< " " << v[2] << endl;
 }
 
-void printAllCad(const double* const ang, const double* const vec,
+inline void printAllCad(const double* const ang, const double* const vec,
 	ofstream& f) {
 	f << ang[0] << " " << ang[1] << " " << ang[2] << " " << vec[2] << " "
 		<< vec[5] << " " << vec[8] << endl;
 }
 
-void printLicos(const unsigned short n, const double* const vec, ofstream& f) {
+inline void printLicos(const unsigned short n, const double* const vec, ofstream& f) {
 	f << "Material '" << n << "'\n";
 	f << "AnisotropicAxises {{'" << vec[0] << "','" << vec[1] << "','" << vec[2]
 		<< "'},{'" << vec[3] << "','" << vec[4] << "','" << vec[5]
@@ -138,20 +138,20 @@ void printLicos(const unsigned short n, const double* const vec, ofstream& f) {
 	f << "EndOfMaterial\n\n";
 }
 
-void printTmfft(const unsigned short n, const double* const ang, ofstream& f) {
+inline void printTmfft(const unsigned short n, const double* const ang, ofstream& f) {
 	f << "Material " << n << "\n";
 	f << "AnisotropicAxises<Angles> {" << ang[0] * 180 / m_PI << ","
 		<< ang[1] * 180 / m_PI << "," << ang[2] * 180 / m_PI << "}\n";
 	f << "EndOfMaterial\n\n";
 }
 
-void printNoFormatting(const unsigned short n, const double* const vec,
+inline void printNoFormatting(const unsigned short n, const double* const vec,
 	ofstream& f) {
 	f << n << " " << vec[0] << " " << vec[1] << " " << vec[2] << " " << vec[3]
 		<< " " << vec[4] << " " << vec[5] << endl;
 }
 
-void randomOrient0(const unsigned short N, const unsigned short seed_i,
+inline void randomOrient0(const unsigned short N, const unsigned short seed_i,
 	ofstream& f) {
 	double ang[3], vec[9];
 	default_random_engine gen(seed_i);
@@ -173,7 +173,7 @@ void randomOrient0(const unsigned short N, const unsigned short seed_i,
 	}
 }
 
-void readOrient0(const char* const outEBSD, ofstream& f, ofstream& g) {
+inline void readOrient0(const char* const outEBSD, ofstream& f, ofstream& g) {
 	ifstream febsd(outEBSD);
 	if (!febsd)
 		throw logic_error("Le fichier sortie d'EBSD n'existe pas");
@@ -207,6 +207,6 @@ void printRandomOrient_3D(const unsigned short N,
 	randomOrient0(N, seed_i, file);
 }
 
-} // geneOrientation
-} // namespace merope
+}  // namespace geneOrientation
+}  // namespace merope
 

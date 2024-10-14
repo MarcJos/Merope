@@ -13,8 +13,10 @@ tic0 = time.time()
 
 n3D = 256
 
+L = [10,10,10]
+
 sphIncl = merope.SphereInclusions_3D()
-sphIncl.setLength([10,10,10])
+sphIncl.setLength(L)
 sphIncl.fromHisto(0, sac_de_billes.TypeAlgo.RSA, 0., [[0.5,0.2],[0.25,0.2]], [1,2])
 
 mIncl = merope.MultiInclusions_3D()
@@ -54,11 +56,12 @@ for i, n in enumerate(list2):
 ###
 ###############################################
 
-grid = merope.Voxellation_3D(mIncl)
-grid.setPureCoeffs([0, 1, 2, 3, 4])
-grid.setHomogRule(merope.HomogenizationRule.Largest)
-grid.setVoxelRule(merope.VoxelRule.Center)
-grid.proceed([n3D, n3D, n3D])
-grid.printFile("Zone_Incl.vtk","Coeffs_Incl.txt")
+structure = merope.Structure_3D(mIncl)
+
+gridParameters = merope.vox.create_grid_parameters_N_L_3D([n3D, n3D, n3D], L)
+grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Center)
+
+my_printer = merope.vox.vtk_printer_3D()
+my_printer.printVTK(grid, "Zone_Incl.vtk")
 
 print(time.time() - tic0)

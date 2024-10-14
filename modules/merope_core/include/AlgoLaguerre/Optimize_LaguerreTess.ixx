@@ -19,7 +19,7 @@ void algo_fit_volumes<DIM>::proceed(double max_delta_Vol, size_t max_iter, bool 
 }
 
 template<unsigned short DIM>
-std::conditional<DIM == 3, const vector<Sphere<DIM>>&, vector<Sphere<DIM>>>::type algo_fit_volumes<DIM>::getCenterTessels() const {
+std::conditional_t<DIM == 3, const vector<Sphere<DIM>>&, vector<Sphere<DIM>>> algo_fit_volumes<DIM>::getCenterTessels() const {
     if constexpr (DIM == 3) {
         return internal_algo.getCenterTessels();
     }
@@ -39,7 +39,7 @@ double algo_fit_volumes<DIM>::maxDeltaVolumes() const {
 }
 
 template<unsigned short DIM>
-std::conditional<DIM == 3, const vector<double>&, vector<double>>::type algo_fit_volumes<DIM>::getCurrentVolumes() const {
+std::conditional_t<DIM == 3, const vector<double>&, vector<double>> algo_fit_volumes<DIM>::getCurrentVolumes() const {
     if constexpr (DIM == 3) {
         return internal_algo.getCurrentVolumes();
     }
@@ -102,6 +102,6 @@ vector<double> algo_fit_volumes<DIM>::transform_2D(const vector<double>& desired
 }
 
 
-} // namespace  optimizeLaguerreTess
+}  // namespace  optimizeLaguerreTess
 
-} // namespace  merope
+}  // namespace  merope

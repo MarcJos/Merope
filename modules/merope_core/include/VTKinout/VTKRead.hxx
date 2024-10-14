@@ -1,11 +1,10 @@
 //! Copyright : see license.txt
 //!
-//! \brief Reader for a periodic discrete medium
+//! \briefReader for a periodic discrete medium
 //! given by a VTK File (DATASET STRUCTURED_POINTS)
 //
 
-#ifndef _VTKFILEGRID_HXX
-#define _VTKFILEGRID_HXX 1
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -31,23 +30,23 @@ struct Comp {
 };
 
 //! VTK reading structure
-class VTKRead: public ifstream {
+class VTKRead : public ifstream {
 public:
     //! Material Id data type
     enum MType {
         UC, US, ST, CH
     };
 protected:
-    size_t nx, ny, nz; //!< Grid dimensions
+    size_t nx, ny, nz;  //!< Grid dimensions
     size_t ng;
-    unsigned char d; //!< Space dimension
-    double dx, dy, dz; //!< Spacing
-    vector<Comp> cmps; //!< Variable components
-    Comp vel; //!< Velocity
-    streampos pMId; //!< Material Id position
-    MType mt; //!< Material Id data type
-    bool isList; //!< True after the component parsing
-    bool isFor; //!< True for a formated VTK
+    unsigned char d;  //!< Space dimension
+    double dx, dy, dz;  //!< Spacing
+    vector<Comp> cmps;  //!< Variable components
+    Comp vel;  //!< Velocity
+    streampos pMId;  //!< Material Id position
+    MType mt;  //!< Material Id data type
+    bool isList;  //!< True after the component parsing
+    bool isFor;  //!< True for a formated VTK
 public:
     //! VTK reader constructor
     //! \param fname File name
@@ -96,10 +95,10 @@ protected:
     void gatherL(const char* strainN, const char* stressN);
 };
 
-} // namespace merope
+}  // namespace merope
 
 
 #include "../VTKinout/VTKRead.ixx"
 
-#endif // _VTKFILEGRID_HXX
+
 

@@ -1,25 +1,18 @@
 //! Copyright : see license.txt
 //!
-//! \brief FFT fields based on FFTW library
+//! \briefFFT fields based on FFTW library
 
-#ifndef _FFT_FIELD_HXX
-#define _FFT_FIELD_HXX 1
+#pragma once
 
 #include<vector>
 #include<iostream>
 
-#if defined(_WIN32) || defined(WIN32)  // ugly for Eclipse
-#include "../../../FFTW_Win/fftw3.h"
-#else
 #include<fftw/fftw3.h>
-#endif
 
 #include<assert.h>
 
 #include"../FFTW3/NumericTypes.h"
 #include "../localMFront.h"
-
-
 
 #include "../MeropeNamespace.hxx"
 
@@ -33,25 +26,25 @@ class Grid;
 class FFTField {
 protected:
     unsigned char d;  //!< Space dimension
-    unsigned char nv; //!< Number of variables
+    unsigned char nv;  //!< Number of variables
     size_t fSize;  //!< Number of spatial nodes
     size_t FSize;  //!< Number of spectral nodes
-    bool isSpatial; //!< Current representation (spatial or spectral)
+    bool isSpatial;  //!< Current representation (spatial or spectral)
 
-    int n[3]; //!< Grid dimensions
-    unsigned nz, nzb; //!< Last real grid dimension (for in-place FFT)
+    int n[3];  //!< Grid dimensions
+    unsigned nz, nzb;  //!< Last real grid dimension (for in-place FFT)
 
-    rfloat* f; //!< Spatial field
-    cfloat* F; //!< Spectral field
+    rfloat* f;  //!< Spatial field
+    cfloat* F;  //!< Spectral field
 
 private:
     FFTW_PREF(plan) forwardPlan;  //!< FFT forward  plane
-    FFTW_PREF(plan) backwardPlan; //!< FFT backward plane
-    unsigned flags; //!< FFT plane type
+    FFTW_PREF(plan) backwardPlan;  //!< FFT backward plane
+    unsigned flags;  //!< FFT plane type
 
 public:
     void forward();  //!< Direct transformation (with normalization)
-    void backward(); //!< Reverse transformation
+    void backward();  //!< Reverse transformation
 
     //! Print the field values
     //! \param os Output flux
@@ -70,8 +63,8 @@ public:
     //! \param k coeff to apply to all other frequencies values
     void resetSpectralField(const CastemReal* values, const double k);
 
-    cfloat* getSpectralField(); //!< getter on spectral field
-    const cfloat* getSpectralField() const; //!< const getter on spectral field
+    cfloat* getSpectralField();  //!< getter on spectral field
+    const cfloat* getSpectralField() const;  //!< const getter on spectral field
     //! Spatial vector at node i
     //! \param i Node number
     //! \return Spatial vector at node i
@@ -153,10 +146,10 @@ protected:
     }
 
 private:
-    FFTField(const FFTField&); //!< Forbid copy constructor
+    FFTField(const FFTField&);  //!< Forbid copy constructor
 
     void buildForwardPlan();  //!< Direct  transformation plane construction
-    void buildBackwardPlan(); //!< Reverse transformation plane construction
+    void buildBackwardPlan();  //!< Reverse transformation plane construction
     //! Spatial scalar product
     //! \param ff2 Other FFTfield
     //! \return the scalar product
@@ -167,7 +160,7 @@ private:
     long double SpectralScalarProduct(const FFTField& ff2) const;
 };
 
-} // namespace merope
+}  // namespace merope
 
-#endif // _FFT_FIELD_HXX
+
 

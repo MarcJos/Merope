@@ -78,6 +78,6 @@ double auxi::compute_alpha_n(const VECTOR& x_n, const VECTOR& x_n_1, const VECTO
     return alpha_n;
 }
 
-} // namespace Barzilai_Borwein
+}  // namespace Barzilai_Borwein
 
-} // namespace  optimization
+}  // namespace  optimization

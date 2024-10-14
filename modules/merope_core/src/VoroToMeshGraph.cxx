@@ -9,13 +9,8 @@
 #include "Mesh/GeoObjects.hxx"
 #include "Mesh/MeshStructure.hxx"
 
-#if defined(_WIN32) || defined(WIN32) // ugly for Eclipse
-#include "../../voro-plus-plus/src/container.hh"
-#include "../../voro-plus-plus/src/pre_container.hh"
-#else
 #include "container.hh"
 #include "pre_container.hh"
-#endif
 
 
 #include "MeropeNamespace.hxx"
@@ -100,7 +95,7 @@ mesh::meshStructure::VoroMesh_UnStructureData<3> getRawMeshGraph(const Point<3>&
     return getRawMeshGraph(singleCell);
 }
 
-} //namespace voroTranslater
-} //namespace microToMesh
-} // namespace merope
+}  // namespace voroTranslater
+}  // namespace microToMesh
+}  // namespace merope
 

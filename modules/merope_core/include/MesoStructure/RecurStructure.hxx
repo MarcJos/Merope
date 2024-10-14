@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef PREMICROSTRUCTURE_HXX_
-#define PREMICROSTRUCTURE_HXX_
+#pragma once
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 
@@ -28,7 +27,7 @@ enum class TypeOfCombination {
     Mask,           // the microstructure is a combination of 2 RecurGeoms, with a function defining the resulting RecurGeom
     Combination2    // the microstructure is a combination of 3 RecurGeoms, the 2nd being a mask
 };
-} // namespace auxiMicroStructure
+}  // namespace auxiMicroStructure
 
 
 template<unsigned short DIM, class BasicStruct, class BasicType>
@@ -110,9 +109,9 @@ private:
     vector<PhaseType> allPhases;
 };
 
-} // namespace merope
+}  // namespace merope
 
 
 #include "RecurStructure.ixx"
 
-#endif /* PREMICROSTRUCTURE_HXX_ */
+

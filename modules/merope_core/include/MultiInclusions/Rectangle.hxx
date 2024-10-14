@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief For Test: a 2 phases geometry, 
+//! \briefFor Test: a 2 phases geometry, 
 //! with a rectangle included in a matrix
 //
-#ifndef _RECTANGLE_HXX
-#define _RECTANGLE_HXX 1
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -19,13 +18,13 @@ namespace merope {
 
 //! Periodical 2 phases geometry with a rectangle included in a Matrix.
 template<unsigned short DIM>
-class Rectangle: public InsideTorus<DIM> {
+class Rectangle : public InsideTorus<DIM> {
 public:
     //! Constructors
     //! \param L : Periodical geometry dimensions
     //! \param rec : 'rectangle' inclusion dimensions
     //! constructor.
-    Rectangle(array<double, DIM> L, array<double, DIM> recL_): InsideTorus<DIM>(L), recL{ recL_ }{};
+    Rectangle(array<double, DIM> L, array<double, DIM> recL_) : InsideTorus<DIM>(L), recL{ recL_ }{};
     //! Number of phases in the geometry.
     size_t getNumberOfPhases() const;
     //! Rectangular inclusion dimension in x direction.
@@ -37,8 +36,8 @@ size_t Rectangle<DIM>::getNumberOfPhases() const {
     return 2;
 }
 
-} // namespace merope
+}  // namespace merope
 
 
-#endif // _RECTANGLE_HXX
+
 

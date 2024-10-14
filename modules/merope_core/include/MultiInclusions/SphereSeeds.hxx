@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef SPHERESEEDS_HXX_
-#define SPHERESEEDS_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -25,7 +24,7 @@ void writeLongLine(const std::vector<std::string>&, std::ostream&);
 void readKeyword(const std::string keyword, ifstream& f);
 
 template<unsigned short DIM>
-class SphereSeeds: public SphereCollection<DIM>, public InsideTorus<DIM> {
+class SphereSeeds : public SphereCollection<DIM>, public InsideTorus<DIM> {
     //! class holding, printing and manipulating collections of spheres
 public:
     SphereSeeds();
@@ -60,9 +59,9 @@ private:
     static constexpr array<double, DIM> DEFAULT_L = create_array<DIM>(1.);
 };
 
-} // namespace merope
+}  // namespace merope
 
 
 #include "../MultiInclusions/SphereSeeds.ixx"
 
-#endif /* SPHERESEEDS_HXX_ */
+

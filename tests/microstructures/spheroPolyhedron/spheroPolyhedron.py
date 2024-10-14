@@ -26,9 +26,11 @@ spheroPolyhedron = merope.microInclusion.SpheroPolyhedronFactory_3D().fromVertic
 
 multiInclusions = merope.MultiInclusions_3D()
 multiInclusions.setInclusions([spheroPolyhedron], L)
+structure = merope.Structure_3D(multiInclusions)
 
-grid = merope.Voxellation_3D(multiInclusions)
-grid.setPureCoeffs([1,2])
-grid.proceed(nbVox)
-grid.printFile("Zone.vtk","Coeffs.txt")
+gridParameters = merope.vox.create_grid_parameters_N_L_3D(nbVox, L)
+grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Center)
+grid.apply_coefficients([1, 2])
 
+my_printer = merope.vox.vtk_printer_3D()
+my_printer.printVTK_segmented(grid, "Zone.vtk","Coeffs.txt")

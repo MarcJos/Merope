@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief Details of implementation for the voxellisation
+//! \briefDetails of implementation for the voxellisation
 //
-#ifndef VOXELLATIONAUX_HXX_
-#define VOXELLATIONAUX_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -21,7 +20,6 @@
 #include "../MultiInclusions/MultiInclusions.hxx"
 #include "../MultiInclusions/SphereInclusions.hxx"
 #include "../MesoStructure/Structure.hxx"
-// #include "../Voxellation/VoxRecurStructure.hxx"
 
 
 #include "../MeropeNamespace.hxx"
@@ -32,13 +30,13 @@ namespace vox {
 
 //! Class for building a phase field from a MultiInclusions geometry
 template<unsigned short DIM, vox::VoxelRule VOXEL_RULE>
-class VoxSimpleMultiInclusions : public VoxGrid<DIM, vox::OutputFormat<VOXEL_RULE>> {
+class VoxSimpleMultiInclusions : public VoxGrid<DIM, vox::composite::OutputFormat<VOXEL_RULE, DIM, PhaseType>> {
     // Preconditions
-    static_assert(VOXEL_RULE == VoxelRule::Center or VOXEL_RULE == VoxelRule::Average);
+    static_assert(VOXEL_RULE == VoxelRule::Center or VOXEL_RULE == VoxelRule::Average or VOXEL_RULE == VoxelRule::Laminate);
     //
 public:
     //! main constructor
-    VoxSimpleMultiInclusions(const MultiInclusions<DIM>& multiI, PreSubGrid<DIM> gridParameters);
+    VoxSimpleMultiInclusions(const MultiInclusions<DIM>& multiI, GridParameters<DIM> gridParameters);
 
 protected:
     //! inner inclusions ref
@@ -60,7 +58,7 @@ private:
     template<class C>
     void computeInclusionVoxel(const C& microInclusion, const DiscPoint<DIM>& indexVoxel);
     //! simple method for filling a voxel with a given list of phases and volume fractions
-    void fillVoxel(const DiscPoint<DIM>& indexVoxel, const vox::OutputFormat <VOXEL_RULE>& phases2Include);
+    void fillVoxel(const DiscPoint<DIM>& indexVoxel, const vox::composite::OutputFormat<VOXEL_RULE, DIM, PhaseType>& phases2Include);
     //! fills the vector phaseFracVol, considering a single class of inclusions
     template<class C>
     void buildGridPhaseFrac_T_auxi(const vector<C>& inclusions);
@@ -73,13 +71,13 @@ private:
     void postProcessGrid();
     //! execute a single slice instruction
     template<class INCLUSION_TYPE>
-    void execute(vox::auxi::SliceInstruction<long>, DiscPoint<DIM> ijk, INCLUSION_TYPE inclusion);
+    void execute(vox::auxi::SliceInstruction<long>, DiscPoint<DIM> ijk, const INCLUSION_TYPE& inclusion);
 };
 
-} // namespace vox
-} // namespace merope
+}  // namespace vox
+}  // namespace merope
 
 
 #include "VoxSimpleMultiInclusions.ixx"
 
-#endif /* VOXELLATIONAUX_HXX_ */
+

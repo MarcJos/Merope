@@ -18,7 +18,7 @@ void print(auto my_vector) {
 
 double f(const std::vector<double>& x) {
     return sin(std::inner_product(x.begin(), x.end(), x.begin(), 0.));
-};
+}
 
 std::vector<double> nabla_f(const std::vector<double>& x) {
     double factor = 2 * cos(std::inner_product(x.begin(), x.end(), x.begin(), 0.));
@@ -27,7 +27,7 @@ std::vector<double> nabla_f(const std::vector<double>& x) {
         res[i] *= factor;
     }
     return res;
-};
+}
 
 void test1_BarzilaiBorwein() {
     cerr << "################" << endl;
@@ -56,6 +56,6 @@ void test2_BarzilaiBorwein() {
     std::cerr << "## : " << f(algo2.get_x()) << endl;
 }
 
-} // namespace  tests
-} // namespace  optimization
+}  // namespace  tests
+}  // namespace  optimization
 

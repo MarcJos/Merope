@@ -1,6 +1,6 @@
 //! Copyright : see license.txt
 //!
-//! \brief Geostatistic data needed to simulate a periodic medium
+//! \briefGeostatistic data needed to simulate a periodic medium
 //!
 
 
@@ -173,7 +173,6 @@ double LogNorm::PDF(const double x) const {
         return 0;
     }
     return GaussRV::PDF(log(x)) / x;
-
 }
 
 double LogNorm::CDF(const double x) const {
@@ -235,6 +234,6 @@ double SofERV::inverseF(const double u) const {
     return 0;
 }
 
-} // namespace gaussianField
-} // namespace merope
+}  // namespace gaussianField
+}  // namespace merope
 

@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef FFTW3_VOXELLATIONGREEN_IXX_
-#define FFTW3_VOXELLATIONGREEN_IXX_
+#pragma once
 
 #include "../Grid/AreCompatible.hxx"
 
@@ -15,7 +14,7 @@ namespace merope {
 namespace vox {
 
 template<unsigned short DIM>
-inline vox::VoxSimpleGauss<DIM>::VoxSimpleGauss(const CartesianField<DIM>& cartesianField_, const PreSubGrid<DIM>& gridParameters_) :
+inline vox::VoxSimpleGauss<DIM>::VoxSimpleGauss(const CartesianField<DIM>& cartesianField_, const GridParameters<DIM>& gridParameters_) :
     VoxGrid<DIM, double>(gridParameters_),
     fieldGenerator{ &cartesianField_ } {
 }
@@ -32,40 +31,40 @@ inline void vox::VoxSimpleGauss<DIM>::build() {
         }
     }
     ////////////////////////////////
-    if (fieldGenerator->getTypeField() == TypeField::Gaussian) { // case : gaussian
+    if (fieldGenerator->getTypeField() == TypeField::Gaussian) {  // case : gaussian
         Grid_VER grid{};
         grid.set_L<DIM>(this->getGridParameters().getL());
         grid.set_Nb<DIM>(this->getGridParameters().getNbNodeBigGrid());
         auto gaussianField_ = fieldGenerator->getGaussianField();
         auto randomField = gaussianField::createField(gaussianField_, grid, this->getVoxGrid().size());
         std::function<double(double)> nonLin = gaussianField_.nonlinearFunction;
-        { // begin parallel section
+        {  // begin parallel section
         //#pragma omp parallel for firstprivate(nonLin) //inefficient when using python function
             for (size_t i = 0; i < this->getVoxGrid().size(); ++i) {
                 this->getVoxGrid()[i] = nonLin(randomField[i]);
             }
-        } // end parallel section
-    } else if (fieldGenerator->getTypeField() == TypeField::NumericalCovariance) { // case : gaussian
+        }  // end parallel section
+    } else if (fieldGenerator->getTypeField() == TypeField::NumericalCovariance) {  // case : gaussian
         Grid_VER grid{};
         grid.set_L<DIM>(this->getGridParameters().getL());
         grid.set_Nb<DIM>(this->getGridParameters().getNbNodeBigGrid());
         auto covariance = fieldGenerator->getCovariance();
         auto covarianceField = gaussianField::createField(covariance, grid, this->getVoxGrid().size());
-        { // begin parallel section
+        {  // begin parallel section
         //#pragma omp parallel for firstprivate(nonLin) //inefficient when using python function
             for (size_t i = 0; i < this->getVoxGrid().size(); ++i) {
                 this->getVoxGrid()[i] = covarianceField[i];
             }
-        } // end parallel section
-    } else if (fieldGenerator->getTypeField() == TypeField::Scalar) { // case : scalar field
+        }  // end parallel section
+    } else if (fieldGenerator->getTypeField() == TypeField::Scalar) {  // case : scalar field
         auto nbVoxels = this->getVoxGrid().getNbNodeBigGrid();
         auto fonction = fieldGenerator->getScalarField().fieldFunction;
         auto dx = this->getVoxGrid().getDx();
-        loop(nbVoxels, [this, &nbVoxels, &fonction, &dx](auto ijk) {
+        loop<false>(nbVoxels, [this, &nbVoxels, &fonction, &dx](auto ijk) {
             this->getVoxGrid()[vox::auxi::get_linear_index<DIM>(ijk, nbVoxels)] = fonction(vox::auxi::origin<DIM>(ijk, dx));
             ;
             });
-    } else if (fieldGenerator->getTypeField() == TypeField::Discretized) { // case discretized
+    } else if (fieldGenerator->getTypeField() == TypeField::Discretized) {  // case discretized
         auto discretizedField = fieldGenerator->getDiscretizedField();
         if (areCompatible(discretizedField.getGridParameters(), this->getGridParameters())) {
             this->getVoxGrid() = discretizedField;
@@ -76,8 +75,8 @@ inline void vox::VoxSimpleGauss<DIM>::build() {
     }
 }
 
-} //namespace vox
-} // namespace merope
+}  // namespace vox
+}  // namespace merope
 
 
-#endif /* FFTW3_VOXELLATIONGREEN_IXX_ */
+

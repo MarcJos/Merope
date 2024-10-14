@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief A simple grid at 1,2 or 3 dimensions
+//! \briefA simple grid at 1,2 or 3 dimensions
 //
 
-#ifndef _GRID_IXX
-#define _GRID_IXX 1
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -12,6 +11,7 @@
 #include "../VTKinout/VTKRead.hxx"
 
 #include "../MeropeNamespace.hxx"
+#include "../VTKinout/VTK_adapter.hxx"
 
 
 namespace merope {
@@ -35,7 +35,7 @@ void Grid::readVTK(VTKRead& vf) {
     phases.resize(pmax - pmin + 1);
 
     unsigned short i, j, k;
-    unsigned nyz = (unsigned)nz * ny;
+    auto nyz = nz * ny;
     size_t I;
     for (I = 0, k = 0; k < nz; ++k) {
         size_t cj = k;
@@ -51,31 +51,22 @@ void Grid::readVTK(VTKRead& vf) {
 
 template<unsigned short DIM>
 void Grid::toVTKCELL_T(VTKstream& fvtk) const {
-    // File header
-    VTKheaderCELL_T<DIM>(fvtk);
-    fvtk << "SCALARS MaterialId unsigned_short" << endl;
-    fvtk << "LOOKUP_TABLE default" << endl;
-    // Geometry reconstruction
     vector<unsigned short> ids(ng);
     vtkReorderMaterialIdx(&ids[0]);
-    // Write phase indices values in file
-    fvtk.writeVector(ids, array<size_t, 3>{nx, ny, nz});
-}
+    string nameValue = "MaterialId";
 
-template<unsigned short DIM>
-void Grid::VTKheaderCELL_T(VTKstream& fvtk) const {
-    static_assert(DIM == 2 or DIM == 3);
     if constexpr (DIM == 2) {
-        const double dx = lx / nx, dy = ly / ny;
-        fvtk.STRUCTURED_POINTS(nx, ny, dx, dy);
+        array<double, DIM> dx = { lx / nx, ly / ny };
+        array<size_t, DIM> n = { nx, ny };
+        vtk_adapter::printVTK<unsigned short, DIM>(fvtk, n, dx, ids, nameValue);
     } else if constexpr (DIM == 3) {
-        const double dx = lx / nx, dy = ly / ny, dz = lz / nz;
-        fvtk.STRUCTURED_POINTS(nx, ny, nz, dx, dy, dz);
+        array<double, DIM> dx = { lx / nx, ly / ny, lz / nz };
+        array<size_t, DIM> n = { nx, ny, nz };
+        vtk_adapter::printVTK<unsigned short, DIM>(fvtk, n, dx, ids, nameValue);
     }
-    // Data type and associated color table
-    fvtk.setCELL(ng);
+
 }
 
-} // namespace merope
+}  // namespace merope
 
-#endif // _GRID_IXX
+

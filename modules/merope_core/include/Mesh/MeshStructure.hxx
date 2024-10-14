@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MESH_MESHSTRUCTURE_HXX_
-#define MESH_MESHSTRUCTURE_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -74,15 +73,16 @@ public:
     AmbiantSpace::Tore<DIM> torus;
 public:
     //! constructor
-    VoroMesh_NotPeriodic(VoroMesh_UnStructureData<DIM> rawData);
+    VoroMesh_NotPeriodic(const VoroMesh_UnStructureData<DIM>& rawData);
     //! destructor
     virtual ~VoroMesh_NotPeriodic() {}
+    //! @brief add new raw mesh data
+    void add_raw_mesh_data(const VoroMesh_UnStructureData<DIM>& rawData);
     //! verify if the structure is coherent
     bool isCoherent() const;
     //! prints into the stream f
     //! \param f: stream
     virtual void print(std::ostream& f) const;
-protected:
     //! build the tree, namely connecting all the components
     void buildTree();
 };
@@ -168,6 +168,18 @@ private:
     bool comparePerSurface(Identifier surf_id1, Identifier surf_id2, const Point<DIM>& translation) const;
 };
 
+template<unsigned short DIM>
+class VoroMesh_Periodic_Physical : public VoroMesh_Periodic<DIM> {
+public:
+    explicit VoroMesh_Periodic_Physical(VoroMesh_Periodic<DIM> voroMeshPer) :
+        VoroMesh_Periodic<DIM>{ voroMeshPer }, dictPhysicalSurface({}), dictPhysicalVolume({}) {}
+    //! to identify points copied by periodicity
+    std::map<Identifier, PhysicalSurface>   dictPhysicalSurface;
+    //! to identify surfaces copied by periodicity
+    std::map<Identifier, PhysicalVolume>    dictPhysicalVolume;
+};
+
+
 //! translate a vector of GeoObjects into a map with identifier being its element
 //! \param vec : a vector of GeoObjects
 //! \param dict : the desired map of GeoObjects
@@ -196,10 +208,10 @@ template<class DICT_LEAF, class DICT_ROOT>
 void restrictTo_RootLeaves_withoutRootConnection(DICT_LEAF& dictThings, const DICT_ROOT& dictRoots);
 
 
-} // namespace meshStructure
-} // namespace mesh
-} // namespace merope
+}  // namespace meshStructure
+}  // namespace mesh
+}  // namespace merope
 
 #include "../Mesh/MeshStructure.ixx"
 
-#endif /* MESH_MESHSTRUCTURE_HXX_ */
+

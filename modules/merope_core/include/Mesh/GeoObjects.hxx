@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MESH_GEOOBJECTS_HXX_
-#define MESH_GEOOBJECTS_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -45,7 +44,7 @@ constexpr inline TypeRelation Invert(TypeRelation RELAT) {
 //! base class for geometrical mesh object
 class GeoObject {
     template<TypeRelation RELAT>
-    using TYPE = typename std::conditional<RELAT == TypeRelation::Leaf, vector<Identifier>, std::set<Identifier>>::type;
+    using TYPE = typename std::conditional_t<RELAT == TypeRelation::Leaf, vector<Identifier>, std::set<Identifier>>;
 public:
     //! identifier of the object
     Identifier identifier;
@@ -148,14 +147,27 @@ public:
 };
 
 
+enum class TypeEdge {
+    Segment, Circle
+};
+
 class Edge final : public GeoObject {
 public:
     //! constructor
-    Edge(Identifier identifier_, const vector<Identifier>& leaves_) : GeoObject(TypeObject::Edge, identifier_, leaves_) {}
+    Edge(Identifier identifier_, const vector<Identifier>& leaves_, TypeEdge typeEdge_ = TypeEdge::Segment)
+        : GeoObject(TypeObject::Edge, identifier_, leaves_), typeEdge{ typeEdge_ } {}
     //! return whether the line is singular or not
-    bool isSingular() const override { return leaves[0] == leaves[1]; }
+    bool isSingular() const override {
+        if (typeEdge == TypeEdge::Segment) return leaves[0] == leaves[1];
+        throw runtime_error("Not programmed yet");
+    }
     //! return whether the line is coherent or not
-    bool isCoherent() const override { return leaves.size() == 2; }
+    bool isCoherent() const override {
+        if (typeEdge == TypeEdge::Segment) return leaves.size() == 2;
+        if (typeEdge == TypeEdge::Circle) return leaves.size() == 3;
+        throw runtime_error("Not programmed yet");
+    }
+    TypeEdge typeEdge;
 };
 
 
@@ -170,11 +182,18 @@ public:
     }
 };
 
+enum class TypeSurface {
+    Plane, Curved
+};
 
 class Surface final : public GeoObject_PerLeave {
 public:
     //! constructor
-    Surface(Identifier identifier_, const vector<Identifier>& leaves_) : GeoObject_PerLeave(TypeObject::Surface, identifier_, leaves_) {}
+    Surface(Identifier identifier_, const vector<Identifier>& leaves_, TypeSurface typeSurface_ = TypeSurface::Plane) :
+        GeoObject_PerLeave(TypeObject::Surface, identifier_, leaves_),
+        typeSurface{ typeSurface_ } {}
+    //! type of surface
+    TypeSurface typeSurface;
 };
 
 
@@ -272,18 +291,18 @@ void vec_merge(vector<SameThings<Identifier>> vecSameThings, DICT_ROOTS& dictRoo
 template<class DICT_ROOTS, class DICT_THINGS, class DICT_LEAVES>
 void merge(const SameThings<Identifier> sameThings, DICT_ROOTS& dictRoots, DICT_THINGS& dictThings, DICT_LEAVES& dictLeaves);
 
-} // namespace geoObjects
+}  // namespace geoObjects
 
 
 namespace sameThings {
 //! \see sameThings::getReplacementList here, implicitly use the function areSame
 template<class DICT_THINGS>
 vector<SameThings<Identifier>> getReplacementList(const DICT_THINGS& dictThing);
-} // namespace sameThings
+}  // namespace sameThings
 
 
-} // namespace mesh
-} // namespace merope
+}  // namespace mesh
+}  // namespace merope
 
 #include "../Mesh/GeoObjects.ixx"
-#endif /* MESH_GEOOBJECTS_HXX_ */
+

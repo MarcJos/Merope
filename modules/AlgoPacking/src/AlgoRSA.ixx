@@ -2,8 +2,7 @@
 //!
 //! \brief
 //
-#ifndef ALGORSA_IXX_
-#define ALGORSA_IXX_
+#pragma once
 
 namespace sac_de_billes {
 using namespace std;
@@ -13,7 +12,7 @@ template <unsigned short NUM_METHOD>
 void algoRSA_aux::MotherGrid<DIM>::addSphere(const Sphere<DIM>& sphere,
     MotherVoxel<DIM>* motherVoxel) {
     placedSpheres.push_back(sphere);
-    int iSphe = placedSpheres.size() - 1;
+    size_t iSphe = placedSpheres.size() - 1;
     motherVoxel->updateCovered(sphere, minRadius);
     if constexpr (NUM_METHOD == 1) {
         linkSphereToVoxel(motherVoxel, sphere, iSphe);
@@ -60,15 +59,15 @@ inline vector<tuple<array<int, DIM>, algoRSA_aux::MotherVoxel<DIM>*>> algoRSA_au
 
     auto getIndex = [&centralVoxel, &i, this](size_t j) {
         return auxi_function::fast_modulo(centralVoxel[j] + i[j], this->sizes[j]);
-    }; // to get the j-th coordinate of the voxel placed at position i wrt central voxel
+        };  // to get the j-th coordinate of the voxel placed at position i wrt central voxel
     DiscPoint<DIM> index({ 0 });
 
     if constexpr (DIM == 3) {
-        int size_0 = iMax[0] - iMin[0];
-        int size_1 = iMax[1] - iMin[1];
-        int size_2 = iMax[2] - iMin[2];
+        size_t size_0 = iMax[0] - iMin[0];
+        size_t size_1 = iMax[1] - iMin[1];
+        size_t size_2 = iMax[2] - iMin[2];
         result.resize(size_0 * size_1 * size_2);
-        int idx = 0;
+        size_t idx = 0;
         for (i[0] = iMin[0]; i[0] < iMax[0]; i[0]++) {
             index[0] = getIndex(0);
             for (i[1] = iMin[1]; i[1] < iMax[1]; i[1]++) {
@@ -80,10 +79,10 @@ inline vector<tuple<array<int, DIM>, algoRSA_aux::MotherVoxel<DIM>*>> algoRSA_au
             }
         }
     } else if constexpr (DIM == 2) {
-        int size_0 = iMax[0] - iMin[0];
-        int size_1 = iMax[1] - iMin[1];
+        size_t size_0 = iMax[0] - iMin[0];
+        size_t size_1 = iMax[1] - iMin[1];
         result.resize(size_1 * size_0);
-        int idx = 0;
+        size_t idx = 0;
         for (i[0] = iMin[0]; i[0] < iMax[0]; i[0]++) {
             index[0] = getIndex(0);
             for (i[1] = iMin[1]; i[1] < iMax[1]; i[1]++, idx++) {
@@ -170,12 +169,12 @@ template <unsigned short DIM>
 void algoRSA_aux::MotherGrid<DIM>::auxi_linkSphereToVoxel(
     algoRSA_aux::MotherVoxel<DIM>* currentVoxel, const size_t& iSphe,
     const array<int, DIM>& i, const bool& sphereOnBoundary) {
-    if (not currentVoxel->covered) { /// unecessary. Avoid to add spheres where they will not be tested anymore.
+    if (not currentVoxel->covered) {  /// unecessary. Avoid to add spheres where they will not be tested anymore.
         currentVoxel->spheresInside.push_back(iSphe);
         array<int, DIM> relativePos{};
         // By default, we cannot infer easily the relative position of the voxel wrt the sphere in that case
         // thus, we take the worst case, considering the sphere is inside the voxel
-        if (not sphereOnBoundary) { //< in that case, we may compute more precisely the relative position
+        if (not sphereOnBoundary) {  //< in that case, we may compute more precisely the relative position
             for (size_t j = 0; j < DIM; j++) {
                 relativePos[j] = -i[j];
             }
@@ -262,12 +261,12 @@ algoRSA_aux::MotherVoxel<DIM>* algoRSA_aux::MotherGrid<DIM>::getVoxel(
 }
 
 template <unsigned short DIM>
-algoRSA_aux::MotherGrid<DIM>::MotherGrid(DiscPoint<DIM> sizes_,
+algoRSA_aux::MotherGrid<DIM>::MotherGrid(std::array<size_t, DIM> sizes_,
     AmbiantSpace::BigShape<DIM>* bigShape_, double voxelLength_,
     double minRadius_, double maxRadius_)
     : sizes(sizes_), bigShape(bigShape_), tabVoxels(), voxelLength(voxelLength_), inverse_voxelLength(1. / voxelLength_), minRadius(minRadius_), maxRadius(maxRadius_) {
     // Inialize the voxel grid
-    merope::vox::ArrayDimensions<DIM> arrayDim(auxi_function::convertArray<DIM, long, size_t>(sizes_));
+    merope::vox::ArrayDimensions<DIM> arrayDim(sizes_);
     tabVoxels = TYPE_TABVOXEL(arrayDim, MotherVoxel<DIM>());
     // Define each voxel
     DiscPoint<DIM> i{};
@@ -291,7 +290,7 @@ algoRSA_aux::MotherGrid<DIM>::MotherGrid(DiscPoint<DIM> sizes_,
     }
     placedSpheres.reserve(
         ceil(
-            0.5 * bigShape->volume() / sphereTools::volumeSphere<DIM>(minRadius))); //< Initialize with the maximal possible size.
+            0.5 * bigShape->volume() / sphereTools::volumeSphere<DIM>(minRadius)));  //< Initialize with the maximal possible size.
 }
 
 template <unsigned short DIM>
@@ -311,28 +310,28 @@ algoRSA_aux::CurrentGrid<DIM>::CurrentGrid(MotherGrid<DIM>* motherGrid_,
     mt19937* randGen_) : motherGrid(motherGrid_), randGen(randGen_), nbUncoveredVoxels(0) {
     size_t compteur = 0;
     if constexpr (DIM == 3) {
-        long nbVoxels = motherGrid->sizes[0] * motherGrid->sizes[1] * motherGrid->sizes[2];
+        size_t nbVoxels = motherGrid->sizes[0] * motherGrid->sizes[1] * motherGrid->sizes[2];
         // defines the grid of voxels
         vector<Voxel<DIM>> futureTabVoxels(nbVoxels,
             motherGrid->tabVoxels[0]);
-        loop(motherGrid->sizes[0], motherGrid->sizes[1], motherGrid->sizes[2],
+        loop<true>(motherGrid->sizes[0], motherGrid->sizes[1], motherGrid->sizes[2],
             [this, &compteur, &futureTabVoxels](
                 const array<size_t, 3u>& i) {
                     futureTabVoxels[compteur] = *(motherGrid->getVoxel(i));
                     compteur++;
             });
-        setTabVoxels(futureTabVoxels);
+        setTabVoxels(std::move(futureTabVoxels));
     } else if constexpr (DIM == 2) {
-        long nbVoxels = motherGrid->sizes[0] * motherGrid->sizes[1];
+        size_t nbVoxels = motherGrid->sizes[0] * motherGrid->sizes[1];
         // defines the grid of voxels
         vector<Voxel<DIM>> futureTabVoxels(nbVoxels, motherGrid->tabVoxels[0]);
-        loop(motherGrid->sizes[0], motherGrid->sizes[1],
+        loop<true>(motherGrid->sizes[0], motherGrid->sizes[1],
             [this, &compteur, &futureTabVoxels](
                 const array<size_t, 2u>& i) {
                     futureTabVoxels[compteur] = *(motherGrid->getVoxel(i));
                     compteur++;
             });
-        setTabVoxels(futureTabVoxels);
+        setTabVoxels(std::move(futureTabVoxels));
     } else {
         throw invalid_argument("CurrentGrid<DIM>::CurrentGrid. Uncorrect DIM.");
     }
@@ -343,20 +342,20 @@ template <unsigned short NUM_METHOD>
 void algoRSA_aux::CurrentGrid<DIM>::subdivide() {
     // estimates the size of the new tabVoxel
     vector<Voxel<DIM>> futureTabVoxel{};
-    futureTabVoxel.reserve(ceil(pow(2, DIM - 1) * nbUncoveredVoxels)); // a reasonable new size
+    futureTabVoxel.reserve(ceil(pow(2, DIM - 1) * nbUncoveredVoxels));  // a reasonable new size
     // objects for the loop
     for (Voxel<DIM>& voxel : tabVoxels) {
         if (not voxel.covered and not voxel.mother->covered) {
             voxel.Voxel<DIM>::template subdivide<NUM_METHOD>(futureTabVoxel);
         }
     }
-    setTabVoxels(futureTabVoxel);
+    setTabVoxels(std::move(futureTabVoxel));
 }
 
 template <unsigned short DIM>
 algoRSA_aux::Voxel<DIM>* algoRSA_aux::CurrentGrid<DIM>::pickUncoveredVoxel() {
     bool oneMoreTime = true;
-    long indexVoxel = 0;
+    size_t indexVoxel = 0;
     while (oneMoreTime) {
         indexVoxel = distribution(*randGen);
         oneMoreTime = tabVoxels[indexVoxel].covered;
@@ -372,12 +371,12 @@ algoRSA_aux::AlgoRSA_Template<DIM>::AlgoRSA_Template(
     minRadius = radiusGen->minRadius();
     maxRadius = radiusGen->maxRadius();
     // Intialize the random generator, cf https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
-    mt19937 gen(seed); // Standard mersenne_twister_engine seeded with rd()
+    mt19937 gen(seed);  // Standard mersenne_twister_engine seeded with rd()
     randGenerator = gen;
     randomReal = uniform_real_distribution<>(0., 1.);
     // Define the sizes parameter
-    DiscPoint<DIM> sizes;
-    double voxelLength = maxRadius; // difficult to find the optimal choice...
+    std::array<size_t, DIM> sizes;
+    double voxelLength = maxRadius;  // difficult to find the optimal choice...
     for (size_t i = 0; i < DIM; i++) {
         sizes[i] = floor(bigShape->L[i] / voxelLength) + 1;
     }
@@ -420,7 +419,7 @@ bool algoRSA_aux::AlgoRSA_Template<DIM>::proceed_T() {
         for (long i = 0; i < 1 + PARAM_A * currentGrid->nbUncoveredVoxels;
             i++) {
             if (throwDart<NUM_METHOD>()) {
-                if (not radiusGen->nextRadius()) { /// not more radius to be placed
+                if (not radiusGen->nextRadius()) {  /// not more radius to be placed
                     printFinalMessage(true);
                     return false;
                 }
@@ -476,7 +475,7 @@ bool algoRSA_aux::AlgoRSA_Template<DIM>::throwDart() {
 
 template <unsigned short DIM>
 void algoRSA_aux::CurrentGrid<DIM>::setTabVoxels(
-    const vector<Voxel<DIM>>& tabVoxels_) {
+    vector<Voxel<DIM>>&& tabVoxels_) {
     tabVoxels = std::move(tabVoxels_);
     uniform_int_distribution<> distrib(0, tabVoxels.size() - 1);
     distribution = distrib;
@@ -508,6 +507,6 @@ void algoRSA_aux::AlgoRSA_Template<DIM>::printStep() const {
     cout << "Uncovered voxels  = " << currentGrid->nbUncoveredVoxels << endl;
     cout << "Nb of spheres = " << (*placedSpheres).size() << endl;
 }
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* ALGORSA_IXX_ */
+

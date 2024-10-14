@@ -1,16 +1,15 @@
 //! Copyright : see license.txt
 //!
-//! \brief FFT fields based on FFTW library
+//! \briefFFT fields based on FFTW library
 //!
 
 #include "FFTW3/FFTField.hxx"
 
-#include <stdexcept> // use assert for all checks
+#include <stdexcept>  // use assert for all checks
 #include <iomanip>
 #include <cstring>
 
 #include "Grid/Grid.hxx"
-#include "Parallelism/OpenmpWrapper.hxx"
 
 
 #include "MeropeNamespace.hxx"
@@ -28,7 +27,6 @@ unsigned short activePlanesNb_g = 0;
 
 FFTField::FFTField(const Grid& grid, unsigned flags_i) :
   isSpatial(true), f(NULL), F(NULL), forwardPlan(NULL), backwardPlan(NULL), flags(flags_i) {
-
   d = grid.getDim();  // Grid dimensions
   n[0] = grid.getNx();
   n[1] = grid.getNy();
@@ -141,7 +139,6 @@ void FFTField::checkSpectral(const std::string& mName) const {
 
 
 void FFTField::buildForwardPlan() {
-  localFFT::set_num_threads(0);
   forwardPlan = FFTW_PREF(plan_many_dft_r2c)(d, n, nv, f, NULL, nv, 1, F, NULL, nv, 1, flags);
   if (!forwardPlan) throw(logic_error("FFTField::buildForwardPlan: unable to build the plan"));
   ++activePlanesNb_g;
@@ -149,7 +146,6 @@ void FFTField::buildForwardPlan() {
 
 
 void FFTField::buildBackwardPlan() {
-  localFFT::set_num_threads(0);
   backwardPlan = FFTW_PREF(plan_many_dft_c2r)(d, n, nv, F, NULL, nv, 1, f, NULL, nv, 1, flags);
   if (!backwardPlan) throw(logic_error("FFTField::buildBackwardPlan: unable to build the plan"));
   ++activePlanesNb_g;
@@ -164,7 +160,7 @@ void FFTField::forward() {
 
   double ifSize = 1. / fSize;
   // Normalization
-#pragma omp parallel for simd schedule(static)  
+#pragma omp parallel for simd schedule(static)
   for (size_t i = 0; i < FSize * nv; i++) {
     F[i][0] *= ifSize;
     F[i][1] *= ifSize;
@@ -210,12 +206,16 @@ void FFTField::print(std::ostream& os) const {
         for (int k = ncz; k < n[2]; ++k) {
           for (int j = 0; j < n[1]; ++j) {
             int j2;
-            if (j) j2 = n[1] - j;
-            else j2 = j;
+            if (j)
+              j2 = n[1] - j;
+            else
+              j2 = j;
             for (int i = 0; i < ncx; ++i) {
               int i2;
-              if (i) i2 = n[0] - i;
-              else i2 = i;
+              if (i)
+                i2 = n[0] - i;
+              else
+                i2 = i;
               os << F[l + nv * ((n[2] - k) + ncz * (j2 + i2 * n[1]))][0] << ","
                 << -F[l + nv * ((n[2] - k) + ncz * (j2 + i2 * n[1]))][1] << endl;
             }
@@ -278,13 +278,17 @@ void FFTField::SpectralZeroMean() {
   for (unsigned char i = 0; i < 2; ++i) {
     if (!i or xp) {
       unsigned i2;
-      if (i) i2 = nx / 2;
-      else i2 = 0;
+      if (i)
+        i2 = nx / 2;
+      else
+        i2 = 0;
       for (unsigned char j = 0; j < 2; ++j) {
         if (!j or yp) {
           unsigned j2;
-          if (j) j2 = ny / 2;
-          else j2 = 0;
+          if (j)
+            j2 = ny / 2;
+          else
+            j2 = 0;
           for (unsigned char k = 0; k < 2; ++k) {
             if (!k or zp) {
               unsigned k2;
@@ -467,7 +471,7 @@ inline long double FFTField::SpatialScalarProduct(const FFTField& ff2) const {
   long double sum = 0;
   size_t N12 = (size_t)fSize / nz, Nzb = (size_t)nv * nzb, Nzv = (size_t)nv * nz;
 #pragma omp parallel
-  { // begin parallel section
+  {  // begin parallel section
 #pragma omp for simd schedule(static) collapse(2) reduction(+:sum)
     for (size_t i = 0; i < N12; ++i) {
       for (size_t k = 0; k < Nzv; ++k) {
@@ -493,7 +497,7 @@ inline long double FFTField::SpectralScalarProduct(const FFTField& ff2) const {
   const cfloat* F1 = F, * F2 = ff2.F;
   size_t NT = (size_t)nx * ny, NT2 = nv * ncz;
 #pragma omp parallel reduction(+: sum)
-  { // begin parallel section
+  {  // begin parallel section
 #pragma omp for schedule(static) collapse(2)
     for (size_t i = 0; i < NT; ++i) {
       for (unsigned short k = 0; k < ncz; k++) {
@@ -511,7 +515,7 @@ inline long double FFTField::SpectralScalarProduct(const FFTField& ff2) const {
           sum += s;
         }
       }
-    } // end parallel section
+    }  // end parallel section
   }
   return sum;
 }
@@ -549,11 +553,11 @@ void FFTField::linComb(const FFTField* const* V, const long double* l, const uns
   setSpectralField();
 
 #pragma omp parallel default(shared)
-  { // begin parallel section
+  {  // begin parallel section
 #pragma omp for schedule(static)
     for (size_t i = 0; i < FSize; ++i) {
       for (size_t k = 0; k < nv; ++k) {
-        cfloat sum = { 0,0 };
+        cfloat sum = { 0, 0 };
         const size_t ivk = i * nv + k;
         for (size_t jj = 0; jj < N; jj++) {
           sum[0] += (V[jj]->F)[ivk][0] * l[jj];
@@ -563,7 +567,7 @@ void FFTField::linComb(const FFTField* const* V, const long double* l, const uns
         F[ivk][1] = sum[1];
       }
     }
-  } // end parallel section
+  }  // end parallel section
 }
 
-} // namespace merope
+}  // namespace merope

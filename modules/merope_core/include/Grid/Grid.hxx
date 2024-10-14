@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief A simple grid at 1,2 or 3 dimensions
+//! \briefA simple grid at 1,2 or 3 dimensions
 //!
 
-#ifndef _GRID_HXX
-#define _GRID_HXX 1
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -25,12 +24,12 @@ class TIFFRead;
 class Grid {
 
 protected:
-    unsigned char d; //!< Grid dimension (1D, 2D or 3D).
+    unsigned char d;  //!< Grid dimension (1D, 2D or 3D).
 
-    size_t ng; //!< Number of nodes in the grid \f$n_T=n_x \times n_y \times n_z\f$.
-    size_t nx; //!< Number of nodes in x direction (spatial discretization).
-    size_t ny; //!< Number of nodes in y direction (spatial discretization).
-    size_t nz; //!< Number of nodes in z direction (spatial discretization).
+    size_t ng;  //!< Number of nodes in the grid \f$n_T=n_x \times n_y \times n_z\f$.
+    size_t nx;  //!< Number of nodes in x direction (spatial discretization).
+    size_t ny;  //!< Number of nodes in y direction (spatial discretization).
+    size_t nz;  //!< Number of nodes in z direction (spatial discretization).
 
     double lx;   //!< Length of the grid in x direction.
     double ly;   //!< Length of the grid in y direction.
@@ -64,18 +63,19 @@ public:
     Grid(TIFFRead& tf, double);
     //! Print the internal variables
     //! \param os: Output stream
-    void print(std::ostream& os = std::cout) const;
+    void print(std::ostream& os) const;
+    void print() const { print(std::cout); };
 
-    unsigned char getDim() const; //!< getter for grid nb of nodes.
-    size_t getNx() const; //!< getter for nb of node in x direction.
-    size_t getNy() const; //!< getter for nb of node in y direction.
-    size_t getNz() const; //!< getter for nb of node in z direction.
-    size_t getNg() const; //!< getter for nb of node in grid (nx x ny x nz)
-    double getLx() const; //!< getter for x length.
-    double getLy() const; //!< getter for y length.
-    double getLz() const; //!< getter for z length.
+    unsigned char getDim() const;  //!< getter for grid nb of nodes.
+    size_t getNx() const;  //!< getter for nb of node in x direction.
+    size_t getNy() const;  //!< getter for nb of node in y direction.
+    size_t getNz() const;  //!< getter for nb of node in z direction.
+    size_t getNg() const;  //!< getter for nb of node in grid (nx x ny x nz)
+    double getLx() const;  //!< getter for x length.
+    double getLy() const;  //!< getter for y length.
+    double getLz() const;  //!< getter for z length.
 
-    unsigned short getNbOfPhases() const; //!< getter for number of phases \f$\alpha\f$.
+    size_t getNbOfPhases() const;  //!< getter for number of phases \f$\alpha\f$.
 
     //! getter to retrieve a list of points for a material (ie a phase).
     //! \param alpha the phase number \f$\alpha\f$
@@ -94,9 +94,6 @@ public:
     //! \return Correction factor sqrt(N)/L
     double DivNormFactor() const;
 
-    //! VTK CELL header file
-    //! \param fvtk VTK output stream
-    void VTKheaderCELL(VTKstream& fvtk) const;
     //! Writes a VTK CELL file.
     //! \param fvtk VTK output stream
     void toVTKCELL(VTKstream& fvtk) const;
@@ -127,7 +124,7 @@ public:
     void covZ(unsigned short a, unsigned short b, std::ostream& fout) const;
 
     Grid(const Grid&);            //!< Forbid use of copy constructor.
-    Grid& operator=(const Grid&); //!< Forbid use of affectation.
+    Grid& operator=(const Grid&);  //!< Forbid use of affectation.
 
 protected:
     //! Common initialisation
@@ -144,20 +141,16 @@ protected:
     //! Fill a 1/2/3D table with phaseIdx saved in each point of the grid
     //! \param ids Filled table defining geometry phases on the grid
     void vtkReorderMaterialIdx(unsigned short* const ids) const;
-    //! VTK CELL header DIM-D file
-    //! \param fvtk VTK file stream
-    template<unsigned short DIM>
-    void VTKheaderCELL_T(VTKstream& fvtk) const;
     //! Writes a VTK CELL DIM-D file, for VTK generation purpose.
     //! \param fvtk VTK file stream
     template<unsigned short DIM>
     void toVTKCELL_T(VTKstream& fvtk) const;
 };
 
-} // namespace merope
+}  // namespace merope
 
 
 #include "../Grid/Grid.ixx"
 
-#endif // _GRID_HXX
+
 

@@ -63,8 +63,7 @@ CovSpherical::CovSpherical(const double r_i, const double s_i) :
 // Isotrope covariance function
 // h: Distance
 inline double CovSpherical::covIso(const double h) const {
-    if (h > 1)
-        return 0;
+    if (h > 1) return 0;
     else return 1 - (1.5 - 0.5 * h * h) * h;
 }
 
@@ -147,6 +146,6 @@ CovSum::~CovSum() {
 }
 
 
-} // namespace gaussianField
-} // namespace merope
+}  // namespace gaussianField
+}  // namespace merope
 

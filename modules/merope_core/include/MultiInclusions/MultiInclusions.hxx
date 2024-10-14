@@ -1,31 +1,40 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
 
-#ifndef MULTIINCLUSIONS_HXX_
-#define MULTIINCLUSIONS_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
 #include "../MeropeNamespace.hxx"
 
 #include "../../../AlgoPacking/src/AmbiantSpace.hxx"
-#include "../MultiInclusions/EllipseInclusions.hxx"
 #include "../MultiInclusions/LaguerreTess.hxx"
 #include "../MultiInclusions/Rectangle.hxx"
 #include "../MultiInclusions/SphereInclusions.hxx"
-#include "../MultiInclusions/SpheroPolyhedronInclusions.hxx"
+#include "../MultiInclusions/ObjectInclusions.hxx"
 #include "../MicroInclusion/MicroInclusion.hxx"
+#include "../../../AlgoPacking/src/SOA.hxx"
 
 
 
 namespace merope {
 
 template<unsigned short DIM>
-class MultiInclusions : public InsideTorus<DIM> {
+using SOA_for_MultiI = std::enable_if_t<DIM == 2 or DIM == 3,
+        std::conditional_t<DIM == 2,
+        SOA <smallShape::SphereInc<DIM>, smallShape::ConvexPolyhedronInc<DIM>, smallShape::EllipseInc<DIM>, smallShape::SpheroPolyhedronInc<DIM>>,
+        SOA <smallShape::SphereInc<DIM>, smallShape::ConvexPolyhedronInc<DIM>, smallShape::EllipseInc<DIM>, smallShape::SpheroPolyhedronInc<DIM>, smallShape::CylinderInc<3>>
+        >>;
+
+template<unsigned short DIM>
+class MultiInclusions final :
+        public InsideTorus<DIM>,
+        private  SOA_for_MultiI<DIM> {
         //! class for NON-INTERSECTING inclusions inside a matrix
 public:
+        using SOA_type = SOA_for_MultiI<DIM>;
         //! constructor
         MultiInclusions();
         //! from a PolyInclusions
@@ -34,19 +43,26 @@ public:
         void setInclusions(LaguerreTess<DIM> polyX);
         //! from spherical inclusions
         void setInclusions(const SphereInclusions<DIM>& sphereI);
-        //! from elliptical inclusions
-        void setInclusions(const EllipseInclusions<DIM>& ellipseI);
+        //! from ObjectInclusions
+        template<class ObjectInc>
+        void setInclusions(const ObjectInclusions<DIM, ObjectInc>& objectInclusion);
+        //! from Object vectors
+        template<class ObjectInc>
+        void setInclusions(const vector<ObjectInc>& vectInclusions, Point<DIM> L);
+        //! enlarge each inclusion
+        //! \param identifiers : concerned identifiers of inclusions
+        //! \param width : width of the enlargement
+        void enlarge(const vector<Identifier>& identifiers, const vector<double>& width);
+        void enlarge(const vector<Identifier>& identifiers, double width) {
+                this->enlarge(identifiers, vector<double>(identifiers.size(), width));
+        }
         //! from a rectangle
         void setInclusions(const Rectangle<DIM>& rect);
-        //! from spheroPolyhedrons
-        void setInclusions(const vector<smallShape::SpheroPolyhedronInc<DIM>>& spheroPolyhedrons, Point<DIM> L);
-        //! from spheroPolyhedrons
-        void setInclusions(const SpheroPolyhedronInclusions<DIM>& spheroPolyhedrons);
         //! add a layer
         //! \param layersToAdd : instructions for adding a layer
         void addLayer(vector<smallShape::LayerInstructions> layersToAdd);
         //! add a layer
-        //! \param identifiers : concerned phases of inclusions
+        //! \param identifiers : concerned identifiers of inclusions
         //! \param newPhases : phases identifiers to be given to the new layer
         //! \param width : widths of the layer to be added
         void addLayer(const vector<Identifier>& identifiers,
@@ -69,6 +85,10 @@ public:
         //! vector of all phases at a specific layer
         //! \param : layer_index, is the number of the layer (0=close to boundary, +1 = farther from the boundary ...)
         vector<PhaseType> getAllPhases(size_t layer_index) const;
+        //! vector of all phases verifying a specific test
+        template<class TEST_AND_FILL_FUNCTION, class TEST_FUNCTION>
+        vector<PhaseType> getAllPhases(TEST_AND_FILL_FUNCTION test_and_fill_function,
+                TEST_FUNCTION insert_matrix_phase) const;
         //! get all the centers of the inclusions
         vector<Point<DIM>> getAllCenters() const;
         //! set the matrix phase
@@ -77,31 +97,15 @@ public:
                 this->matrixPhase = matrixPhase_;
         }
         //! get inclusions
-        template<class C>
-        vector<C>& getInclusions();
+        using SOA_type::get;
+        using SOA_type::apply_on_all;
 
-        //! getter
-        const vector<smallShape::EllipseInc<DIM> >& getEllipseInc() const { return ellipseInc; }
-        //! getter
-        const vector<smallShape::ConvexPolyhedronInc<DIM> >& getPolyhedrons() const { return polyhedrons; }
-        //! getter
-        const vector<smallShape::SphereInc<DIM> >& getSphereInc() const { return sphereInc; }
-        //! getter
-        const vector<smallShape::SpheroPolyhedronInc<DIM> >& getSpheroPolyhedrons() const { return spheroPolyhedrons; }
         //! getter
         PhaseType getMatrixPhase() const { return matrixPhase; }
         //! is there a matrix ?
         bool is_there_matrix() const { return matrixPresence; }
 
 private:
-        //! stores the polyhedrons inclusions
-        vector<smallShape::ConvexPolyhedronInc<DIM>> polyhedrons;
-        //! stores the spherical inclusions
-        vector<smallShape::SphereInc<DIM>> sphereInc;
-        //! stores the ellipsoid inclusions
-        vector<smallShape::EllipseInc<DIM>> ellipseInc;
-        //! stores the ellipsoid inclusions
-        vector<smallShape::SpheroPolyhedronInc<DIM>> spheroPolyhedrons;
         //! is there a matrix ?
         bool matrixPresence;
         //! Phase of the matrix
@@ -111,15 +115,6 @@ private:
         //! if not, throws an error
         //! \param layersToAdd : layer that we wish to add
         bool checkAddLayer(vector<smallShape::LayerInstructions> layersToAdd) const;
-        //! todo
-        template<class C>
-        void setInclusions_T(const C& vectorOfInclusions);
-        //! todo
-        template<class LAMBDA_FUNCTION>
-        void applyOnAllInclusions(LAMBDA_FUNCTION f);
-        //! todo
-        template<class LAMBDA_FUNCTION>
-        void applyOnAllInclusions(LAMBDA_FUNCTION f) const;
 };
 
 namespace auxi_MultiInclusions {
@@ -130,13 +125,17 @@ using Instruction = std::function<void(C*, smallShape::LayerInstructions)>;
 //! \param NbOfSeeds : number of seeds in the Structure
 static vector<Identifier> getAllIdentifiers(size_t NbOfSeeds);
 
+//! \see MultiInclusions<DIM>::enlarge
+template<class INCLUSIONVECTOR>
+void enlarge_T(vector<smallShape::LayerInstructions> layerInstructions,
+        INCLUSIONVECTOR& inclusions);
 //! \see MultiInclusions<DIM>::changePhase
 template<class INCLUSIONVECTOR>
 void changePhase_T(vector<smallShape::LayerInstructions> layerInstructions,
         INCLUSIONVECTOR& inclusions);
 //! \see MultiInclusions<DIM>::addLayer
 template<class INCLUSIONVECTOR>
-void addLayer_T(vector<smallShape::LayerInstructions> layerInstructions,
+void addLayer_T(vector<smallShape::LayerInstructions> instructions,
         INCLUSIONVECTOR& inclusions);
 //! adds layers to inclusions accorded to the LayerInstructions
 //! both inputs are sorted wrt identifier property
@@ -154,10 +153,10 @@ vector<Identifier> getIdentifiers(vector<PhaseType> phases, const INCLUSIONVECTO
 template<class C>
 vector<C*> sortInclusionAndInstructions(vector<C>& inclusions,
         vector<smallShape::LayerInstructions>& layerInstructions);
-} // namespace auxi_MultiInclusions
+}  // namespace auxi_MultiInclusions
 
-} // namespace merope
+}  // namespace merope
 
 #include "../MultiInclusions/MultiInclusions.ixx"
 
-#endif /* MULTIINCLUSIONS_HXX_ */
+

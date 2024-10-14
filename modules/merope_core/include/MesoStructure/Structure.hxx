@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef STRUCTURE_HXX_
-#define STRUCTURE_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -22,7 +21,7 @@ namespace merope {
 template<unsigned short DIM>
 //! combines many MultiInclusions
 //! according to rules auxiMicroStructure::TypeOfCombination
-class Structure : public RecurGeom<DIM> {
+class Structure final : public RecurGeom<DIM> {
 public:
     //! initializes a structure with a multiInclusion
     //! \param mi : multiInclusions
@@ -65,8 +64,8 @@ public:
     FieldStructure(const RecurField<DIM>& recurStructure) : RecurField<DIM>(recurStructure) {}
 };
 
-} // namespace merope
+}  // namespace merope
 
 #include "../MesoStructure/Structure.ixx"
 
-#endif /* STRUCTURE_HXX_ */
+

@@ -25,12 +25,13 @@ multiInclusions2.setInclusions(sphIncl2)
 
 ### Get the spherical inclusions
 
-grid = merope.Voxellation_3D(multiInclusions2)
-grid.setPureCoeffs([0, 1])
-grid.setVoxelRule(merope.VoxelRule.Center)
-grid.setHomogRule(merope.HomogenizationRule.Largest)
-grid.proceed([n3D,n3D,n3D])
-grid.printFile("Zone_Inclusions.vtk","Coeffs.txt")
+structure = merope.Structure_3D(multiInclusions2)
+
+gridParameters = merope.vox.create_grid_parameters_N_L_3D([n3D,n3D,n3D], L)
+grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Center)
+
+my_printer = merope.vox.vtk_printer_3D()
+my_printer.printVTK_removeUnusedPhase(grid, "Zone_Inclusions.vtk", "Coeffs.txt")
 
 ### Laguerre
 
@@ -48,12 +49,12 @@ multiInclusions.changePhase(multiInclusions.getAllIdentifiers(), [1 for i in mul
 
 ### Get the polyCrystal
 
-grid = merope.Voxellation_3D(multiInclusions)
-grid.setPureCoeffs([i for i in range(0,N+1)])
-grid.setVoxelRule(merope.VoxelRule.Center)
-grid.setHomogRule(merope.HomogenizationRule.Largest)
-grid.proceed([n3D,n3D,n3D])
-grid.printFile("Zone_Crystal.vtk","Coeffs.txt")
+structure = merope.Structure_3D(multiInclusions)
+
+grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Center)
+
+my_printer = merope.vox.vtk_printer_3D()
+my_printer.printVTK_removeUnusedPhase(grid, "Zone_Crystal.vtk", "Coeffs.txt")
 
 
 phase = [N]
@@ -63,11 +64,8 @@ structure = merope.Structure_3D(multiInclusions, multiInclusions2, dictionnaire)
 
 ###
 
-grid = merope.Voxellation_3D(structure)
-grid.setPureCoeffs([i for i in range(0,N+2)])
-grid.setVoxelRule(merope.VoxelRule.Center)
-grid.setHomogRule(merope.HomogenizationRule.Largest)
-grid.proceed([n3D,n3D,n3D])
-grid.printFile("Zone.vtk","Coeffs.txt")
+grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Center)
+my_printer = merope.vox.vtk_printer_3D()
+my_printer.printVTK_removeUnusedPhase(grid, "Zone.vtk", "Coeffs.txt")
 
 

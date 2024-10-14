@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief Scalar FFT fields with FFTW
+//! \briefScalar FFT fields with FFTW
 //!
 
-#ifndef _FFTSCALARFIELD_HXX
-#define _FFTSCALARFIELD_HXX 1
+#pragma once
 
 #include<functional>
 #include<array>
@@ -20,7 +19,7 @@ namespace merope {
 
 namespace gaussianField {
 class CovSum;
-} // gaussianField
+}  // gaussianField
 
 class VTKstream;
 //! Scalars field based on FFT fields
@@ -71,12 +70,12 @@ private:
     void prepareCovarianceInFourier();
     //! apply the function on each fourier mode
     template<class FUNCTION>
-    void loopOnFrequencies(const FUNCTION& function);
+    void loopOnFrequencies(const FUNCTION& function, bool use_omp = true);
 };
 
-} // namespace merope
+}  // namespace merope
 
 #include "../FFTW3/FFTScalarField.ixx"
 
-#endif /* _FFTSCALARFIELD_HXX */
+
 

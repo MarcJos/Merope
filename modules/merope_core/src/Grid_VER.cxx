@@ -1,13 +1,12 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
 
 
 #include "../../AlgoPacking/src/StdHeaders.hxx"
 
 #include "Grid/Grid_VER.hxx"
-#include "Voxellation/Voxellation.hxx"
 
 
 #include "MeropeNamespace.hxx"
@@ -25,13 +24,6 @@ Grid_VER::Grid_VER(VTKRead& geometry) :
 
 Grid_VER::Grid_VER(TIFFRead& tf, double dx_) :
     Grid(tf, dx_) {
-    initCommon();
-}
-
-Grid_VER::Grid_VER(const vox::Voxellation<3>& voxellisation) {
-    this->phases = voxellisation.getGrid().phases;
-    this->set_L<3>(voxellisation.getL());
-    this->set_Nb<3>(voxellisation.getGrid().nbNodes);
     initCommon();
 }
 
@@ -77,6 +69,8 @@ size_t vox::aux::symmetriseAuxi(size_t N1, size_t i, size_t N2) {
 void Grid_VER::removeUnusedPhase(vector<double>& coefficients) {
     if (coefficients.size() < this->phases.size()) {
         cerr << __PRETTY_FUNCTION__ << endl;
+        auxi_function::writeVectorToString(coefficients, cerr); cerr << endl;
+        cerr << this->phases.size() << endl;
         throw runtime_error("Problem");
     }
     ///
@@ -95,4 +89,4 @@ void Grid_VER::removeUnusedPhase(vector<double>& coefficients) {
     this->phases.resize(currentPhase);
 }
 
-} // namespace merope
+}  // namespace merope

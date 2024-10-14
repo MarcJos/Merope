@@ -1,6 +1,6 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
 
 #include "AlgoPacking.hxx"
@@ -40,14 +40,14 @@ AlgoRSA3D::AlgoRSA3D(Point<3> L, vector<array<double, 2> > desiredRPhi_,
 double fractionVolThMaxRSA(short unsigned d) {
     switch (d) {
     case 1:
-        return 0.74750; // Reference : Remyi, Publ. Math. Inst. Hung. Acad. Sci. 3, 109 (1958)
+        return 0.74750;  // Reference : Remyi, Publ. Math. Inst. Hung. Acad. Sci. 3, 109 (1958)
     case 2:
-        return 0.54689; // Reference : Torquato, Physical Review E 74, 061308 2006
+        return 0.54689;  // Reference : Torquato, Physical Review E 74, 061308 2006
     case 3:
-        return 0.385; // Reference : Cooper, Physical Review A Vol38(1) 1988
+        return 0.385;  // Reference : Cooper, Physical Review A Vol38(1) 1988
     default:
         throw runtime_error("la dimension est 1, 2 ou 3.");
     }
 }
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes

@@ -2,8 +2,7 @@
 //!
 //! \brief
 //
-#ifndef GLOBALSHAPE_IXX_
-#define GLOBALSHAPE_IXX_
+#pragma once
 
 ///--------------------------------------
 /// BigShape
@@ -213,9 +212,9 @@ inline void AmbiantSpace::BigSphere<DIM>::bounce(Sphere<DIM>& sph) const {
     double delta = R + sph.radius + this->boundaryExclusionDistance - radius;
     if (delta > 0) {
         for (size_t i = 0; i < DIM; i++) {
-            sph.center[i] -= center[i]; // computes the sphere wrt the basis with the center of the BigSphere as origin
+            sph.center[i] -= center[i];  // computes the sphere wrt the basis with the center of the BigSphere as origin
             sph.center[i] *= (1 - 2 * delta / R); 	// bounce on the boundary
-            sph.center[i] += center[i]; // puts the sphere back in the original basis
+            sph.center[i] += center[i];  // puts the sphere back in the original basis
         }
     }
 }
@@ -271,6 +270,6 @@ inline void AmbiantSpace::BigCylinder<DIM>::bounce(Sphere<DIM>& sph) const {
         sph.radius + this->boundaryExclusionDistance);
 }
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* GLOBALSHAPE_IXX_ */
+

@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
-#ifndef GRID_GRID_VER_IXX_
-#define GRID_GRID_VER_IXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/Loops.hxx"
@@ -32,15 +31,23 @@ inline void Grid_VER::fromGridPhase(const vox::GridPhase<DIM>& gridPhase, vector
     this->removeUnusedPhase(coefficients);
 }
 
-template<unsigned short DIM>
+template<unsigned short DIM, IndexConvention indexConvention>
 size_t Grid_VER::get_linear_index(const array<size_t, DIM>& ijk) const {
-    static_assert(DIM == 2 or DIM == 3);
-    if constexpr (DIM == 3) {
-        return vox::auxi::get_linear_index<DIM>(ijk, nbNodes);
+    size_t res = 0;
+    for (size_t id = 0; id < DIM; id++) {
+        if constexpr (indexConvention == IndexConvention::Merope) {
+            res += ijk[id];
+            if (id + 1 < DIM) {
+                res *= nbNodes[id + 1];
+            }
+        } else {
+            res += ijk[DIM - id - 1];
+            if (id + 1 < DIM) {
+                res *= nbNodes[DIM - id - 2];
+            }
+        }
     }
-    else if constexpr (DIM == 2) {
-        return vox::auxi::get_linear_index<DIM>(ijk, array<size_t, DIM>{nbNodes[0], nbNodes[1]});
-    }
+    return res;
 }
 
 /// homogenization
@@ -64,14 +71,12 @@ void Grid_VER::set_Nb(array<size_t, DIM> nb) {
     nx = nb[0];
     if (DIM == 2 or DIM == 3) {
         ny = nb[1];
-    }
-    else {
+    } else {
         ny = 1;
     }
     if (DIM == 3) {
         nz = nb[2];
-    }
-    else {
+    } else {
         nz = 1;
     }
     initCommon();
@@ -87,9 +92,27 @@ array<size_t, DIM> Grid_VER::get_coord_index(size_t i) const {
     res[2] = i;
     if constexpr (DIM == 3) {
         return res;
-    }
-    else if constexpr (DIM == 2) {
+    } else if constexpr (DIM == 2) {
         return array<size_t, 2>{res[0], res[1]};
+    }
+}
+
+template<unsigned short DIM, IndexConvention indexConvention>
+vector<vector<size_t>> Grid_VER::get_phase_list() const {
+    if constexpr (indexConvention == IndexConvention::Merope) {
+        return this->phases;
+    } else if constexpr (indexConvention == IndexConvention::AMITEX) {
+        vector<vector<size_t>> res(this->phases.size());
+        for (size_t p = 0; p < this->phases.size(); p++) {
+            const auto& phases_p = this->phases[p];
+            res[p].resize(phases_p.size());
+            for (size_t i = 0; i < phases_p.size(); i++) {
+                auto index = phases_p[i];
+                auto index_DIM = this->get_coord_index<DIM>(index);
+                res[p][i] = this->get_linear_index<DIM, indexConvention>(index_DIM);
+            }
+        }
+        return res;
     }
 }
 
@@ -140,6 +163,6 @@ void vox::symmetrize(string inputFileName, string outputFileName, array<size_t, 
     grid.toVTKCELL(outputVTK);
 }
 
-} // namespace merope
+}  // namespace merope
 
-#endif /* GRID_GRID_VER_IXX_ */
+

@@ -14,7 +14,7 @@ namespace merope {
 namespace vox {
 
 array<vector<double>, 2> gridAuxi::getTabCoeff(
-    const VoxelPhaseFrac& phaseFrac,
+    const composite::Iso<PhaseType>& phaseFrac,
     const vector<double>& coeff) {
     size_t nbPhase = phaseFrac.size();
     vector<double> tab_coeffs(nbPhase, 0);
@@ -27,7 +27,7 @@ array<vector<double>, 2> gridAuxi::getTabCoeff(
 }
 
 array<double, 2> gridAuxi::translateMask(
-    const VoxelPhaseFrac& mask_i) {
+    const composite::Iso<PhaseType>& mask_i) {
     array<double, 2> result{ 0., 0. };
     for (const auto& phfv : mask_i) {
         if (phfv.phase == 1) {
@@ -39,7 +39,7 @@ array<double, 2> gridAuxi::translateMask(
     return result;
 }
 
-array<double, 2> gridAuxi::translateMask(const VoxelValueFrac& voxelMask) {
+array<double, 2> gridAuxi::translateMask(const composite::Iso<double>& voxelMask) {
     // test preconditions
     double density_error = 1e-6;
     if ((voxelMask.size() != 1) or (abs(voxelMask[0].fracVol - 1) > density_error)
@@ -61,8 +61,8 @@ array<double, 2> gridAuxi::translateMask(const VoxelValueFrac& voxelMask) {
     return result;
 }
 
-} //namespace vox
-} // namespace merope
+}  // namespace vox
+}  // namespace merope
 
 
 

@@ -3,13 +3,13 @@ namespace merope {
 
 // SubArrayDimensions<DIM>
 template<unsigned short DIM>
-vox::SubArrayDimensions<DIM>::SubArrayDimensions(array<size_t, DIM> nbNodes_, array<size_t, DIM> nMin_, array<size_t, DIM> nMax_):
+vox::SubArrayDimensions<DIM>::SubArrayDimensions(array<size_t, DIM> nbNodes_, array<size_t, DIM> nMin_, array<size_t, DIM> nMax_) :
     nbNodes(nbNodes_), coverTorus{ true }, nMin{}, nMax{}, nbNodeSubgrid{} {
     this->setSubGridIndices(nMin_, nMax_);
 }
 
 template<unsigned short DIM>
-vox::SubArrayDimensions<DIM>::SubArrayDimensions(array<size_t, DIM> nbNodes_):
+vox::SubArrayDimensions<DIM>::SubArrayDimensions(array<size_t, DIM> nbNodes_) :
     SubArrayDimensions(nbNodes_, create_array<DIM, size_t>(0), nbNodes_) {}
 
 template<unsigned short DIM>
@@ -57,4 +57,4 @@ inline bool vox::SubArrayDimensions<DIM>::computeCoverTorus() const {
     return true;
 }
 
-}// namespace merope
+}  // namespace merope

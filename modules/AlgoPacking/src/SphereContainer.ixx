@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef SPHERECONTAINER_IXX_
-#define SPHERECONTAINER_IXX_
+#pragma once
 
 #include "StdHeaders.hxx"
 
@@ -14,8 +13,8 @@ using namespace std;
 /// SphereContainer<DIM>
 
 template<unsigned short DIM>
-void SphereContainer<DIM>::translate(const Point<DIM>& translationVector){
-    for(auto& sphere : theSpheres){
+void SphereContainer<DIM>::translate(const Point<DIM>& translationVector) {
+    for (auto& sphere : theSpheres) {
         sphere.center = translationVector + sphere.center;
     }
 }
@@ -42,8 +41,8 @@ void SphereContainer<DIM>::setNamePhase(map<PhaseType, string> dico) {
 }
 
 template<unsigned short DIM>
-void SphereContainer<DIM>::printSphere(ofstream &ost, const Sphere<DIM> &sphere,
-        string separator) const {
+void SphereContainer<DIM>::printSphere(ofstream& ost, const Sphere<DIM>& sphere,
+    string separator) const {
     for (size_t i = 0; i < 3; i++) {
         if (i < DIM)
             ost << sphere.center[i] << separator;
@@ -60,7 +59,7 @@ void SphereContainer<DIM>::printSphere(ofstream &ost, const Sphere<DIM> &sphere,
 template<unsigned short DIM>
 void SphereContainer<DIM>::printDump(string nameFile) const {
     Point<DIM> loc_L = getLength();
-    ofstream ost { nameFile };
+    ofstream ost{ nameFile };
     ost << "ITEM: TIMESTEP" << endl;
     ost << 0 << endl;
     ost << "ITEM: NUMBER OF ATOMS" << endl;
@@ -93,15 +92,15 @@ void SphereContainer<DIM>::printCSV(string nameFile) const {
 
 template<unsigned short DIM>
 void SphereContainer<DIM>::printCSV_with_separator(string nameFile,
-        string separator) const {
-    ofstream ost { nameFile };
+    string separator) const {
+    ofstream ost{ nameFile };
     Point<DIM> loc_L = getLength();
     ost << loc_L[0] << separator << loc_L[1];
     if (DIM == 3) {
         ost << separator << loc_L[2];
     }
     ost << endl;
-    for (const auto &sphere : getSpheres()) {
+    for (const auto& sphere : getSpheres()) {
         printSphere(ost, sphere, separator);
         ost << endl;
     }
@@ -109,7 +108,7 @@ void SphereContainer<DIM>::printCSV_with_separator(string nameFile,
 
 template<unsigned short DIM>
 void SphereContainer<DIM>::printPos(string nameFile) const {
-    ofstream ost { nameFile };
+    ofstream ost{ nameFile };
     // 1ere ligne
     ost << "Combs 1.2.0 " << endl;
     // 2eme ligne
@@ -123,7 +122,7 @@ void SphereContainer<DIM>::printPos(string nameFile) const {
     /// Incompris
     ost << "cas1 matrice pbc 0" << endl;
     // Liste des spheres
-    for (const auto &sph : getSpheres()) {
+    for (const auto& sph : getSpheres()) {
         printSphere(ost, sph, " ");
         ost << endl;
     }
@@ -131,14 +130,14 @@ void SphereContainer<DIM>::printPos(string nameFile) const {
 
 template<unsigned short DIM>
 void SphereContainer<DIM>::printVER(string nameFile) const {
-    ofstream os { nameFile };
+    ofstream os{ nameFile };
     os << "'Dimension' " << DIM << endl;
     os << "'Points' " << theSpheres.size() << endl;
     os << "'Lx' " << getLength()[0] << endl;
     if (DIM > 1) os << "'Ly' " << getLength()[1] << endl;
     if (DIM > 2) os << "'Lz' " << getLength()[2] << endl;
     os << std::setprecision(6);
-    for (const auto &sph : theSpheres) {
+    for (const auto& sph : theSpheres) {
         auto coord = sphereTools::fromSphere2Array(sph);
         for (size_t i = 0; i < 4; i++) {
             os << coord[i] << " ";
@@ -159,10 +158,10 @@ size_t SphereContainer<DIM>::size() const {
 
 template<unsigned short DIM>
 void SphereContainer<DIM>::resetPhases(PhaseType n) {
-    sphereTools::sort (theSpheres);
+    sphereTools::sort(theSpheres);
     PhaseType current_phase = theSpheres[0].phase;
     PhaseType desired_phase = n;
-    for (auto &sph : theSpheres) {
+    for (auto& sph : theSpheres) {
         if (sph.phase != current_phase) {
             desired_phase++;
             current_phase = sph.phase;
@@ -175,12 +174,12 @@ void SphereContainer<DIM>::resetPhases(PhaseType n) {
 template<unsigned short DIM>
 inline void SphereCollection<DIM>::printFracVol(string filename) const {
     vector < auxi_SphereCollection::PhaseFracRadN > phase_frac_rad =
-            tab_PhaseFracRad();
+        tab_PhaseFracRad();
     ofstream fout(filename);
     fout << "# Phase / Radius / Volume Fraction / Number of inclusions\n";
-    for (const auto &pfr : phase_frac_rad) {
+    for (const auto& pfr : phase_frac_rad) {
         fout << pfr.phase << " " << pfr.radius << " " << pfr.fracVol << " "
-                << " " << pfr.number << endl;
+            << " " << pfr.number << endl;
     }
 }
 
@@ -191,8 +190,8 @@ void SphereCollection<DIM>::fill(vector<Sphere<DIM>> vs) {
 
 template<unsigned short DIM>
 size_t SphereCollection<DIM>::getNbPhases() const {
-    set<PhaseType> allPhases { };
-    for (const auto &s : this->theSpheres) {
+    set<PhaseType> allPhases{ };
+    for (const auto& s : this->theSpheres) {
         allPhases.insert(s.phase);
     }
     nbPhases = allPhases.size();
@@ -202,26 +201,26 @@ size_t SphereCollection<DIM>::getNbPhases() const {
 template<unsigned short DIM>
 vector<auxi_SphereCollection::PhaseFracRadN> SphereCollection<DIM>::tab_PhaseFracRad() const {
     vector < Sphere <DIM>> vecSph = this->theSpheres;
-    sphereTools::sort (vecSph);
-    vector < auxi_SphereCollection::PhaseFracRadN > result { };
+    sphereTools::sort(vecSph);
+    vector < auxi_SphereCollection::PhaseFracRadN > result{ };
     PhaseType currentPhase = vecSph[0].phase;
     double currentRadius = 0.;
-    bool firstTime = true; // special case of entering the loop
+    bool firstTime = true;  // special case of entering the loop
     size_t i = 0;
-    for (const auto &sph : vecSph) {
+    for (const auto& sph : vecSph) {
         if (firstTime) {
             firstTime = false;
             i = 0;
             result.push_back(
-                    auxi_SphereCollection::PhaseFracRadN(sph.phase, 0.,
-                            sph.radius));
+                auxi_SphereCollection::PhaseFracRadN(sph.phase, 0.,
+                    sph.radius));
         } else if (sph.phase != currentPhase
-                or abs(sph.radius - currentRadius) > 0.0001 * currentRadius
-                or firstTime) {
+            or abs(sph.radius - currentRadius) > 0.0001 * currentRadius
+            or firstTime) {
             i++;
             result.push_back(
-                    auxi_SphereCollection::PhaseFracRadN(sph.phase, 0.,
-                            sph.radius));
+                auxi_SphereCollection::PhaseFracRadN(sph.phase, 0.,
+                    sph.radius));
         }
         currentPhase = sph.phase;
         currentRadius = sph.radius;
@@ -234,18 +233,18 @@ vector<auxi_SphereCollection::PhaseFracRadN> SphereCollection<DIM>::tab_PhaseFra
 // auxi_SphereCollection
 
 template<unsigned short DIM>
-SphereCollection<DIM> auxi_SphereCollection::fromFile(istream &fileStream, PhaseType phase, AmbiantSpace::BigShape<DIM> *bigShape_) {
+SphereCollection<DIM> auxi_SphereCollection::fromFile(istream& fileStream, PhaseType phase, AmbiantSpace::BigShape<DIM>* bigShape_) {
     vector<Sphere<DIM>> vecSph{};
     Sphere<DIM> sphere{};
-    while(sphereTools::fromLine<DIM>(fileStream, phase, sphere)){
+    while (sphereTools::fromLine<DIM>(fileStream, phase, sphere)) {
         vecSph.push_back(sphere);
     }
-    SphereCollection <DIM> sc { };
+    SphereCollection <DIM> sc{ };
     sc.fill(vecSph);
     sc.setShape(bigShape_);
     return sc;
 }
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* SPHERECONTAINER_IXX_ */
+

@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef ALGOPACKING_SRC_GEOMETRY_HALFSPACE_HXX_
-#define ALGOPACKING_SRC_GEOMETRY_HALFSPACE_HXX_
+#pragma once
 
 #include "../Geometry/GeomTypes.hxx"
 #include "../Geometry/GeomConstants.hxx"
@@ -45,8 +44,8 @@ private:
     RenormPoint<DIM> vec_;
 };
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
 #include "../Geometry/HalfSpace.ixx"
 
-#endif /* ALGOPACKING_SRC_GEOMETRY_HALFSPACE_HXX_ */
+

@@ -1,12 +1,29 @@
 
 # Gallery
 
-## Inclusions
+## Meshed structures
 
 ### Spherical inclusions (meshed)
 
 <img src="/doc/Pictures/Mesh_200spheres.png" alt="drawing" width="500"/>
-See [SpheresMesh.py](/tests/didacticExamples/meshing/SpheresMesh.py)
+See [mesh_spheres_0.py](/tests/microstructures/mesh_spheres_0/mesh_spheres_0.py)
+
+### Spherical inclusions with holes/empty bubbles (meshed)
+
+<img src="/doc/Pictures/mesh_bubbles.png" alt="drawing" width="500"/>
+See [mesh_spheres_1.py](/tests/microstructures/mesh_spheres_1/mesh_spheres_1.py)
+
+### Polyhedral inclusions with holes (meshed)
+
+<img src="/doc/Pictures/mesh_holes.png" alt="drawing" width="500"/>
+See [mesh_poly_1.py](/tests/microstructures/mesh_poly_1/mesh_poly_1.py)
+
+### Cylinder inclusions with holes (meshed)
+<img src="/doc/Pictures/mesh_cylinders.png" alt="drawing" width="500"/>
+See [mesh_cylinder.py](/tests/microstructures/mesh_cylinder/mesh_cylinder.py)
+
+
+## Inclusions
 
 ### Overlapping coated spherical inclusions
 
@@ -22,6 +39,11 @@ See [Inclusions_Voxellisation.py](/tests/microstructures/inclusions/Inclusions_V
 
 <img src="/doc/Pictures/VER_1.png" alt="drawing" width="500"/>
 See [Inclusions_Voxellisation.py](/tests/microstructures/multiLayer/Inclusions_Voxellisation.py)
+
+### Cylinder inclusions
+
+<img src="/doc/Pictures/cylinders.png" alt="drawing" width="500"/>
+See [many_cylinders_random_orient.py](tests/microstructures/many_cylinders_random_orient/many_cylinders_random_orient.py)
 
 ## PolyCrystals
 
@@ -57,7 +79,7 @@ See [polyCrystal_2D.py](/tests/microstructures/polyCrystal_2D/polyCrystal_2D.py)
 ## Gaussian fields
 
 <img src="/doc/Pictures/Gauss.png" alt="drawing" width="350"/>
-See [gaussian.py](/tests/microstructures/gaussian/gaussian.py)
+See [parallel_gaussian.py](/tests/microstructures/parallel_gaussian/parallel_gaussian.py)
 
 ## Deterministic scalar field
 
@@ -85,6 +107,6 @@ Additional structures may be consulted in [CEA_Microstructures](https://www-git-
 
 # Didactic examples
 
-- Build a **structure** and **voxellation** [buildVoxellation.py](/tests/didacticExamples/buildVoxellation/buildVoxellation.py)
-- Compute **thermal conductivity** with **amitex** [Thermal_amitex.py](/tests/didacticExamples/buildVoxellation/Thermal_amitex.py)
-- Compute **thermal conductivity** with **tmfft** [Thermal_tmfft.py](/tests/didacticExamples/buildVoxellation/Thermal_tmfft.py)
+- Build a **structure** and **voxellation** [buildVoxellation.py](/tests/microstructures/buildVoxellation/buildVoxellation.py)
+- Compute **thermal conductivity** with **amitex** [Thermal_amitex.py](/tests/microstructures/buildVoxellation/Thermal_amitex.py)
+- Compute **thermal conductivity** with **tmfft** [Thermal_tmfft.py](/tests/microstructures/buildVoxellation/Thermal_tmfft.py)

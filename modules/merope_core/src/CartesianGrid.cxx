@@ -13,4 +13,4 @@
 namespace merope {
 
 
-} // namespace merope
+}  // namespace merope

@@ -80,11 +80,17 @@ def testVoxel(L0, nVox0, nSpheres):
     multiInclusionsCell.changePhase(allIdentifiers,[i for i in allIdentifiers])
 
     ### Crystal voxellation
-    grid = merope.Voxellation_3D(multiInclusionsCell)
-    grid.setPureCoeffs([i for i in allIdentifiers])
-    grid.setVoxelRule(merope.VoxelRule.Center)
-    grid.proceed(nVox)
-    grid.printFile(nameFileMerope, "Coeffs.txt")
+    structure = merope.Structure_3D(multiInclusionsCell)
+    coefficients =[i for i in allIdentifiers]
+
+    gridParameters = merope.vox.create_grid_parameters_N_L_3D(nVox, L)
+    grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Center)
+    grid.apply_coefficients(coefficients)
+
+    my_printer = merope.vox.vtk_printer_3D()
+    my_printer.printVTK_segmented(grid, nameFileMerope, "Coeffs.txt")
+
+
     tic = time.time() - tic0
     timeList.append(tic)
     

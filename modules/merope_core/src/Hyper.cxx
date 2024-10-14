@@ -1,6 +1,6 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
 
 
@@ -174,4 +174,4 @@ double Hyper::distanceRO(double xm, double ym, double zm) const {
 
     return DRs2 * distance(um, vm);
 }
-} // namespace merope
+}  // namespace merope

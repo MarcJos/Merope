@@ -1,10 +1,9 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //!
 //
-#ifndef TYPECRYSTAL_HXX_
-#define TYPECRYSTAL_HXX_
+#pragma once
 
 
 #include "../../../AlgoPacking/src/StdHeaders.hxx"
@@ -62,7 +61,7 @@ inline ColorMaterialID str_2_ColorMaterialID(const string s) {
     }
 }
 
-} // namespace merope
+}  // namespace merope
 
 
-#endif /* TYPECRYSTAL_HXX_ */
+

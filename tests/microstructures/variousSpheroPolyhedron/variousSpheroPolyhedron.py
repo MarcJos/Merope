@@ -41,9 +41,18 @@ def print_spheroPoly(L, vertices, faces_vertices_indexes, minkowskiRadius, nameF
 
     structure = merope.Structure_3D(multiInclusions)
 
-    voxellation = merope.Voxellation_3D(structure)
-    voxellation.proceed(nbVox)
-    voxellation.printFile(nameFileVTK,"Coeffs.txt")
+    structure = merope.Structure_3D(multiInclusions)
+
+    gridParameters = merope.vox.create_grid_parameters_N_L_3D(nbVox, L)
+    grid = merope.vox.GridRepresentation_3D(structure, gridParameters, merope.vox.VoxelRule.Center)
+    
+    my_printer = merope.vox.vtk_printer_3D()
+    my_printer.printVTK(grid, nameFileVTK)
+
+    my_analyzer = merope.vox.GridAnalyzer_3D()
+    my_analyzer.print_percentages(grid)
+    my_map = my_analyzer.compute_percentages(grid)
+    print(my_map)
 
 print_spheroPoly(jdd1.L, jdd1.vertices, jdd1.faces_vertices_indexes, jdd1.minkowskiRadius, "jdd1.vtk", nbVox)
 print_spheroPoly(jdd2.L, jdd2.vertices, jdd2.faces_vertices_indexes, jdd2.minkowskiRadius, "jdd2.vtk", nbVox)

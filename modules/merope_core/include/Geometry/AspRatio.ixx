@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef GEOMETRY_ASPRATIO_IXX_
-#define GEOMETRY_ASPRATIO_IXX_
+#pragma once
 
 
 #include "../MeropeNamespace.hxx"
@@ -36,6 +35,6 @@ inline void auxi_aspratio::renormalizeAspRatio(Point<DIM>& aspratio) {
     }
 }
 
-} // namespace merope
+}  // namespace merope
 
-#endif /* GEOMETRY_ASPRATIO_IXX_ */
+

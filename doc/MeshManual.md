@@ -18,9 +18,12 @@ Yet, we may chose a strategy to get back to the previous case. We cover each obj
 
 The class `Merope.mesh.MeshGenerator` is used to produce a `.geo` script from the Mérope class `Merope.MultiInclusions_3D`.
 The following features are supported :
-- sphere inclusions, **but** there should be a minimal (nonzero) distance between the spheres,
-- Laguerre tessellations,
-- inner layer definitions.
+- microstructures :
+    - Laguerre tessellations,    
+    - sphere inclusions, **but** there should be a minimal (nonzero) distance between the spheres,
+    - Cylinder inclusions, **but** the cylinders should be included in spheres separated by a (nonzero) distance,
+- inner layer definitions,
+- holes (ignore some inclusions/layers when meshing),
 
 ## Limits
 
@@ -37,6 +40,8 @@ The following features are supported :
 - `setMeshOrder(meshOrder)` / `getMeshOrder()` : set/get the mesh order (=order of the elements) to be equal to the `meshOrder` (default 2).
 - `setMeshSize(meshSize)`/`getMeshSize()` : set the minimal mesh size to be equal to `meshSize` (default = 0.05).
 - `setBinaryOutput(boolean)` : trigger whether the mesh file should be written in binary format or not (default `False`).
+- `do_not_mesh(list_of_phases)` : the solid part corresponding to the phases will not be meshed.
+- `set_nameOutput([name_output_1, ...])` : set which outputs gmsh should produce. Notice gmsh automatically recognize the extension ('.vtk', '.msh') from the name of the output.
 
 The additional functions can be employed, but should not unless the programmer understands how they work :
 - `setAdimMergeDistance0(epsilon_0)` : set the distance criterion for merging elements of the original Laguerre tessellation, before identifiying periodic faces, when building the periodic enveloppe (it is adimensional, that is, it will be multiplied by the minimal edge length of the periodic cuboid). (Default = 1e-5.)
@@ -51,9 +56,9 @@ The additional functions can be employed, but should not unless the programmer u
 ## Spherical inclusions
 
 <img src="/doc/Pictures/Mesh_200spheres.png" alt="drawing" width="500"/>
-See [SpheresMesh.py](/tests/didacticExamples/meshing/SpheresMesh.py.in)
+See [mesh_spheres_0.py](/tests/microstructures/mesh_spheres_0/mesh_spheres_0.py)
 
 ## Laguerre tessellations
 
 <img src="/doc/Pictures/Mesh_Polyhedron.png" alt="drawing" width="500"/>
-See [PolyhedronMesh.py](/tests/didacticExamples/meshing/PolyhedronMesh.py.in)
+See [mesh_poly_0.py](/tests/microstructures/mesh_poly_0/mesh_poly_0.py)

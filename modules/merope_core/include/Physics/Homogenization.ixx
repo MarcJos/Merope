@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief 
+//! \brief
 //
-#ifndef MEROPE_CORE_SRC_PHYSICS_HOMOGENIZATION_IXX_
-#define MEROPE_CORE_SRC_PHYSICS_HOMOGENIZATION_IXX_
+#pragma once
 
 #include "../MeropeNamespace.hxx"
 
@@ -21,8 +20,8 @@ inline double homogenization::homog(const vector<double>& fracVol,
         else  throw invalid_argument(__PRETTY_FUNCTION__);
 }
 
-} // namespace homogenization
-} // namespace merope
+}  // namespace homogenization
+}  // namespace merope
 
 
-#endif /* MEROPE_CORE_SRC_PHYSICS_HOMOGENIZATION_IXX_ */
+

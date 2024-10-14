@@ -1,10 +1,9 @@
 #include "AuxiFunctions.hxx"
 //! Copyright : see license.txt
 //!
-//! \brief Implementation of AuxiFunctions.hxx
+//! \briefImplementation of AuxiFunctions.hxx
 //
-#ifndef AUXIFUNCTIONS_IXX_
-#define AUXIFUNCTIONS_IXX_
+#pragma once
 
 namespace sac_de_billes {
 namespace auxi_function {
@@ -18,14 +17,27 @@ NB productOf(const C& table) {
     return res;
 }
 
+// Primary template
+template<typename T, typename T2 = bool>
+struct make_signed_gen {
+    using type = T;
+};
+
+// Specialization for unsigned types
+template<typename T>
+struct make_signed_gen<T, std::enable_if_t<std::is_unsigned<T>::value>> {
+    using type = std::make_signed_t<T>;
+};
+
+
 template<class T1, class T2>
 T1 fast_modulo(T1 discCoord, T2 s) {
-    using signedT1 = std::make_signed_t<T1>;
+    using signedT1 = typename make_signed_gen<T1>::type;
     signedT1 discCoord_ = static_cast<signedT1>(discCoord);
     while (discCoord_ < 0) {
         discCoord_ += s;
     }
-    while (discCoord_ >= static_cast<std::make_signed_t<T2>>(s)) {
+    while (discCoord_ >= static_cast<typename make_signed_gen<T2>::type>(s)) {
         discCoord_ -= s;
     }
     return discCoord_;
@@ -119,7 +131,8 @@ void for_constexpr(Func f, std::index_sequence<I...>) {
 
 template<int Begin, int End, typename Func>
 void for_constexpr(Func f) {
-    for_constexpr<Begin>(f, std::make_index_sequence<End - Begin>{});
+    static_assert(End > Begin);
+    for_constexpr<Begin>(f, std::make_index_sequence<static_cast<size_t>(End - Begin)>{});
 }
 
 template<class VECTOR>
@@ -136,8 +149,8 @@ void circulate(VECTOR& vect, long step) {
 }
 
 
-} // namespace auxi_function
-} // namespace sac_de_billes
+}  // namespace auxi_function
+}  // namespace sac_de_billes
 
 
-#endif /* AUXIFUNCTIONS_IXX_ */
+

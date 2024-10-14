@@ -1,9 +1,8 @@
 //! Copyright : see license.txt
 //!
-//! \brief Basic geometric types
+//! \briefBasic geometric types
 //
-#ifndef GEOMOBJECTS_HXX_
-#define GEOMOBJECTS_HXX_
+#pragma once
 
 #include "../StdHeaders.hxx"
 #include "../Geometry/GeomConstants.hxx"
@@ -26,7 +25,7 @@ using Point = std::array<double, DIM>;
 
 // checks whether the type T can be understood as a point
 template<class T, unsigned short DIM>
-constexpr bool is_Point = is_base_of<Point<DIM>, T>::value or is_convertible<Point<DIM>, T>::value;
+constexpr bool is_Point = is_base_of_v<Point<DIM>, T> or is_convertible_v<Point<DIM>, T>;
 
 template<unsigned short DIM>
 class RenormPoint;
@@ -52,12 +51,12 @@ class Sphere;
 template<unsigned short DIM>
 class Ellipse;
 
-template<unsigned short DIM>
+template<unsigned short DIM, typename>
 class Cylinder;
 
 template<unsigned short DIM>
 class Cuboid;
 
-} // namespace sac_de_billes
+}  // namespace sac_de_billes
 
-#endif /* GEOMOBJECTS_HXX_ */
+
