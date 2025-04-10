@@ -1,1 +1,1 @@
-See [tools](tools).
+See [tools](/tools).
