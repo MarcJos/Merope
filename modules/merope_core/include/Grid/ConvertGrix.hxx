@@ -5,12 +5,11 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
 #include "../Grid/CartesianGrid.hxx"
 #include "../Grid/VtkHistogramm.hxx"
 
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -38,17 +37,9 @@ CartesianGrid<DIM, C1> applyFunctionDependingOnX(const CartesianGrid<DIM, C2>& g
 template<unsigned short DIM, class C2, class FUNCTION>
 void apply_inplace(CartesianGrid<DIM, C2>& grid0, FUNCTION rule);
 
-
-//! \return a grid of volume fractions from a phase grid
-//! \param grid0 : grid to be converted
-template<unsigned short DIM, class PHASE_TYPE>
-CartesianGrid<DIM, composite::Iso<PHASE_TYPE>> fromPureToIso(const CartesianGrid<DIM, PHASE_TYPE>& grid0);
-
-//! \return a grid of composite voxels from a phase grid
-//! \param grid0 : grid to be converted
-template<unsigned short DIM, class PHASE_TYPE>
-CartesianGrid<DIM, vox::composite::AnIso<DIM, PHASE_TYPE>> fromPureToAnIso(const CartesianGrid<DIM, PHASE_TYPE>& grid0);
-
+//! natural conversion of all voxels
+template<unsigned short DIM, class COMPOSITE_OUT, class COMPOSITE_IN>
+CartesianGrid<DIM, COMPOSITE_OUT> convert_to(const CartesianGrid<DIM, COMPOSITE_IN>& grid0);
 //! \return a grid of volume fractions from a phase grid
 //! \param grid0 : grid to be converted
 template<unsigned short DIM, class COMPOSITE>

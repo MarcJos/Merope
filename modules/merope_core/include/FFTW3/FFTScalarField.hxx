@@ -5,14 +5,8 @@
 
 #pragma once
 
-#include<functional>
-#include<array>
-
-#include "../FFTW3/FFTField.hxx"
-
-
-
-#include "../MeropeNamespace.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
+#include "FFTField.hxx"
 
 
 namespace merope {

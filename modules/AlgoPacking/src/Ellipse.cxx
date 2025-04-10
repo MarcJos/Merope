@@ -2,18 +2,20 @@
 //!
 //! \brief
 
-#include "Geometry/Ellipse.hxx"
-#include "Geometry/Area.hxx"
-#include "AmbiantSpace.hxx"
+#include "../../Geometry/include/Ellipse.hxx"
+#include "../../Geometry/include/Area.hxx"
+#include "../../Geometry/include/AmbiantSpace.hxx"
 
-double sac_de_billes::ellipseAux::angleOnEllipse(const Ellipse<2>& ellipse, Point<2> pointOnEllipse) {
+namespace merope {
+
+double ellipseAux::angleOnEllipse(const Ellipse<2>& ellipse, Point<2> pointOnEllipse) {
     RenormPoint<2> n_x(ellipse.axes[0]);
     RenormPoint<2> n_y(ellipse.axes[1]);
     pointOnEllipse -= ellipse.center;
     return std::atan2(geomTools::prodScal<2>(n_y, pointOnEllipse), geomTools::prodScal<2>(n_x, pointOnEllipse));
 }
 
-double sac_de_billes::ellipseAux::computeChordArea(const Ellipse<2>& ellipse, Point<2> x_0, Point<2> x_1) {
+double ellipseAux::computeChordArea(const Ellipse<2>& ellipse, Point<2> x_0, Point<2> x_1) {
     double theta0 = angleOnEllipse(ellipse, x_0);
     double theta1 = angleOnEllipse(ellipse, x_1);
     // Renormalization in case of incoherent angles
@@ -31,7 +33,7 @@ double sac_de_billes::ellipseAux::computeChordArea(const Ellipse<2>& ellipse, Po
     return result;
 }
 
-double sac_de_billes::ellipseAux::computeAngularArea(const Ellipse<2>& ellipse, double theta) {
+double ellipseAux::computeAngularArea(const Ellipse<2>& ellipse, double theta) {
     //! see https://www.geometrictools.com/Documentation/AreaIntersectingEllipses.pdf
     double a = ellipse.getAlphas()[0];
     double b = ellipse.getAlphas()[1];
@@ -39,4 +41,6 @@ double sac_de_billes::ellipseAux::computeAngularArea(const Ellipse<2>& ellipse, 
         atan((b - a) * sin(2 * theta)
             / ((b + a) + (b - a) * cos(2 * theta))));
 }
+
+}  // namespace  merope
 

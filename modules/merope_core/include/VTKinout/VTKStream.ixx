@@ -2,11 +2,7 @@
 //!
 //! \briefDefines a VTK stream format
 //
-
 #pragma once
-
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -117,7 +113,7 @@ void VTKstream::writeVector(const VECTOR_DATA& vectorData, ARRAY_DIM n) {
                         write(static_cast<PHASE_OUT>(vectorData[k + n2 * (j + i * n[1])][d]));
                     }
                 } else {
-                    cerr << __PRETTY_FUNCTION__ << endl; throw runtime_error("Impossible");
+                    Merope_error_impossible();
                 }
             }
         }

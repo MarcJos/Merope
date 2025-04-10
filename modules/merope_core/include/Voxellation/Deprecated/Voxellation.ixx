@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include "../../../../AlgoPacking/src/SphereContainer.hxx"
+#include "../../AlgoPacking/include/SphereContainer.hxx"
 #include "../../Voxellation/VoxRecurStructure.hxx"
 
-#include "../../MeropeNamespace.hxx"
+
 #include "../../VTKinout/VTK_adapter.hxx"
 
 
@@ -101,10 +101,8 @@ void Voxellation_data<DIM>::checkPureCoeffs() {
     // error verification
     if (this->homogRule == homogenization::Rule::Reuss) {
         for (auto pc : this->pureCoeffs) {
-            if (pc <= 0) {
-                cerr << __PRETTY_FUNCTION__ << endl;
-                throw runtime_error("A negative value is forbidden!");
-            }
+            Merope_assert(pc > 0,
+                "A negative value is forbidden!");
         }
     }
 }
@@ -119,8 +117,7 @@ inline GridField<DIM> Voxellation<DIM>::getField() {
     } else if (this->structure) {
         return computeField(*(this->structure));
     } else {
-        cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("Unexpected");
+        Merope_assert(false, "Unexpected");
     }
 }
 
@@ -129,13 +126,12 @@ template<class STRUCTURE>
 inline GridField<DIM> Voxellation<DIM>::computeField(const STRUCTURE& structure_) {
     if (this->voxelRule == VoxelRule::Center) {
         if constexpr (is_same_v<STRUCTURE, FieldStructure<DIM>>) {
-            return voxellizer::transformStructIntoGrid<DIM, VoxelRule::Center>(structure_, GridParameters<DIM>(*this));
+            return voxellizer::transformStructIntoGrid<DIM>(structure_, GridParameters<DIM>(*this), vox::VoxelPolicy<VoxelRule::Center, true>());
         } else {
-            std::cerr << __PRETTY_FUNCTION__ << endl;
-            throw runtime_error("Not programmed yet");
+            Merope_error_not_done();
         }
     } else {
-        auto phaseValueField = voxellizer::transformStructIntoGrid<DIM, VoxelRule::Average>(structure_, GridParameters<DIM>(*this));
+        auto phaseValueField = voxellizer::transformStructIntoGrid<DIM>(structure_, GridParameters<DIM>(*this), vox::VoxelPolicy<VoxelRule::Average, true>());
         return applyHomogRule(phaseValueField);
     }
 }
@@ -179,7 +175,7 @@ template<VoxelRule VOXEL_RULE>
 CartesianGrid<DIM, composite::OutputFormat<VOXEL_RULE, DIM, PhaseType>> Voxellation<DIM>::computeCartesianGrid() {
     this-> template check_structure<Structure<DIM>>(__PRETTY_FUNCTION__);
     this-> template check_voxel_rule<VOXEL_RULE>(__PRETTY_FUNCTION__);
-    return  voxellizer::transformStructIntoGrid<DIM, VOXEL_RULE>(*(this->structure), GridParameters<DIM>(*this));
+    return  voxellizer::transformStructIntoGrid<DIM>(*(this->structure), GridParameters<DIM>(*this), vox::VoxelPolicy<VOXEL_RULE, true>());
 }
 
 template<unsigned short DIM>
@@ -188,8 +184,7 @@ inline vector<composite::stl_format_Iso<PhaseType>> Voxellation<DIM>::computePha
     if (this->voxelRule == VoxelRule::Average) {
         res.reset(new CartesianGrid<DIM, composite::Iso<PhaseType>>(computeCartesianGrid<VoxelRule::Average>()));
     } else {
-        cerr << __PRETTY_FUNCTION__ << endl;
-        throw invalid_argument("Incoherent voxel rule");
+        Merope_assert(false, "Incoherent voxel rule");
     }
     return convertGrid::linearize(convertGrid::convert_to_stl_format(*res));
 }
@@ -205,7 +200,7 @@ CartesianGrid<DIM, PhaseType> Voxellation<DIM>::computePurePhaseGrid(vector<doub
     coefficients_ = {};
     if (this->structure and this->voxelRule == VoxelRule::Center) {
         coefficients_ = this->pureCoeffs;
-        auto gridPhase = voxellizer::transformStructIntoGrid<DIM, VoxelRule::Center>(*(this->structure), GridParameters<DIM>(*this));
+        auto gridPhase = voxellizer::transformStructIntoGrid<DIM>(*(this->structure), GridParameters<DIM>(*this), vox::VoxelPolicy<VoxelRule::Center, true>());
         convertGrid::renormalizeWithCoefficients(gridPhase, coefficients_);
         return gridPhase;
     } else {
@@ -231,8 +226,7 @@ GridField<DIM> Voxellation<DIM>::applyHomogRule(const CartesianGrid<DIM, VOXEL_T
     } else if (this->homogRule == homogenization::Rule::Smallest) {
         return applyHomogRule_T<homogenization::Rule::Smallest>(phaseFracVol);
     } else {
-        cerr << __PRETTY_FUNCTION__ << endl;
-        throw invalid_argument("HomogRule");
+        Merope_assert(false, "invalid_argument HomogRule");
     }
 }
 
@@ -244,8 +238,7 @@ vox::GridField<DIM> Voxellation<DIM>::applyHomogRule_T(const vox::CartesianGrid<
     } else if constexpr (is_same_v<VOXEL_TYPE, composite::Iso<PhaseType>>) {
         return vox::voxellizer::applyHomogRule_T<HOMOG_RULE, DIM>(phaseFracVol, this->pureCoeffs);
     } else {
-        cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("Incorrect VOXEL_TYPE");
+        Merope_assert(false, "Incorrect VOXEL_TYPE");
     }
 }
 

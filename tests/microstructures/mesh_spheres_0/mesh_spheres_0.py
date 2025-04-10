@@ -37,3 +37,6 @@ meshGenerator.setMeshSize(0.025)
 meshGenerator.setMultiInclusions(mi)
 meshGenerator.set_nameOutput(["spheres.vtk"])
 meshGenerator.write("mesh_spheres.geo")
+
+meshGenerator.write("mesh_spheres_OCC.geo", merope.mesh.MeshMethod.OpenCascade)
+

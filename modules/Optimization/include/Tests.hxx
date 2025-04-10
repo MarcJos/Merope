@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../GenericMerope/StdHeaders.hxx"
 
 namespace optimization {
 namespace tests {

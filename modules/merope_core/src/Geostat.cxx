@@ -4,12 +4,8 @@
 //!
 
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
-
 #include "Grid/Geostat.hxx"
-#include "../../AlgoPacking/src/Geometry/GeomTypes.hxx"
-
-#include "MeropeNamespace.hxx"
+#include "../../Geometry/include/GeomTypes.hxx"
 
 
 namespace merope {

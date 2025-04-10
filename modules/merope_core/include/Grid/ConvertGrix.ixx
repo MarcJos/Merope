@@ -5,7 +5,6 @@
 #pragma once
 
 
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -52,24 +51,22 @@ CartesianGrid<DIM, C1> convertGrid::applyFunctionDependingOnX(const CartesianGri
     return result;
 }
 
-template<unsigned short DIM, class PHASE_TYPE>
-CartesianGrid<DIM, composite::Iso<PHASE_TYPE>> vox::convertGrid::fromPureToIso(const CartesianGrid<DIM, PHASE_TYPE>& grid0) {
-    return localConvert<true, DIM, composite::Iso<PHASE_TYPE>, PHASE_TYPE>(grid0, [](const PHASE_TYPE& phase) {
-        return composite::Iso<PHASE_TYPE>(phase);
-        });
-}
 
-template<unsigned short DIM, class PHASE_TYPE>
-CartesianGrid<DIM, vox::composite::AnIso<DIM, PHASE_TYPE>> vox::convertGrid::fromPureToAnIso(const CartesianGrid<DIM, PHASE_TYPE>& grid0) {
-    return localConvert<DIM, gridAuxi::ListPhaseFrac<PHASE_TYPE>, PHASE_TYPE>(grid0, [](const PHASE_TYPE& phase) {
-        return vox::composite::AnIso<DIM, PHASE_TYPE>(phase);
-        });
+template<unsigned short DIM, class COMPOSITE_OUT, class COMPOSITE_IN>
+CartesianGrid<DIM, COMPOSITE_OUT> vox::convertGrid::convert_to(const CartesianGrid<DIM, COMPOSITE_IN>& grid0) {
+    if constexpr (is_same_v<COMPOSITE_IN, COMPOSITE_OUT>) {
+        return grid0;
+    } else {
+        return localConvert<true, DIM, COMPOSITE_OUT, COMPOSITE_IN>(grid0, [](const COMPOSITE_IN& phase) {
+            return composite::convert_to<DIM, COMPOSITE_OUT, COMPOSITE_IN>(phase);
+            });
+    }
 }
 
 template<unsigned short DIM, class COMPOSITE>
 CartesianGrid<DIM, composite::to_stl_format<COMPOSITE>> vox::convertGrid::convert_to_stl_format(const CartesianGrid<DIM, COMPOSITE>& grid0) {
     return localConvert<true, DIM, composite::to_stl_format<COMPOSITE>, COMPOSITE>(grid0,
-        &composite::convert_to_stl_format<COMPOSITE, DIM>);
+        &composite::auxi::convert_to_stl_format<COMPOSITE, DIM>);
 }
 
 template<unsigned short DIM, class VOXEL_TYPE>

@@ -2,12 +2,8 @@
 //!
 //! \brief
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
 #include "MultiInclusions/SphereSeeds.hxx"
-
-
-#include "MeropeNamespace.hxx"
 
 
 namespace merope {

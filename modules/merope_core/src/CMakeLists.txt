@@ -6,7 +6,7 @@ find_package(OpenMP)
 add_library(Physics Homogenization.cxx)
 install(TARGETS Physics DESTINATION lib)
 
-add_library(VoroInterface VoroInterface.cxx MicroInclusion.cxx)
+add_library(VoroInterface VoroInterface.cxx MicroInclusion.cxx VolumeInCube.cxx)
 target_link_libraries(VoroInterface PUBLIC vorolib)
 target_include_directories(VoroInterface SYSTEM PUBLIC ../../voro-plus-plus)
 install(TARGETS VoroInterface DESTINATION lib)
@@ -15,10 +15,6 @@ add_library(GeomVER Rotation.cxx Hyper.cxx SphereSeeds.cxx RecurStructure.cxx)
 target_include_directories(GeomVER PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(GeomVER PUBLIC RSAalgolib VoroInterface)
 install(TARGETS GeomVER DESTINATION lib)
-
-add_library(OptiLaguerre Optimize_LaguerreTess.cxx)
-target_link_libraries(OptiLaguerre PUBLIC VoroInterface)
-install(TARGETS OptiLaguerre DESTINATION lib)
 
 add_library(GeneOrientations geneOrientations.cxx)
 target_link_libraries(GeneOrientations PUBLIC GeomVER)
@@ -41,7 +37,11 @@ add_library(FFTGrid FFTField.cxx FFTScalarField.cxx Geostat.cxx CovSum.cxx Gauss
 ##########
 install(TARGETS FFTGrid DESTINATION lib)
 
-add_library(Grid Grid_VER.cxx Grid.cxx CartesianGrid.cxx GridManipulations.cxx)
+add_library(OptiLaguerre Optimize_LaguerreTess.cxx)
+target_link_libraries(OptiLaguerre PUBLIC VoroInterface OpenMP::OpenMP_CXX)
+install(TARGETS OptiLaguerre DESTINATION lib)
+
+add_library(Grid Grid_VER.cxx Grid.cxx GridManipulations.cxx)
 target_link_libraries(Grid PUBLIC RSAalgolib VTKinout GeomVER Physics)
 target_link_libraries(Grid PUBLIC OpenMP::OpenMP_CXX)
 target_link_libraries(Grid PRIVATE FFTGrid)
@@ -49,13 +49,15 @@ install(TARGETS Grid DESTINATION lib)
 
 add_library(Mesh GeoObjects.cxx SameThings.cxx GmshWriter.cxx)
 target_link_libraries(Mesh PUBLIC RSAalgolib)
+target_link_libraries(Mesh PUBLIC OpenMP::OpenMP_CXX)
 install(TARGETS Mesh DESTINATION lib)
 
 add_library(VoroToMesh VoroToMeshGraph.cxx MeshGenerator.cxx)
 target_link_libraries(VoroToMesh PUBLIC Mesh VoroInterface)
+target_link_libraries(Mesh PUBLIC OpenMP::OpenMP_CXX)
 
 add_library(tests Tests.cxx TestMesh.cxx)
-target_link_libraries(tests PUBLIC RSAalgolib GeomVER VTKinout Grid VoroInterface Mesh VoroToMesh GeneOrientations OptiLaguerre)
+target_link_libraries(tests PUBLIC RSAalgolib GeomVER VTKinout Grid VoroInterface Mesh VoroToMesh GeneOrientations OptiLaguerre OpenMP::OpenMP_CXX)
 install(TARGETS tests DESTINATION lib)
 
 
@@ -88,3 +90,6 @@ install(TARGETS Z_Test_debug DESTINATION bin)
 
 ## See Makefile.am in previous versions -> is no C++
 ## add_executable(ntfa_evp3d_castem ntfa_evp3d_castem.f)
+
+
+add_subdirectory(ctests)

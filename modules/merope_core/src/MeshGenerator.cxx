@@ -3,7 +3,6 @@
 //! \brief
 //
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
 #include "MicroToMesh/MeshGenerator.hxx"
 #include "MicroToMesh/SphereMesh.hxx"
@@ -11,19 +10,16 @@
 #include "Voronoi/VoroToMeshGraph.hxx"
 
 
-#include "MeropeNamespace.hxx"
-
-
 namespace merope {
 namespace mesh {
 namespace generator {
 
-void MeshGenerator::write(string nameFile) const {
+void MeshGenerator::write(string nameFile, gmsh_writer::MeshMethod meshMethod) const {
     ofstream file(nameFile);
-    this->write(file);
+    this->write(file, meshMethod);
 }
 
-void MeshGenerator::write(std::ostream& f) const {
+void MeshGenerator::write(std::ostream& f, gmsh_writer::MeshMethod meshMethod) const {
     auto geoPerStructure = this->meshFrom_MultiInclusions();
     geoPerStructure.isCoherent();
     //
@@ -31,8 +27,15 @@ void MeshGenerator::write(std::ostream& f) const {
     auxi::remove_ignored_phase(geoPerStructure, ignore_interior);
     auxi::check_phases(geoPerStructure);
     //
-    gmsh_writer::auxi::writePreamble(f);
-    auxi::write_all(f, geoPerStructure);
+    if (meshMethod == gmsh_writer::MeshMethod::native_gmsh) {
+        gmsh_writer::auxi::writePreamble<gmsh_writer::MeshMethod::native_gmsh>(f);
+        auxi::write_all<gmsh_writer::MeshMethod::native_gmsh>(f, geoPerStructure);
+    } else if (meshMethod == gmsh_writer::MeshMethod::OpenCascade) {
+        gmsh_writer::auxi::writePreamble<gmsh_writer::MeshMethod::OpenCascade>(f);
+        auxi::write_all<gmsh_writer::MeshMethod::OpenCascade>(f, geoPerStructure);
+    } else {
+        Merope_assert(false, "Incorrect meshMethod");
+    }
     gmsh_writer::auxi::writeEnd(f, this->get_nameOutput(), this->getMeshSize(), this->getMeshOrder(), this->binaryOutput);
 }
 
@@ -43,24 +46,42 @@ std::tuple<mesh::meshStructure::VoroMesh_UnStructureData<3>,
     std::map<PhaseType, geoObjects::PhysicalVolume> physicalVolumes{};
     //
     mesh::meshStructure::VoroMesh_UnStructureData<3> rawMeshData{};
-    rawMeshData.L = this->multiInclusions->getL();
+    Point<3> L = this->multiInclusions->getL();
+    rawMeshData.L = L;
+    if (this->multiInclusions->isLaguerreTess()) {
+        microToMesh::voroTranslater::VoroToMeshGraph voroToMesh(L, this->multiInclusions->getLaguerreTess().getSeeds(), adimensionnalMergeDistance);
+        rawMeshData = voroToMesh.getMeshData();
+    }
+    auto referenceSolids = rawMeshData.vecSolid;
+    map<Identifier, Identifier> referenceSolidsMap = {};
+    for (size_t i = 0; i < referenceSolids.size(); i++) {
+        const auto& solid = referenceSolids[i];
+        referenceSolidsMap[solid.identifier - 1] = i;  // +1 necessary because 0 is forbidden as identifier
+    }
+    //
+    rawMeshData.vecSolid = {};
     //
     vector<Identifier> outerSurfaces{};
     //// Prepare for the loop
-    Identifier current_identifier = 1;
+    Identifier current_identifier = rawMeshData.getMaxIndex();
     //
     auto my_func = [&](const auto& polyhedron) {
         long nbInclusions = polyhedron.getInnerInclusions().size();
         Identifier last_non_empty_inner_surfaceLoop = -1;
         for (auto i = nbInclusions - 1; i >= 0; i--) {
             auto polyhedronMeshData = auxi::getRawMeshGraph(polyhedron, rawMeshData.L, i);
-            if (polyhedronMeshData.vecSolid.size() > 0) {  // the inclusion is of volume > 0
+            if (this->multiInclusions->isLaguerreTess() and i == 0) {
+                polyhedronMeshData.reset();
+                polyhedronMeshData.vecSolid = { geoObjects::Solid(current_identifier + 1, referenceSolids[referenceSolidsMap.at(polyhedron.identifier)].leaves) };
+            } else {
                 polyhedronMeshData.shiftIndices(current_identifier);
+            }
+            if (polyhedronMeshData.vecSolid.size() > 0) {  // the inclusion is of volume > 0
                 if (last_non_empty_inner_surfaceLoop > 0) {
                     polyhedronMeshData.vecSolid[0].leaves.push_back(last_non_empty_inner_surfaceLoop);
                 }
                 rawMeshData.append(polyhedronMeshData);
-                { // update PhysicalVolumes
+                {  // update PhysicalVolumes
                     auto phase = polyhedron.getPhaseForVoxellation(i);
                     auto id = polyhedronMeshData.vecSolid[0].identifier;
                     if (physicalVolumes.find(phase) != physicalVolumes.end()) {
@@ -70,9 +91,9 @@ std::tuple<mesh::meshStructure::VoroMesh_UnStructureData<3>,
                     }
                 }
                 last_non_empty_inner_surfaceLoop = polyhedronMeshData.vecSolid[0].leaves[0];
-                // update outer surfaces
-                if (i == 0) outerSurfaces.push_back(polyhedronMeshData.vecSurfaceLoop[0].identifier); // outer surface
-                // update indices
+                //  update outer surfaces
+                if (i == 0) outerSurfaces.push_back(last_non_empty_inner_surfaceLoop); // outer surface
+                //  update indices
                 current_identifier = polyhedronMeshData.getMaxIndex() + 1;
             }
         }
@@ -94,7 +115,7 @@ mesh::meshStructure::VoroMesh_Periodic_Physical<3> MeshGenerator::meshFrom_Lague
     const auto& physicalVolumes = get<1>(phy_raw);
     //
     mesh::meshStructure::VoroMesh_Periodic_Physical<3>
-        geoPerStructure(mesh::meshStructure::VoroMesh_Periodic<3>(rawMeshData, adimensionnalMergeDistance_0, adimensionnalMergeDistance_1));
+        geoPerStructure(mesh::meshStructure::VoroMesh_Periodic<3>(rawMeshData, true));
     geoPerStructure.dictPhysicalVolume = physicalVolumes;
     return geoPerStructure;
 }
@@ -109,7 +130,7 @@ mesh::meshStructure::VoroMesh_Periodic_Physical<3> MeshGenerator::getBoundaryMes
             theSpheres[i] = sphereInc[i].getInnerInclusions()[0];
         }
     } else if (this->multiInclusions->template get<smallShape::CylinderInc<3>>().size() > 0) {
-        { // MESSAGE
+        {  // MESSAGE
             for (size_t i = 0; i < 10; i++) {
                 cerr << "WARNING" << endl;
             }
@@ -128,22 +149,18 @@ mesh::meshStructure::VoroMesh_Periodic_Physical<3> MeshGenerator::getBoundaryMes
         throw runtime_error("No known boundary for such a shape");
     }
     //
-    microToMesh::voroTranslater::VoroToMeshGraph voroTranslater(multiInclusions->getL(), theSpheres);
-    mesh::meshStructure::VoroMesh_UnStructureData<3> rawMeshData = voroTranslater.getMeshData();
-    mesh::meshStructure::VoroMesh_Periodic_Physical<3>
-        geoPerStructure(mesh::meshStructure::VoroMesh_Periodic<3>(rawMeshData, adimensionnalMergeDistance_0, adimensionnalMergeDistance_1));
+    Point<3> L = this->multiInclusions->getL();
+    microToMesh::voroTranslater::VoroToMeshGraph voroToMesh(L, theSpheres, adimensionnalMergeDistance);
+    auto rawMeshData = voroToMesh.getMeshData();
+    mesh::meshStructure::VoroMesh_Periodic<3> voroMeshPeriodic(rawMeshData, true);
+    mesh::meshStructure::VoroMesh_Periodic_Physical<3> geoPerStructure(voroMeshPeriodic);
     geoPerStructure.restrictEnveloppe();
     geoPerStructure.isStronglyCoherent();
     return geoPerStructure;
 }
 
 mesh::meshStructure::VoroMesh_Periodic_Physical<3> MeshGenerator::meshFrom_MultiInclusions() const {
-    if (multiInclusions->template get<smallShape::ConvexPolyhedronInc<3>>().size() > 0) {
-        if ((multiInclusions->is_there_matrix())) {
-            cerr << "WARNING" << endl; // warning
-            cerr << __PRETTY_FUNCTION__ << endl;
-            cerr << "I expect either a laguerre tessellation without a matrix or a matrix with inclusions" << endl;
-        }
+    if (multiInclusions->isLaguerreTess()) {
         return this->meshFrom_LaguerreTess();
     } else {
         return this->meshFrom_MatrixInclusions();
@@ -160,7 +177,7 @@ mesh::meshStructure::VoroMesh_Periodic_Physical<3> MeshGenerator::meshFrom_Matri
     //
     //!
     Identifier Last_Identifier = geoPerStructure.getMaxIndex() + 1;
-    { // shift everyone by Last_Identifier
+    {  // shift everyone by Last_Identifier
         rawMeshData.shiftIndices(Last_Identifier);
         for (auto& [id, phyV] : physicalVolumes) {
             for (auto& id_solid : phyV.leaves) {
@@ -186,19 +203,6 @@ mesh::meshStructure::VoroMesh_Periodic_Physical<3> MeshGenerator::meshFrom_Matri
 }
 
 namespace auxi {
-
-void write_all(std::ostream& f, const mesh::meshStructure::VoroMesh_Periodic_Physical<3>& geoPerStructure) {
-    gmsh_writer::auxi::writeDict("Points", geoPerStructure.dictPoint, f);
-    gmsh_writer::auxi::writeDict("Edges", geoPerStructure.dictEdge, f);
-    gmsh_writer::auxi::writeDict("CurveLoops", geoPerStructure.dictCurveLoop, f);
-    gmsh_writer::auxi::writeDict("Surfaces", geoPerStructure.dictSurface, f);
-    gmsh_writer::auxi::writeDict("SurfaceLoop", geoPerStructure.dictSurfaceLoop, f);
-    gmsh_writer::auxi::writeDict("Matrix volume", geoPerStructure.dictSolid, f);
-    gmsh_writer::auxi::writeDict("Periodic surfaces of the enveloppe", geoPerStructure.dictPerSurface, f);
-    gmsh_writer::auxi::writeDict("Physical volumes", geoPerStructure.dictPhysicalVolume, f);
-    gmsh_writer::auxi::writeDict("Physical surfaces", geoPerStructure.dictPhysicalSurface, f);
-}
-
 void create_physical_surfaces(mesh::meshStructure::VoroMesh_Periodic_Physical<3>& geoPerStructure) {
     Identifier max_phase = 0;
     for (const auto& key_phyVol : geoPerStructure.dictPhysicalVolume) {
@@ -217,7 +221,7 @@ void create_physical_surfaces(mesh::meshStructure::VoroMesh_Periodic_Physical<3>
         geoPerStructure.dictPhysicalSurface.insert(make_pair(phase, phySurf));
         max_phase = max(phase, max_phase);
     }
-    geoPerStructure.dictPhysicalSurface.insert(make_pair(max_phase + 1, geoPerStructure.getOuterSurface(max_phase + 1)));
+    geoPerStructure.dictPhysicalSurface.insert(make_pair(max_phase + 1, geoPerStructure.getPeriodicOuterSurface(max_phase + 1)));
 }
 
 void check_phases(const mesh::meshStructure::VoroMesh_Periodic_Physical<3>& geoPerStructure) {
@@ -234,7 +238,7 @@ void check_phases(const mesh::meshStructure::VoroMesh_Periodic_Physical<3>& geoP
 
 void remove_ignored_phase(mesh::meshStructure::VoroMesh_Periodic_Physical<3>& geoPerStructure, const std::map<PhaseType, bool>& ignore_interior) {
     //! remove from dict_solid
-    for (const auto key_fv : geoPerStructure.dictPhysicalVolume) {
+    for (const auto& key_fv : geoPerStructure.dictPhysicalVolume) {
         if (ignore_interior.find(key_fv.first) != ignore_interior.end()) {
             for (auto s : key_fv.second.leaves) {
                 geoPerStructure.dictSolid.erase(s);
@@ -247,7 +251,7 @@ void remove_ignored_phase(mesh::meshStructure::VoroMesh_Periodic_Physical<3>& ge
         });
 }
 
-} // namespace  auxi
+}  // namespace  auxi
 
 }  // namespace generator
 }  // namespace mesh

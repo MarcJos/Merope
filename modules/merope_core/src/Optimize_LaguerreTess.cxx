@@ -41,10 +41,8 @@ vector<double>  algo_fit_volumes_3D::nabla_g(const vector<double>& w_i) {
 
 void algo_fit_volumes_3D::proceed(double max_delta_Vol, size_t max_iter, bool verbose) {
     // warning! preconditions
-    if (not auxi::preconditions(centerTessels, L, volumes_objective, max_delta_Vol)) {
-        cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("Preconditions are not met!");
-    }
+    Merope_assert(auxi::preconditions(centerTessels, L, volumes_objective, max_delta_Vol),
+        "Preconditions are not met!");
     //////////////////////////////////////////////////
     // initial stage
     vector<double> w_init(centerTessels.size());

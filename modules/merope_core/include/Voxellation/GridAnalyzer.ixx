@@ -1,8 +1,8 @@
 //! Copyright : see license.txt
 //!
 //! \brief
-
 #pragma once
+
 
 namespace merope {
 namespace vox {
@@ -27,8 +27,7 @@ std::map<PhaseType, double> compute_percentages(const CartesianGrid<DIM, COMPOSI
                 add_percentage(fv.phase, fv.fracVol * voxel_percentage);
             }
         } else {
-            cerr << __PRETTY_FUNCTION__ << endl;
-            throw runtime_error("Imposible");
+            Merope_assert(false, "Imposible");
         }
         };
     for (const auto& cell : cartesianGrid) {

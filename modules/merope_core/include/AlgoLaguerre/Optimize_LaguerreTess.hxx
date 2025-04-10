@@ -4,12 +4,11 @@
 
 #pragma once
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
+
+#include "../../../Geometry/include/AmbiantSpace.hxx"
 
 namespace merope {
-using namespace sac_de_billes;
-
 namespace optimizeLaguerreTess {
 
 //! optimize the laguerre tessellation by changing the radii so that the volume fraction of each

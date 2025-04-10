@@ -5,15 +5,10 @@
 #pragma once
 
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
-
-
-#include "MeropeNamespace.hxx"
+#include "../../GenericMerope/StdHeaders.hxx"
 
 
 namespace merope {
-using namespace std;
-using namespace sac_de_billes;
 namespace geneOrientation {
 
 void readOrient0(const char* const, std::ofstream&, std::ofstream&);

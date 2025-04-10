@@ -11,7 +11,7 @@
 #include<iostream>
 #include <functional>
 
-#include "../AlgoPacking/src/AlgoNames.hxx"
+#include "../../AlgoPacking/include/AlgoNames.hxx"
 #include "../include/MultiInclusions/SphereInclusions.hxx"
 #include "../include/Voronoi/VoroInterface.hxx"
 #include "../include/MultiInclusions/LaguerreTess.hxx"
@@ -108,8 +108,8 @@ py::list get_as_list(const vox::voxellizer::GridRepresentation<DIM>& grid_rep) {
 }
 
 template<class VOX>
-py::array_t<merope::vox::PhaseType> computePurePhaseGrid(VOX& vox) {
-    vector<merope::vox::PhaseType> result{};
+py::array_t<merope::PhaseType> computePurePhaseGrid(VOX& vox) {
+    vector<merope::PhaseType> result{};
     {// stop the GIL of python just for this computation
         Stop_gil stop_gil{};
         std::vector<double> coeffs{};
@@ -131,6 +131,14 @@ inline void create_functions_depending_on_dimension(py::module_& merope, std::st
     auto my_string_Segment = std::string("Segment") + DIM_S;
     py::class_<sac_de_billes::Segment<DIM>>(geometry, my_string_Segment.c_str())
         .def(py::init<array<Point<DIM>, 2>>())
+        ;
+
+    auto my_string_HalfSpace = std::string("HalfSpace") + DIM_S;
+    py::class_<merope::HalfSpace<DIM>>(geometry, my_string_HalfSpace.c_str())
+        .def(py::init<Point<DIM>, double>())
+        .def(py::init<Point<DIM>, Point<DIM>>())
+        .def("c", static_cast<double(merope::HalfSpace<DIM>::*)()const>(&merope::HalfSpace<DIM>::c))
+        .def("vec", &merope::HalfSpace<DIM>::vec)
         ;
 
 
@@ -173,6 +181,7 @@ inline void create_functions_depending_on_dimension(py::module_& merope, std::st
 
     auto my_string_GridRepresentation = "GridRepresentation" + DIM_S;
     py::class_<vox::voxellizer::GridRepresentation<DIM>>(vox, my_string_GridRepresentation.c_str())
+        .def(py::init<const Structure<DIM>&, vox::GridParameters<DIM>, vox::VoxelRule, std::map<tuple<PhaseType, PhaseType>, PhaseType>>())
         .def(py::init<const Structure<DIM>&, vox::GridParameters<DIM>, vox::VoxelRule>())
         .def(py::init<const FieldStructure<DIM>&, vox::GridParameters<DIM>, vox::VoxelRule>())
         .def(py::init<const vox::voxellizer::GridRepresentation<DIM>&>()) // deep copy
@@ -183,6 +192,8 @@ inline void create_functions_depending_on_dimension(py::module_& merope, std::st
         gridRep.apply_texture(i1.get<DIM, 1>());
             })
         .def("convert_to_stl_format", &vox::voxellizer::GridRepresentation<DIM>::convert_to_stl_format)
+        .def("convert_to_Iso_format", &vox::voxellizer::GridRepresentation<DIM>::convert_to_Iso_format)
+        .def("convert_to_AnIso_format", &vox::voxellizer::GridRepresentation<DIM>::convert_to_AnIso_format)
         .def("removeUnusedPhase", &vox::voxellizer::GridRepresentation<DIM>::removeUnusedPhase)
         .def("get_PureRealField", &vox::voxellizer::GridRepresentation<DIM>::template get<vox::composite::Pure<double>>)
         .def("get_PurePhaseField", &vox::voxellizer::GridRepresentation<DIM>::template get<vox::composite::Pure<PhaseType>>)
@@ -399,16 +410,20 @@ inline void create_functions_depending_on_dimension(py::module_& merope, std::st
         .def("setAspRatio", &LaguerreTess<DIM>::setAspRatio)
         .def("computeTessels", &LaguerreTess<DIM>::computeTessels)
         .def("getLength", &LaguerreTess<DIM>::getL)
+        .def("toPolyInclusions", &LaguerreTess<DIM>::toPolyInclusions)
         ;
 
     auto my_string_VoroInterface = "VoroInterface" + DIM_S;
     py::class_<voroInterface::VoroInterface<DIM>>(merope, my_string_VoroInterface.c_str())
         .def(py::init<std::array<double, DIM>, const std::vector<Sphere<DIM>>& >())
         .def(py::init<std::array<double, DIM>, const std::vector<Sphere<DIM>>&, std::array<bool, DIM> >())
+        .def("findTessel", &voroInterface::VoroInterface<DIM>::findTessel)
+        .def("computeSolids", &voroInterface::VoroInterface<DIM>::computeSolids)
         .def("drawGnuPlot", &voroInterface::VoroInterface<DIM>::drawGnuPlot)
         .def("drawCellsPov", &voroInterface::VoroInterface<DIM>::drawCellsPov)
         .def("printCustom", &voroInterface::VoroInterface<DIM>::printCustom)
         .def("addWallCylinder", &voroInterface::VoroInterface<DIM>::addWallCylinder)
+        .def("getCellCenters", &voroInterface::VoroInterface<DIM>::getCellCenters)
         ;
 
     auto my_string_ScalarField = "ScalarField" + DIM_S;
@@ -518,17 +533,22 @@ inline void createModule_merope(py::module_& merope) {
 
     //! Mesh
 
+    py::enum_<mesh::gmsh_writer::MeshMethod>(mesh, "MeshMethod")
+        .value("native_gmsh", mesh::gmsh_writer::MeshMethod::native_gmsh)
+        .value("OpenCascade", mesh::gmsh_writer::MeshMethod::OpenCascade)
+        .export_values()
+        ;
 
     py::class_<mesh::generator::MeshGenerator>(mesh, "MeshGenerator")
         .def(py::init<>())
         .def("getMeshOrder", &mesh::generator::MeshGenerator::getMeshOrder)
         .def("setMeshOrder", &mesh::generator::MeshGenerator::setMeshOrder)
-        .def("write", static_cast<void(mesh::generator::MeshGenerator::*)(std::string) const>(&mesh::generator::MeshGenerator::write))
+        .def("write", static_cast<void(mesh::generator::MeshGenerator::*)(std::string, mesh::gmsh_writer::MeshMethod) const>(&mesh::generator::MeshGenerator::write),
+            py::arg("nameFile") = "myFile.geo", py::arg("meshMethod") = mesh::gmsh_writer::MeshMethod::native_gmsh)
         .def("setMultiInclusions", &mesh::generator::MeshGenerator::setMultiInclusions)
         .def("getMeshSize", &mesh::generator::MeshGenerator::getMeshSize)
         .def("setMeshSize", &mesh::generator::MeshGenerator::setMeshSize)
-        .def("setAdimMergeDistance0", &mesh::generator::MeshGenerator::setAdimMergeDistance0)
-        .def("setAdimMergeDistance1", &mesh::generator::MeshGenerator::setAdimMergeDistance1)
+        .def("setAdimMergeDistance", &mesh::generator::MeshGenerator::setAdimMergeDistance)
         .def("setBinaryOutput", &mesh::generator::MeshGenerator::setBinaryOutput)
         .def("do_not_mesh", &mesh::generator::MeshGenerator::do_not_mesh)
         .def("set_nameOutput", &mesh::generator::MeshGenerator::set_nameOutput)
@@ -576,6 +596,7 @@ inline void createModule_merope(py::module_& merope) {
         .value("Average", merope::vox::VoxelRule::Average)
         .value("Center", merope::vox::VoxelRule::Center)
         .value("Laminate", merope::vox::VoxelRule::Laminate)
+        .value("PolyGeom", merope::vox::VoxelRule::PolyGeom)
         .export_values()
         ;
 

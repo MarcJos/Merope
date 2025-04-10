@@ -5,15 +5,12 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../../../AlgoPacking/src/Geometry/GeomTypes.hxx"
-
-#include "../MeropeNamespace.hxx"
+#include "../../../Geometry/include/GeomTypes.hxx"
 
 
 namespace merope {
-
 namespace mesh {
 namespace sameThings {
 
@@ -45,8 +42,13 @@ inline ostream& operator<<(ostream& os, const IdentifierSort& is) {
 //! \return same entities, according to a comparison function
 //! \param dictThing : map of things
 //! \param comparisonFunction : function to compare two entities
-template<class DICT_THING, class COMPARISON_FUNCTION>
-vector<SameThings<Identifier>> getReplacementList(const DICT_THING& dictThing, COMPARISON_FUNCTION comparisonFunction);
+template<class DICT_THING, class COMPARISON_FUNCTION, class FUNCTION>
+vector<SameThings<Identifier>> getReplacementList(
+    const DICT_THING& dictThing, COMPARISON_FUNCTION comparisonFunction, const FUNCTION& getIndices);
+//! see above
+template<class DICT_THING, class COMPARISON_FUNCTION, class FUNCTION, class DICT_INDEXES>
+vector<SameThings<Identifier>> getReplacementList(
+    const DICT_THING& dictThing, COMPARISON_FUNCTION comparisonFunction, const FUNCTION& getIndices, DICT_INDEXES cellList);
 
 /////////////////////////
 //! Auxiliary functions
@@ -56,8 +58,9 @@ namespace auxi {
 //! \return same entities, according to a comparison function
 //! \param dictThing : map of things
 //! \param comparisonFunction : function to compare two entities
-template<class DICT_THING, class COMPARISON_FUNCTION>
-vector<SameThings<typename DICT_THING::mapped_type>> findSamePairs(const DICT_THING& dictThing, COMPARISON_FUNCTION comparisonFunction);
+template<class DICT_THING, class COMPARISON_FUNCTION, class FUNCTION, class DICT_INDEXES>
+vector<SameThings<typename DICT_THING::mapped_type>> findSamePairs(
+    const DICT_THING& dictThing, COMPARISON_FUNCTION comparisonFunction, const FUNCTION& getIndices, DICT_INDEXES cellList);
 
 //! \return a list of replacements, from a list of same entities to , where all the same entities are to be merged into a single final one
 //! \param vecSameThings : vector of things that are the same

@@ -151,6 +151,7 @@ The classes `Sphere_3D` and `Sphere_2D` have 3 properties:
 - `phase` : a nonnegative integer.
 
 ## Print
+`algo.printVTK("sortie3D.vtk")`  return an .vtk file, that can be read by Paraview,  
 `algo.printDump("sortie3D.dump")`  return an .dump file (LAMMPS format), that can be read by Ovito,  
 `algo.printCSV("sortie3D.csv")`  return a .csv file, with " , " as separators,  
 `algo.printPos("sortie3D.pos")`  return a .pos file, that can be used in COMBS,  

@@ -32,24 +32,35 @@ The following features are supported :
 
 # Manual
 
+## `Merope.mesh.MeshMethod`
+
+This is a parameter, which takes two values:
+- `MeshMethod.native_gmsh` : to produce a simple standard .geo file readable by gmsh.
+- `MeshMethod.OpenCascade` : to produce a .geo file appealing to the OpenCascade plugin of gmsh.
+
+
 ## `Merope.mesh.MeshGenerator`
 
 `Merope.mesh.MeshGenerator` supports the following functions :
 - `setMultiInclusions(multiInclusions_3D)` : acquire the microstructure to be meshed (:warning: the microstructure should satisfy the above implicit assumptions).
-- `write(nameGeoFile)` : write the mesh commands for `gmsh`  in `.geo` format into the file `nameGeoFile`.
+- `write(nameGeoFile, meshMethod = merope.mesh.MeshMethod.native_gmsh)` : write the mesh commands for `gmsh`  in `.geo` format into the file `nameGeoFile`.
 - `setMeshOrder(meshOrder)` / `getMeshOrder()` : set/get the mesh order (=order of the elements) to be equal to the `meshOrder` (default 2).
 - `setMeshSize(meshSize)`/`getMeshSize()` : set the minimal mesh size to be equal to `meshSize` (default = 0.05).
 - `setBinaryOutput(boolean)` : trigger whether the mesh file should be written in binary format or not (default `False`).
 - `do_not_mesh(list_of_phases)` : the solid part corresponding to the phases will not be meshed.
 - `set_nameOutput([name_output_1, ...])` : set which outputs gmsh should produce. Notice gmsh automatically recognize the extension ('.vtk', '.msh') from the name of the output.
 
-The additional functions can be employed, but should not unless the programmer understands how they work :
-- `setAdimMergeDistance0(epsilon_0)` : set the distance criterion for merging elements of the original Laguerre tessellation, before identifiying periodic faces, when building the periodic enveloppe (it is adimensional, that is, it will be multiplied by the minimal edge length of the periodic cuboid). (Default = 1e-5.)
+This additional function can be employed, but should not unless the programmer understands how they work :
+- `setAdimMergeDistance(epsilon)` : set the distance criterion for merging elements of the original Laguerre tessellation, before identifiying periodic faces, when building the periodic enveloppe (it is adimensional, that is, it will be multiplied by the minimal edge length of the periodic cuboid). (Default = 1e-5.)
     - :warning: This is a technical parameter, that should be small.
     - :warning: In any case, it is assumed that $\epsilon_0 \leq \epsilon_1$.
-- `setAdimMergeDistance1(epsilon_1)` : set the distance criterion for merging elements of the original Laguerre tessellation, after identifiying periodic faces, when building the periodic enveloppe (it is adimensional, that is, it will be multiplied by the minimal edge length of the periodic cuboid).  (Default = 1e-5.)
-    - :warning: This is a technical parameter, that should be small.
-    - :warning: In any case, it is assumed that $\epsilon_0 \leq \epsilon_1$.
+
+## Physical surfaces and volumes
+
+`Mérope` relies on the underlying phases of the microstructure for defining physical volumes and surfaces.
+More precisely, to each phase is associated :
+- a physical volume containing it (unless it is not meshed). The identifier of such domain is *equal* to the phase.
+- a physical surface delimitating it. The identifier of such surfaces is *equal* to the phase. :warning: This surface may contain additional surfaces **inside** the phase.
 
 # Examples
 

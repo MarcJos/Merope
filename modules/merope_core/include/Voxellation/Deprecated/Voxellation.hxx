@@ -5,9 +5,10 @@
 #pragma once
 
 
-#include "../../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../GenericMerope/StdHeaders.hxx"
+#include "../../GenericMerope/MeropeNamespace.hxx"
 
-#include "../../Geometry/GeomTools.hxx"
+#include "../../Geometry/include/GeomTools.hxx"
 #include "../../Grid/CartesianGrid.hxx"
 #include "../../Grid/ConvertGrix.hxx"
 #include "../../Grid/Grid_VER.hxx"
@@ -16,9 +17,6 @@
 #include "../../Grid/VtkHistogramm.hxx"
 #include "../../Voxellation/VoxRecurStructure.hxx"
 #include "../../VTKinout/VTKStream.hxx"
-
-
-#include "../../MeropeNamespace.hxx"
 #include "../../Voxellation/Voxellizer.hxx"
 
 
@@ -103,13 +101,13 @@ public:
         this->setDiscretization(nbNodes_, nMin_, nMax_);
     }
     //! \param nbNodes : sizes of the voxellation grid
-    void proceed(array<size_t, DIM> nbNodes) { this->proceed(nbNodes, create_array<DIM, size_t>(0), nbNodes); }
+    void proceed(array<size_t, DIM> nbNodes_) { this->proceed(nbNodes_, create_array<DIM, size_t>(0), nbNodes_); }
 
 
     //! computes a field
     GridField<DIM> getField();
     //! compute a phaseGrid
-    vox::CartesianGrid<DIM, vox::PhaseType> computePurePhaseGrid(vector<double>& coefficients_);
+    vox::CartesianGrid<DIM, PhaseType> computePurePhaseGrid(vector<double>& coefficients_);
     //! for outputs in python Format
     //! \return a vector of vectors of (phase, volume fraction)
     vector<composite::stl_format_Iso<PhaseType>> computePhaseGrid();

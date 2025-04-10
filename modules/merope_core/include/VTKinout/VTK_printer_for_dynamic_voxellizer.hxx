@@ -1,11 +1,14 @@
 //! Copyright : see license.txt
 //!
 //! \brief
-
 #pragma once
+
+
+#include "../../../GenericMerope/StdHeaders.hxx"
 
 #include "../VTKinout/VTK_adapter.hxx"
 #include "../Voxellation/DynamicVoxellizer.hxx"
+
 
 namespace merope {
 namespace vtk_adapter {

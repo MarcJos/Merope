@@ -5,16 +5,16 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../Grid/GridTypesBase.hxx"
-#include "../../../AlgoPacking/src/SphereContainer.hxx"
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
+#include "../../../Geometry/include/AmbiantSpace.hxx"
+
+#include "../../../AlgoPacking/include/SphereContainer.hxx"
+#include "../../../AlgoPacking/include/ArrayDimensions.hxx"
+
+#include "../SingleVoxel/SingleVoxel_Headers.hxx"
 #include "../MesoStructure/InsideTorus.hxx"
 #include "../MicroInclusion/MicroInclusion.hxx"
-
-#include "../MeropeNamespace.hxx"
-#include "../../../AlgoPacking/src/ArrayDimensions.hxx"
 
 
 namespace merope {
@@ -100,6 +100,7 @@ vector<array<long, 2>> auxi_intersectGridLimits(const array<long, 2>& gridLimits
 }  // namespace vox
 }  // namespace merope
 
+#include "../Grid/AreCompatible.hxx"
 #include "../Grid/PreGrid.ixx"
 
 

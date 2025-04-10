@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "../Geometry/GeomTools.hxx"
-#include "../Voronoi/VoroInterface.hxx"
 
-#include "../MeropeNamespace.hxx"
+#include "../../../Geometry/include/GeomTools.hxx"
+
+#include "../Voronoi/VoroInterface.hxx"
 
 
 namespace merope {
@@ -16,7 +16,7 @@ namespace merope {
 
 template<unsigned short DIM>
 inline LaguerreTess<DIM>::LaguerreTess(array<double, DIM> L_, vector<Sphere<DIM> > seeds_) :
-    PolyInclusions<DIM>(), seeds{ seeds_ } {
+    PolyInclusions<DIM>(), WithAspratio<DIM>(), seeds{ seeds_ } {
     this->setLength(L_);
 }
 
@@ -35,9 +35,9 @@ inline void LaguerreTess<DIM>::computeTessels() {
 template<unsigned short DIM>
 inline void LaguerreTess<DIM>::no_aspratio_computeTessels() {
     voroInterface::VoroInterface<DIM> voroInterface(this->tore.L, seeds);
-    this->polyInclusions = voroInterface.getMicroInclusions();
-    for (size_t i = 0; i < this->polyInclusions.size(); i++) {  // recovers the correct phase
-        this->polyInclusions[i].getPhaseGraphical(0) = seeds[i].phase;
+    this->setInclusions(voroInterface.getMicroInclusions());
+    for (size_t i = 0; i < this->getMicroInclusions().size(); i++) {  // recovers the correct phase
+        this->getMicroInclusions()[i].getPhaseGraphical(0) = seeds[i].phase;
     }
 }
 
@@ -53,8 +53,8 @@ inline void LaguerreTess<DIM>::with_aspratio_computeTessels() {
     // transforms back in the original coordinates
     LaguerreTess <DIM> res(L_dilated, seeds_dilated);
     res.computeTessels();
-    this->polyInclusions = res.getMicroInclusions();
-    for (auto& tess : this->polyInclusions) {
+    this->setInclusions(res.getMicroInclusions());
+    for (auto& tess : this->getMicroInclusions()) {
         tess.linearTransform(this->aspratio);
     }
 }

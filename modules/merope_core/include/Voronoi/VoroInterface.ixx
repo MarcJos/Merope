@@ -5,8 +5,6 @@
 #pragma once
 
 
-#include "../MeropeNamespace.hxx"
-
 namespace merope {
 namespace voroInterface {
 
@@ -14,6 +12,13 @@ template<>
 inline VoroInterface<3>::VoroInterface(array<double, 3> L, const vector<Sphere<3>>& centerTessels, array<bool, 3> periodicity) :
     InsideTorus<3>(L),
     PreparedVoroppContainer(centerTessels, L, periodicity), virtualLength{ L } {
+    if (*min_element(L.begin(), L.end()) < 1e-3) {
+        std::cerr << "WARNING" << endl;
+        std::cerr << __PRETTY_FUNCTION__ << endl;
+        std::cerr << "It is NOT advised to give cube lengths not of order 1." << endl;
+        std::cerr << "Indeed, voro++ does not behave well with very small lengths." << endl;
+        std::cerr << "WARNING" << endl;
+    }
 }
 
 template<>
@@ -32,7 +37,7 @@ int VoroInterface<DIM>::findTessel(const Point<DIM>& pt) {
     } else if constexpr (DIM == 2) {
         return voroInterface_aux::findTessel(voroInterface_aux::extendDimension(pt, virtualLength), voropp_container);
     } else {
-        throw invalid_argument(__PRETTY_FUNCTION__);
+        Merope_assert(false, "Only in dimensions 2 and 3");
     }
 }
 
@@ -64,10 +69,28 @@ vector<smallShape::ConvexPolyhedronInc<DIM>> VoroInterface<DIM>::getMicroInclusi
 }
 
 template<unsigned short DIM>
+std::pair<std::map<Identifier, vector<Identifier>>, std::map<Identifier, HalfSpace<3>>> VoroInterface<DIM>::computeSolids() {
+    return auxi::computeSolids(voroInterface_aux::virtualLength<DIM>(this->getL()), this->getSingleCells(), this->periodicity);
+}
+
+template<unsigned short DIM>
+std::map<Identifier, Point<3>> VoroInterface<DIM>::getCellCenters() {
+    if constexpr (DIM == 2) {
+        Merope_error_not_done();
+    }
+    std::map<Identifier, Point<3>> centers;
+    vector<merope::voroInterface::SingleCell> polys = this->getSingleCells();
+
+    for (Identifier id_solid = 0; id_solid < polys.size(); id_solid++) {
+        centers.insert({ polys[id_solid].identifier, polys[id_solid].center });
+    }
+    return centers;
+}
+
+template<unsigned short DIM>
 inline vector<SingleCell> VoroInterface<DIM>::getSingleCells() {
     if constexpr (DIM == 2) {
-        cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("Not programmed yet in dimension 2.");
+        Merope_error_not_done();
     }
     vector<SingleCell> polyhedrons{ };
     polyhedrons.reserve(voropp_container->total_particles());
@@ -110,11 +133,11 @@ void VoroInterface<DIM>::addInclusion(double* pp, int index,
 template<unsigned short DIM>
 void VoroInterface<DIM>::addCell(double* pp, int index,
     voro::voronoicell_neighbor* c, vector<SingleCell>& polyhedrons) {
-    Point<DIM> center;  // center of the polyhedron
+    Point<3> center;  // center of the polyhedron
     if constexpr (DIM == 3) {
         center = { pp[0], pp[1], pp[2] };
     } else  if constexpr (DIM == 2) {
-        center = { pp[0], pp[1] };
+        center = { pp[0], pp[1], 0 };
     }
     polyhedrons.emplace_back(SingleCell(index, center, c));
 }
@@ -190,6 +213,49 @@ void loop_on_voroppcontainer(voro::container_poly* voropp_container, Func my_fun
     } while (vl.inc());
 }
 
+namespace auxi {
+template<bool Ignore_Negative_Neighbor>
+pair<Identifier, vector<size_t>> correspondingFaces(std::function<const merope::voroInterface::SingleCell* (Identifier)> getCell,
+    Identifier id_cell, size_t id_face) {
+    const auto& singleCell_0 = getCell(id_cell);
+    const auto& normal_0 = singleCell_0->faceNormal[id_face];
+    //
+    Identifier id_singleCell_1 = singleCell_0->neighbors[id_face];
+    // verifications
+    if (id_singleCell_1 < 0) {
+        if constexpr (Ignore_Negative_Neighbor) {
+            return { 0,{} };
+        } else {
+            Merope_assert(false, "Voro++ is undefined with negative neighbors (at least, does not correspond to the users' manual)");
+        }
+    }
+    //
+    const voroInterface::SingleCell* singleCell_1 = getCell(id_singleCell_1);
+    //
+    if (singleCell_1) {
+        vector<size_t> candidatesFaces = {};
+        double tol = 1e-16; // magical constant!
+        for (size_t face_1_id_ = 0; face_1_id_ < singleCell_1->faceVertices.size(); face_1_id_++) {
+            if (geomTools::normeCarre<3>(normal_0 + singleCell_1->faceNormal[face_1_id_]) < tol) {
+                if (singleCell_1->neighbors[face_1_id_] == id_cell) {
+                    candidatesFaces.push_back(face_1_id_);
+                } else {
+                    if constexpr (Ignore_Negative_Neighbor) {
+                        Merope_assert(singleCell_1->neighbors[face_1_id_] + id_cell == 0, "Two faces have close normals, but do not correspond to each others");
+                    } else {
+                        std::cerr << singleCell_1->neighbors[face_1_id_] << " : " << id_cell << endl;
+                        Merope_assert(false, "Two faces have close normals, but do not correspond to each others");
+                    }
+                }
+            }
+        }
+        return pair<Identifier, vector<size_t>>(id_singleCell_1, candidatesFaces);
+    } else {
+        return { 0,{} };
+    }
+}
+
+}  // namespace  auxi
 }  // namespace voroInterface
 }  // namespace merope
 

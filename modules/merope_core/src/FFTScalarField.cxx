@@ -8,14 +8,11 @@
 
 #include <cmath>
 #include <cstdlib>
-#include "../../AlgoPacking/src/Geometry/GeomTypes.hxx"
+#include "../../Geometry/include/GeomTypes.hxx"
 #include "Field/CovSum.hxx"
 #include "Grid/Geostat.hxx"
 #include "Grid/Grid.hxx"
 #include "VTKinout/VTKStream.hxx"
-
-
-#include "MeropeNamespace.hxx"
 
 
 namespace merope {

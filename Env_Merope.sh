@@ -33,22 +33,16 @@ then
     version=$release/$processor
     ### use TMFFT
     export LD_LIBRARY_PATH=/soft/pleiades/testing/BUILDS/PLEIADES-trunk/PREREQUIS/$version/BOOST/lib:$LD_LIBRARY_PATH
-##    TMFFT_INSTALL=/soft/pleiades/testing/BUILDS/TMFFT-master/$version
-    TMFFT_INSTALL=/soft/pleiades/testing/BUILDS/TMFFT-trunk/$version
-
-    export PYTHONPATH=$TMFFT_INSTALL/lib/python3.7m/site-packages:$PYTHONPATH
-    export LD_LIBRARY_PATH=$TMFFT_INSTALL/lib:$LD_LIBRARY_PATH
-    export PATH=$PATH:$TMFFT_INSTALL/bin
+    TMFFT_ENV=/soft/pleiades/testing/BUILDS/TMFFT/TMFFT-master/env.sh
+    source $TMFFT_ENV
 
     ### use amitex_fftp
-    AMITEX_FOLDER=/soft/pleiades/testing/BUILDS/AMITEX_FFTP/${version}/amitex_fftp-v8.17.8
+    AMITEX_ENV=/soft/pleiades/testing/BUILDS/AMITEX_FFTP/AMITEX_FFTP-11.0.1/env.sh
 else
     # FILL IN
-    AMITEX_FOLDER=/usr/lib/amitex_fft-v8.17.8
+    AMITEX_ENV=/usr/lib/amitex_fft-v8.17.8/env_amitex.sh
 fi
 
-### use amitex_fftp
-export PATH=${AMITEX_FOLDER}/libAmitex/bin:$PATH
-export LD_LIBRARY_PATH=${AMITEX_FOLDER}/libAmitex/src/materiauxK:$LD_LIBRARY_PATH
-source ${AMITEX_FOLDER}/env_amitex.sh
+### use amitex_env
+source ${AMITEX_ENV}
 

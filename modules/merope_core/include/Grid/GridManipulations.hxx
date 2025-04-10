@@ -5,15 +5,11 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-
+#include "../../../GenericMerope/StdHeaders.hxx"
 
 #include "../Grid/GridTypes.hxx"
-#include "../Grid/VoxelRule.hxx"
-#include "../Grid/InclusionAndVoxel.hxx"
+#include "../SingleVoxel/SingleVoxel_Headers.hxx"
 #include "../Grid/ConvertGrix.hxx"
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {

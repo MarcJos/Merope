@@ -5,17 +5,13 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
+#include "../../../Geometry/include/AmbiantSpace.hxx"
 #include "../Mesh/SameThings.hxx"
 
 
-#include "../MeropeNamespace.hxx"
-
-
 namespace merope {
-
 namespace mesh {
 namespace geoObjects {
 using namespace mesh::sameThings;
@@ -87,9 +83,9 @@ public:
     template<TypeRelation RELAT>
     const TYPE<RELAT>& get() const;
     //! print the thing
-    void print(std::ostream& f) const;
+    virtual void print(std::ostream& f) const;
     //! shift the indices by a given shift
-    void shiftIndices(const Identifier shift);
+    virtual void shiftIndices(const Identifier shift);
     //! find a leaf/root
     template<TypeRelation>
     vector<Identifier> find(Identifier id) const;
@@ -116,11 +112,13 @@ public:
     //! return the identifier for sorting (when merging)
     IdentifierSort getId_forSort() const override;
     //! getter
-    Identifier getPeriodicRoot() const { if (hasPeriodicRoot) return periodicRoot; else throw runtime_error("Unexpected"); }
+    Identifier getPeriodicRoot() const { if (hasPeriodicRoot) return periodicRoot; else Merope_error_impossible(); }
     //! setter
     void setPeriodicRoot(const Identifier& periodicRoot_) { periodicRoot = periodicRoot_; hasPeriodicRoot = true; }
     //! setter
     void removePeriodicRoot() { hasPeriodicRoot = false; }
+    //! shift the indices by a given shift
+    void shiftIndices(const Identifier shift) override;
 private:
     //! indicates, if applicable, if the object is periodic
     bool hasPeriodicRoot;
@@ -142,6 +140,8 @@ public:
     AreSame areSamePer(const AmbiantSpace::Tore<DIM>& torus, const GeoPoint<DIM>& point2, double epsilon) const {
         return static_cast<AreSame>(torus.distanceCarre(this->coordinates, point2.coordinates) < epsilon * epsilon);
     }
+    //! print the thing
+    void print(std::ostream& f) const override { GeoObject_PerLeave::print(f); auxi_function::writeVectorToString(this->coordinates, f); f << endl; }
     //! a point is never singular
     bool isSingular() const override { return false; }
 };
@@ -159,13 +159,13 @@ public:
     //! return whether the line is singular or not
     bool isSingular() const override {
         if (typeEdge == TypeEdge::Segment) return leaves[0] == leaves[1];
-        throw runtime_error("Not programmed yet");
+        Merope_error_impossible();
     }
     //! return whether the line is coherent or not
     bool isCoherent() const override {
         if (typeEdge == TypeEdge::Segment) return leaves.size() == 2;
         if (typeEdge == TypeEdge::Circle) return leaves.size() == 3;
-        throw runtime_error("Not programmed yet");
+        Merope_error_impossible();
     }
     TypeEdge typeEdge;
 };
@@ -298,6 +298,9 @@ namespace sameThings {
 //! \see sameThings::getReplacementList here, implicitly use the function areSame
 template<class DICT_THINGS>
 vector<SameThings<Identifier>> getReplacementList(const DICT_THINGS& dictThing);
+//! \see sameThings::getReplacementList here, implicitly use the function areSame
+template<class DICT_THINGS, class COMPARISON_FUNCTION>
+vector<SameThings<Identifier>> getReplacementList(const DICT_THINGS& dictThing, COMPARISON_FUNCTION comparisonFunction);
 }  // namespace sameThings
 
 

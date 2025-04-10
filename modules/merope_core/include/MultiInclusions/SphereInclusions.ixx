@@ -5,9 +5,6 @@
 #pragma once
 
 
-#include "../MeropeNamespace.hxx"
-
-
 namespace merope {
 
 template<unsigned short DIM>
@@ -40,8 +37,7 @@ inline void SphereInclusions<DIM>::covDirection(size_t direction,
     for (x[direction] = 0, i = 0; i < n; ++i, x[direction] += dxi) {
         /*fout << x[direction] << " " << cS.volInter(x, getL()) / V - fv2 << endl;
          */
-        cerr << "Not ready yet!" << endl;
-        throw runtime_error(__PRETTY_FUNCTION__);
+        Merope_error_not_done();
     }
 }
 

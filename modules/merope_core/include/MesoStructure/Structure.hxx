@@ -5,15 +5,14 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
+
+#include "../../../Geometry/include/GeomTools.hxx"
 
 #include "../Field/GaussianField.hxx"
 #include "../Field/RealScalarField.hxx"
-#include "../Geometry/GeomTools.hxx"
 #include "../MultiInclusions/MultiInclusions.hxx"
-#include "RecurStructure.hxx"
-
-#include "../MeropeNamespace.hxx"
+#include "RecurMesoStructure.hxx"
 
 
 namespace merope {
@@ -64,8 +63,11 @@ public:
     FieldStructure(const RecurField<DIM>& recurStructure) : RecurField<DIM>(recurStructure) {}
 };
 
-}  // namespace merope
+template<class STRUCTURE>
+using Phase_Type_From_Structure_Type = std::conditional_t<std::is_same_v<STRUCTURE, Structure<2>> or std::is_same_v<STRUCTURE, Structure<3>>
+    or is_same_v<STRUCTURE, MultiInclusions<2>> or is_same_v<STRUCTURE, MultiInclusions<3>>, PhaseType, double>;
 
-#include "../MesoStructure/Structure.ixx"
+
+}  // namespace merope
 
 

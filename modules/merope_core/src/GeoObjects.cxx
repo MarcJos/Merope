@@ -3,13 +3,8 @@
 //! \briefEncodes geometry objects compatible with OpenCascad/gmsh
 
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
-
 #include "Mesh/GeoObjects.hxx"
-#include "../../AlgoPacking/src/AuxiFunctions.hxx"
-
-
-#include "MeropeNamespace.hxx"
+#include "../../GenericTools/AuxiFunctions.hxx"
 
 
 namespace merope {
@@ -80,6 +75,13 @@ void GeoObject::shiftIndices(const Identifier shift) {
     for (auto& index : this->leaves) {
         if (index >= 0) index += shift;
         if (index < 0) index -= shift;
+    }
+}
+
+void GeoObject_PerLeave::shiftIndices(const Identifier shift) {
+    GeoObject::shiftIndices(shift);
+    if (hasPeriodicRoot) {
+        setPeriodicRoot(getPeriodicRoot() + shift);
     }
 }
 

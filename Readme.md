@@ -4,6 +4,7 @@
 <img src="doc/Pictures/MultiImages.png" alt="drawing" width="1000"/>
 </div>
 
+
 :warning: The use of Mérope is subjected to a licence, available [in French](Licence_FR.txt) and [in English](Licence.txt).
 
 :warning: Unfortunately, some hyperlinks will not work properly for people without access to the internal resources of the CEA. We are sorry for this inconvenience.
@@ -25,7 +26,7 @@ Two approaches are possible :
 
 ```mermaid
 graph TB
-  subgraph "Merope"
+  subgraph "Mérope"
     Gauss(Fields)-->Microstructure;
     SdB(Random spheres)-->Microstructure;
     Microstructure-->Voxelation;
@@ -66,7 +67,6 @@ graph TB
   SdB-->DEM;
   SdB--Ribaudequin-->Gaz(Gas relocation);
 ```
-
 # OS and language
 
 Mérope is implemented in C++ (and uses features of C++17). 

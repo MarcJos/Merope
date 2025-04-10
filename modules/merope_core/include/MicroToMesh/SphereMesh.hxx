@@ -4,12 +4,13 @@
 
 #pragma once
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
-#include "../../AlgoPacking/src/Geometry/GeomTools_1.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
+
+#include "../../../Geometry/include/GeomTools_1.hxx"
+
 #include "../Mesh/GeoObjects.hxx"
 #include "../Mesh/MeshStructure.hxx"
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -17,7 +18,7 @@ namespace microToMesh {
 
 //! fixme
 inline mesh::meshStructure::VoroMesh_UnStructureData<3> getRawMeshGraph(const Sphere<3>& sphere) {
-    mesh::meshStructure::VoroMesh_UnStructureData<3> result{ create_array<3>(0.), {}, {}, {}, {}, {}, {}, {} };
+    mesh::meshStructure::VoroMesh_UnStructureData<3> result{ create_array<3>(0.), {}, {}, {}, {}, {}, {}, {}, {} };
 
     auto easyCoord = [&sphere](const auto& i, const auto& j, const auto& k) {
         return Point<3>({ sphere.center[0] + i * sphere.radius, sphere.center[1] + j * sphere.radius, sphere.center[2] + k * sphere.radius });

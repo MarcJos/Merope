@@ -4,8 +4,6 @@
 //
 #pragma once
 
-#include "../MeropeNamespace.hxx"
-
 
 namespace merope {
 namespace mesh {
@@ -209,10 +207,22 @@ void geoObjects::merge(const SameThings<Identifier> sameThings, DICT_ROOTS& dict
     dictThings.erase(thing_original.identifier);
 }
 
+
 template<class DICT_THING>
 inline vector<sameThings::SameThings<Identifier>> sameThings::getReplacementList(const DICT_THING& dictThing) {
     auto comparisonFunction = [](const auto& obj1, const auto& obj2) {return geoObjects::areSame(obj1, obj2);};
     return getReplacementList(dictThing, comparisonFunction);
+}
+
+template<class DICT_THINGS, class COMPARISON_FUNCTION>
+inline vector<sameThings::SameThings<Identifier>> sameThings::getReplacementList(const DICT_THINGS& dictThing, COMPARISON_FUNCTION comparisonFunction) {
+    auto getIndices = [](const auto& obj) {
+        auto leaves = obj.template get<geoObjects::TypeRelation::Leaf>();
+        vector<Identifier> result{};
+        for (auto& leaf : leaves) { result.push_back(abs(leaf)); }
+        return result;
+        };
+    return getReplacementList(dictThing, comparisonFunction, getIndices);
 }
 
 template<class DICT_THINGS>

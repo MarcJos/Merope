@@ -6,9 +6,8 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-#include "../localMFront.h"
-#include "../MeropeNamespace.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
+#include "../../../GenericMerope/localMFront.h"
 
 
 namespace merope {

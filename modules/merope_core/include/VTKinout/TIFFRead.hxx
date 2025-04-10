@@ -2,14 +2,10 @@
 //!
 //! \briefMedium from a TIFF File
 //
-
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-
-
-#include "../MeropeNamespace.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
 
 namespace merope {

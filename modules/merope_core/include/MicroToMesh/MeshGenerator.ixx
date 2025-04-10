@@ -4,10 +4,13 @@
 
 #pragma once
 
+
+#include "../../../GenericMerope/StdHeaders.hxx"
+
 #include "../MicroToMesh/SphereMesh.hxx"
 #include "../MicroToMesh/CylinderMesh.hxx"
-#include "../Mesh/GmshWriter.hxx"
 #include "../Voronoi/VoroToMeshGraph.hxx"
+
 
 namespace merope {
 namespace mesh {
@@ -30,6 +33,21 @@ mesh::meshStructure::VoroMesh_UnStructureData<3> getRawMeshGraph(const INCLUSION
     }
     return polyhedronMeshData;
 }
+
+template<gmsh_writer::MeshMethod meshMethod>
+void write_all(std::ostream& f, const mesh::meshStructure::VoroMesh_Periodic_Physical<3>& geoPerStructure) {
+    gmsh_writer::auxi::writeDict<meshMethod>("Points", geoPerStructure.dictPoint, f);
+    //gmsh_writer::auxi::writeDict("PerPoints", geoPerStructure.dictPerPoint, f);
+    gmsh_writer::auxi::writeDict<meshMethod>("Edges", geoPerStructure.dictEdge, f);
+    gmsh_writer::auxi::writeDict<meshMethod>("CurveLoops", geoPerStructure.dictCurveLoop, f);
+    gmsh_writer::auxi::writeDict<meshMethod>("Surfaces", geoPerStructure.dictSurface, f);
+    gmsh_writer::auxi::writeDict<meshMethod>("SurfaceLoop", geoPerStructure.dictSurfaceLoop, f);
+    gmsh_writer::auxi::writeDict<meshMethod>("Matrix volume", geoPerStructure.dictSolid, f);
+    gmsh_writer::auxi::writeDict<meshMethod>("Periodic surfaces of the enveloppe", geoPerStructure.dictPerSurface, f);
+    gmsh_writer::auxi::writeDict<meshMethod>("Physical volumes", geoPerStructure.dictPhysicalVolume, f);
+    gmsh_writer::auxi::writeDict<meshMethod>("Physical surfaces", geoPerStructure.dictPhysicalSurface, f);
+}
+
 
 }  // namespace auxi
 }  // namespace generator

@@ -4,12 +4,13 @@
 
 #pragma once
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
-#include "../../AlgoPacking/src/Geometry/GeomTools_1.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
+
+#include "../../../Geometry/include/GeomTools_1.hxx"
+
 #include "../Mesh/GeoObjects.hxx"
 #include "../Mesh/MeshStructure.hxx"
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -17,7 +18,7 @@ namespace microToMesh {
 
 //! fixme
 inline mesh::meshStructure::VoroMesh_UnStructureData<3> getRawMeshGraph(const Cylinder<3>& cylinder) {
-    mesh::meshStructure::VoroMesh_UnStructureData<3> result{ create_array<3>(0.), {}, {}, {}, {}, {}, {}, {} };
+    mesh::meshStructure::VoroMesh_UnStructureData<3> result{ create_array<3>(0.), {}, {}, {}, {}, {}, {}, {}, {} };
 
     Point<3> basis = cylinder.axis[0];
     // build the local frame

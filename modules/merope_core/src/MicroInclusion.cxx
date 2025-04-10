@@ -4,21 +4,14 @@
 //
 
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
-
 #include "MicroInclusion/MicroInclusion.hxx"
-
-
-#include "MeropeNamespace.hxx"
 
 
 namespace merope {
 
 size_t smallShape::auxi_MicroInclusions::getIndexPhaseGraphical(size_t phaseIndex, size_t nbOfLayers) {
-    if (phaseIndex > nbOfLayers) {
-        cerr << __PRETTY_FUNCTION__;
-        throw runtime_error("Too large index.");
-    }
+    Merope_assert((phaseIndex <= nbOfLayers),
+        "Too large index.");
     if (phaseIndex == 0) {
         return nbOfLayers - 1;
     } else {
@@ -34,10 +27,8 @@ vector<smallShape::LayerInstructions> smallShape::auxi_layerInstructions::buildI
     } else if (width.size() == 0) {
         return buildInstructionVector(identifier, phase, vector<double>(identifier.size(), 0.));
     }
-    if (identifier.size() != phase.size() or identifier.size() != width.size()) {
-        cerr << __PRETTY_FUNCTION__;
-        throw runtime_error("Incompatible sizes");
-    }
+    Merope_assert(identifier.size() == phase.size() and identifier.size() == width.size(),
+        "Incompatible sizes");
     vector < LayerInstructions > layerInstructions{ };
     for (size_t i = 0; i < identifier.size(); i++) {
         layerInstructions.push_back(LayerInstructions{ identifier[i], phase[i],

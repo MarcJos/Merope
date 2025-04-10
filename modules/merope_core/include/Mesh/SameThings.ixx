@@ -4,31 +4,49 @@
 //
 
 #pragma once
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {
 namespace mesh {
 namespace sameThings {
 
-template<class DICT_THING, class COMPARISON_FUNCTION>
+template<class DICT_THING, class COMPARISON_FUNCTION, class FUNCTION>
 inline vector<SameThings<Identifier>> getReplacementList(
-    const DICT_THING& dictThing, COMPARISON_FUNCTION comparisonFunction) {
-    auto vecSameThings = auxi::findSamePairs(dictThing, comparisonFunction);
+    const DICT_THING& dictThing, COMPARISON_FUNCTION comparisonFunction, const FUNCTION& getIndices) {
+    std::map<Identifier, std::vector<Identifier>> cellList{};
+    for (const auto& pair : dictThing) {
+        Identifier id = getIndices(pair.second)[0];
+        if (cellList.find(id) != cellList.end()) {
+            cellList[id].push_back(pair.first);
+        } else {
+            cellList[id] = { pair.first };
+        }
+    }
+    return getReplacementList(dictThing, comparisonFunction, getIndices, cellList);
+}
+
+
+template<class DICT_THING, class COMPARISON_FUNCTION, class FUNCTION, class DICT_INDEXES>
+inline vector<SameThings<Identifier>> getReplacementList(
+    const DICT_THING& dictThing, COMPARISON_FUNCTION comparisonFunction, const FUNCTION& getIndices, DICT_INDEXES cellList) {
+    auto vecSameThings = auxi::findSamePairs(dictThing, comparisonFunction, getIndices, cellList);
     return auxi::replaceGraph<typename DICT_THING::mapped_type>(vecSameThings);
 }
 
 
 namespace auxi {
-template<class DICT_THING, class COMPARISON_FUNCTION>
-inline vector<SameThings<typename DICT_THING::mapped_type>> findSamePairs(const DICT_THING& dictThing, COMPARISON_FUNCTION comparisonFunction) {
+template<class DICT_THING, class COMPARISON_FUNCTION, class FUNCTION, class DICT_INDEXES>
+inline vector<SameThings<typename DICT_THING::mapped_type>> findSamePairs(const DICT_THING& dictThing, COMPARISON_FUNCTION comparisonFunction, const FUNCTION& getIndices, DICT_INDEXES cellList) {
     vector<SameThings<typename DICT_THING::mapped_type>> vecSameThings{};
     for (auto it1 = dictThing.begin(); it1 != dictThing.end(); it1++) {
-        for (auto it2 = it1; it2 != dictThing.end(); it2++) {
-            const auto& x1 = (*it1).second, x2 = (*it2).second;
-            AreSame areSame = comparisonFunction(x1, x2);
-            if (abs(areSame) == 1 and x1.identifier != x2.identifier) {
-                vecSameThings.push_back(make_tuple(x1, x2, areSame));
+        auto indexes = getIndices((*it1).second);
+        for (const auto& i : indexes) {
+            for (const auto& key : cellList[i]) {
+                const auto& x1 = (*it1).second, x2 = dictThing.at(key);
+                AreSame areSame = comparisonFunction(x1, x2);
+                if (abs(areSame) == 1 and x1.identifier != x2.identifier) {
+                    vecSameThings.push_back(make_tuple(x1, x2, areSame));
+                }
             }
         }
     }

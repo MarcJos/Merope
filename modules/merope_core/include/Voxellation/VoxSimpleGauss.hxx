@@ -5,13 +5,10 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
 #include "../Field/CartesianField.hxx"
 #include "../Grid/Grid_VER.hxx"
-
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {

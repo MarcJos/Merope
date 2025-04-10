@@ -5,12 +5,11 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
+#include "../../../Geometry/include/AmbiantSpace.hxx"
+
 #include "../Mesh/GeoObjects.hxx"
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -34,7 +33,9 @@ struct VoroMesh_UnStructureData {
     vector<Surface>         vecSurface;
     vector<SurfaceLoop>     vecSurfaceLoop;
     vector<Solid>           vecSolid;
+    // periodic links
     vector<PerSurface<DIM>> vecPerSurface;
+    vector<PerPoint> vecPerPoint;
 
     //! \return the maximal index of the objects of the structure
     Identifier getMaxIndex() const;
@@ -47,7 +48,7 @@ struct VoroMesh_UnStructureData {
     template<class FUNCTION>
     void applyOnAllVectors(FUNCTION function) const;
     //! copy from geoStructure
-    void fromGeoPerStructure(VoroMesh_Periodic<DIM> geoStructure);
+    void fromGeoPerStructure(const VoroMesh_Periodic<DIM>& geoStructure);
     //! reset all vectors of objects
     void reset();
     //! add the data of another structure
@@ -87,6 +88,7 @@ public:
     void buildTree();
 };
 
+
 template<unsigned short DIM>
 class VoroMesh_Periodic : public VoroMesh_NotPeriodic<DIM> {
 public:
@@ -95,9 +97,9 @@ public:
     //! to identify surfaces copied by periodicity
     std::map<Identifier, PerSurface<DIM>>   dictPerSurface;
     //! constructor
-    VoroMesh_Periodic(VoroMesh_UnStructureData<DIM> rawData, double adim_epsilon_0 = VoroMesh_Periodic::ADIM_EPSILON_0, double adim_epsilon_1 = VoroMesh_Periodic::ADIM_EPSILON_1);
-    //! fixme not programmed yet
-    geoObjects::PhysicalSurface getOuterSurface(Identifier id) const;
+    VoroMesh_Periodic(const VoroMesh_UnStructureData<DIM>& rawData, bool check_coherence);
+    //! @brief : get the outer surface of the structure, assumed to be periodic
+    geoObjects::PhysicalSurface getPeriodicOuterSurface(Identifier id) const;
     //! prints into the stream f
     //! \param f: stream
     void print(std::ostream& f) const override;
@@ -115,57 +117,26 @@ protected:
     //! \return the identifiers of the points delimitating a surface, in a order compatible with the orientation of the surface
     //! \param surf_id : identifier of a surface
     vector<Identifier> getPoints_from_Surface(Identifier surf_id) const;
-    //! adimensional distance to decide to merge two points, due to voro++ approximation errors
-    static constexpr double ADIM_EPSILON_0 = 1.e-5;
-    double epsilon_0;
-    //! adimensional distance to decide to merge two points, for avoiding too small surfaces
-    static constexpr double ADIM_EPSILON_1 = 1.e-5;
-    double epsilon_1;
 private:
-    //! build the periodic structure
-    //! fixme
-    void buildPeriodicity(double epsilon_1);
-    //! recovers the periodic points
-    //! fixme
-    void buildPerPoint(double epsilon_1_);
+    //! criterion for identifier periodic surfaces
+    //! magical constant!
+    static constexpr double epsilon_per_surfaces = 1e-6;
     //! recover the periodic surfaces
     void buildPerSurface();
-    //! unify the Points that are too close to each others
-    void unifyPoints();
-    //! verify the periodicity relationship
-    //! fixme : very weak tests
-    //! fixme : strange way of swapping periodic surfaces
-    void verifyPeriodicity();
-
-    //! Merge points that are too close, but due to the Voronoi tessllation (no machine error)
-    void removeClosePoints();
+    //! put the correct order on periodic surfaces (compatible with gmsh, so that no "periodicity loop" exist)
+    void orderPerSurface();
     //! remove all the singular components of the polyhedron mesh : (edges of 0 length, surface of 0 area, solids of 0 volume...)
-    void removeAllSingular();
-    //! merge two PerPoints
-    //! \param samePoints : list of identifiers of periodic points that shall be merged. the merging process is supposed to be well-posed
-    void mergePerPoints(const vector<SameThings<Identifier>>& samePoints);
-    //! Merge two periodic points, namely perPt1 into perPt2
-    //! For avoiding errors, a single reference point is chosen, and then, each of the physical point is aligned wrt to it
-    //! \param perPt1, perPt2 : periodic points
-    void mergeSinglePerPoint(const PerPoint& perPt1, const PerPoint& perPt2);
-    //! align all the euclidean representants of a same periodic point
-    //! \param perPoint_id : identifier of the periodic point
-    void alignPerPoints(Identifier perPoint_id);
+    bool removeAllSingular();
     //! merge points, and compute the effects on the geometry
-    void mergeAll(vector<SameThings<Identifier>> listSamePoints);
-
-    //! \param : closePointDoublePer = [[perPoint1, perPoint2, 1], ...] where perPoint1 and perPoint2 are close
-    vector<SameThings<Identifier>> getClosePerPoints(const vector<SameThings<GeoPoint<DIM>>>& closePointDoublePer) const;
-    //! \return points that should be merged
-    vector<SameThings<Identifier>> tooClosePoints(double adimensionalDistance) const;
-    //! \return : points that should be merged, taking the periodicity into account
-    //! \warning : for some reasons, not exhaustive, unless the size of the result is 0
-    tuple<vector<sameThings::SameThings<Identifier>>, vector<sameThings::SameThings<Identifier>>> periodicTooClosePoint(double adimensionalDistance) const;
+    bool mergeAll();
     //! Return true if surface_2 is the periodic copy of surface_1 with the given translation.
     //! the criterion is that they shall possess at least 3 points that are periodic copies
     //! \param surf_id1, surf_id2 : identifiers of the surface to compare
     //! \param translation : Expected translation in the Euclidean space to get surf_2 from sorf_1.
     bool comparePerSurface(Identifier surf_id1, Identifier surf_id2, const Point<DIM>& translation) const;
+    //! verify the periodicity relationship
+    //! fixme : very weak tests
+    void verifyPeriodicity() const;
 };
 
 template<unsigned short DIM>
@@ -179,7 +150,6 @@ public:
     std::map<Identifier, PhysicalVolume>    dictPhysicalVolume;
 };
 
-
 //! translate a vector of GeoObjects into a map with identifier being its element
 //! \param vec : a vector of GeoObjects
 //! \param dict : the desired map of GeoObjects
@@ -190,6 +160,11 @@ void translate(const VEC& vec, DICT& dict);
 //! \param dictRoot : the map of roots
 template<class DICT_THINGS, class DICT_ROOT>
 void connectRoot(DICT_THINGS& dictThings, const DICT_ROOT& dictRoots);
+//! connect the leaves to their roots
+//! \param dictThings : the map of leaves (to be modified)
+//! \param dictPerRoot : the map of  periodic roots
+template<class DICT_THINGS, class DICT_ROOT>
+void connectPerRoot(DICT_THINGS& dictThings, const DICT_ROOT& dictPerRoots);
 //! update the periodic components when merging elements
 //! \param vecThings_id : well-posed vector containing the identifiers of things to be merged
 //! \param dictThings : map of all things (to be modified)

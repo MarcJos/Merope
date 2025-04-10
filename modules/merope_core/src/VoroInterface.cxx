@@ -2,9 +2,10 @@
 //!
 //! \brief
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
-#include "Geometry/GeomTools.hxx"
+#include "../../GenericTools/CPP_Functions.hxx"
+
+#include "../../Geometry/include/GeomTools.hxx"
 
 #include "container.hh"
 #include "pre_container.hh"
@@ -13,18 +14,13 @@
 #include "Voronoi/VoroInterface.hxx"
 
 
-#include "MeropeNamespace.hxx"
-
-
 namespace merope {
 namespace voroInterface {
 
 vector<Point<3> > voroInterface_aux::breakList(const vector<double>& v) {
     size_t s = v.size();
     size_t imax = s / 3;
-    if (s != 3 * imax) {
-        throw runtime_error(__PRETTY_FUNCTION__);
-    }
+    Merope_assert(s == 3 * imax, "s is not congruent to 0 modulo 3");
     vector<Point<3>> result(imax);
     for (size_t i = 0; i < imax; i++) {
         result[i] = Point<3>{ v[3 * i], v[3 * i + 1], v[3 * i + 2] };
@@ -132,7 +128,7 @@ int voroInterface_aux::findTessel(const Point<3>& pt,
     if (success) {
         return indexTessel;
     } else {
-        throw runtime_error(__PRETTY_FUNCTION__);
+        Merope_assert(false, "fail");
     }
 }
 
@@ -187,6 +183,21 @@ void SingleCell::print(ostream& os) const {
     os << "neighbords : "; auxi_function::writeVectorToString(this->neighbors, os); os << endl;
 }
 
+
+void SingleCell::linTransform(double dilation) {
+    center *= dilation;
+    for (auto& v : vertices) {
+        v *= dilation;
+    }
+}
+
+void SingleCell::removeFace(size_t id_face) {
+    faceNormal.erase(faceNormal.begin() + id_face);
+    faceVertices.erase(faceVertices.begin() + id_face);
+    neighbors.erase(neighbors.begin() + id_face);
+}
+
+
 void SingleCell::correctNormals() {
     for (size_t i = 0; i < faceNormal.size(); i++) {
         if (geomTools::normeCarre<3>(faceNormal[i]) < 1e-10) {
@@ -236,11 +247,9 @@ vector<double> compute_volumes(const vector<Sphere<3>>& centerTessels,
     PreparedVoroppContainer voroCont(centerTessels, L);
     loop_on_voroppcontainer(voroCont.voropp_container, evaluate_volume);
     // test output
-    if (abs(std::accumulate(volumes.begin(), volumes.end(), 0.) - auxi_function::productOf<double>(L))
-        / auxi_function::productOf<double>(L) > precision_sum_volumes) {
-        std::cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("Unexpected : total volume not close to the sum of volumes.");
-    }
+    Merope_assert(not(abs(std::accumulate(volumes.begin(), volumes.end(), 0.) - auxi_function::productOf<double>(L))
+        / auxi_function::productOf<double>(L) > precision_sum_volumes),
+        "Unexpected : total volume not close to the sum of volumes.");
     // test output
     return volumes;
 }
@@ -292,8 +301,8 @@ void ListOfVoroppCells::build() {
 // PreparedVoroppContainer
 
 PreparedVoroppContainer::PreparedVoroppContainer(const vector<Sphere<3>>& centerTessels, array<double, 3> L,
-    array<bool, 3> periodicity)
-    : voropp_container{ nullptr }, voropp_wall_ptr{ nullptr } {
+    array<bool, 3> periodicity_)
+    : voropp_container{ nullptr }, voropp_wall_ptr{ nullptr }, periodicity(periodicity_) {
     voro::pre_container_poly precont(0., L[0], 0., L[1], 0., L[2],
         periodicity[0], periodicity[1], periodicity[2]);
     // Place the centers
@@ -315,6 +324,61 @@ void PreparedVoroppContainer::addWallCylinder(double xc_, double yc_, double zc_
     voropp_wall_ptr.reset(new voro::wall_cylinder(xc_, yc_, zc_, xa_, ya_, za_, rc_));
     voropp_container->add_wall(voropp_wall_ptr.get());
 }
+
+namespace auxi {
+std::pair<std::map<Identifier, vector<Identifier>>, std::map<Identifier, HalfSpace<3>>> computeSolids(Point<3> L, const vector<merope::voroInterface::SingleCell>& outputVoroPP, array<bool, 3> periodicity) {
+    for (size_t i = 0; i < 3; i++) {
+        Merope_assert(not periodicity[i], "I can't manage periodic boundaries!");
+    }
+    // initialisation
+    std::map<pair<Identifier, size_t>, pair<Identifier, size_t>> correspondingSurfaces{};
+    std::map<pair<Identifier, size_t>, Identifier> to_idSurface{};
+    std::map<Identifier, HalfSpace<3>> face_equations{};
+    std::map<Identifier, vector<Identifier>> solids{};
+    std::map<Identifier, size_t> dictSingleCells{};
+    //! store the link between identifier a of SingleCell -> index of outputVoroPP
+    for (size_t i = 0; i < outputVoroPP.size(); i++) {
+        dictSingleCells[outputVoroPP[i].identifier] = i;
+    }
+    // identifying pairs
+    // and build equations
+    Identifier id_surf = 0;
+    for (const auto& cell : outputVoroPP) {
+        for (size_t i = 0; i < cell.faceNormal.size(); i++) {
+            auto candidatesFaces = voroInterface::auxi::correspondingFaces<true>([&](Identifier id) {
+                if (dictSingleCells.find(abs(id)) != dictSingleCells.end()) {
+                    return &(outputVoroPP[dictSingleCells[abs(id)]]);
+                } else {
+                    return static_cast<const merope::voroInterface::SingleCell*>(nullptr);
+                }
+                },
+                cell.identifier, i);
+            Merope_assert(candidatesFaces.second.size() <= 1, "more than 2 surfaces coincide with one");
+            if (candidatesFaces.second.size() == 1 and cell.identifier < candidatesFaces.first) {
+                correspondingSurfaces[{cell.identifier, i}] = { candidatesFaces.first, candidatesFaces.second[0] };
+            } else {
+                face_equations.insert({ id_surf, HalfSpace<3>(cell.faceNormal[i], cell.vertices[cell.faceVertices[i][0]]) });
+                to_idSurface[{cell.identifier, i}] = id_surf;
+                id_surf++;
+            }
+        }
+    }
+    //
+    for (Identifier id_solid = 0; id_solid < outputVoroPP.size(); id_solid++) {
+        const auto& cell = outputVoroPP[id_solid];
+        solids[cell.identifier] = {};
+        for (size_t i = 0; i < cell.faceNormal.size(); i++) {
+            if (correspondingSurfaces.find({ cell.identifier, i }) != correspondingSurfaces.end()) {
+                solids[cell.identifier].push_back(-to_idSurface.at(correspondingSurfaces.at({ cell.identifier, i })));
+            } else {
+                solids[cell.identifier].push_back(to_idSurface.at({ cell.identifier, i }));
+            }
+        }
+    }
+    return { solids, face_equations };
+}
+
+}  // namespace  auxi
 
 }  // namespace voroInterface
 }  // namespace merope

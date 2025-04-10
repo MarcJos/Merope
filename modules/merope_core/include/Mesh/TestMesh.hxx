@@ -5,14 +5,12 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
 #include "../Mesh/GeoObjects.hxx"
 #include "../Mesh/GmshWriter.hxx"
 #include "../Mesh/MeshStructure.hxx"
 #include "../Voronoi/VoroToMeshGraph.hxx"
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -30,7 +28,7 @@ void test4();
 //! test for the special functions    setAdimMergeDistance0 // setAdimMergeDistance1(1.e-2);
 void test5();
 //! meshes a microstructure made of spherical inclusions with holes inside
-void test6();
+void test6(int nb_sph = 16);
 
 }  // namespace testMesh
 }  // namespace merope

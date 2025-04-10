@@ -5,60 +5,49 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../Geometry/GeomTools.hxx"
+#include "../../../Geometry/include/GeomTools.hxx"
+
 #include "../Grid/CartesianGrid.hxx"
 #include "../Grid/ConvertGrix.hxx"
 #include "../Grid/ConvexGrid.hxx"
 #include "../Grid/GridManipulations.hxx"
 #include "../Grid/GridTypes.hxx"
-#include "../Grid/InclusionAndVoxel.hxx"
+#include "../SingleVoxel/SingleVoxel_Headers.hxx"
 #include "../Grid/PreGrid.hxx"
-#include "../Grid/VoxelRule.hxx"
 #include "../MultiInclusions/LaguerreTess.hxx"
 #include "../MultiInclusions/MultiInclusions.hxx"
 #include "../MultiInclusions/SphereInclusions.hxx"
 #include "../MesoStructure/Structure.hxx"
-
-
-#include "../MeropeNamespace.hxx"
+#include "../SingleVoxel/MatrixPhaseHolder.hxx"
 
 
 namespace merope {
 namespace vox {
 
 //! Class for building a phase field from a MultiInclusions geometry
-template<unsigned short DIM, vox::VoxelRule VOXEL_RULE>
-class VoxSimpleMultiInclusions : public VoxGrid<DIM, vox::composite::OutputFormat<VOXEL_RULE, DIM, PhaseType>> {
-    // Preconditions
-    static_assert(VOXEL_RULE == VoxelRule::Center or VOXEL_RULE == VoxelRule::Average or VOXEL_RULE == VoxelRule::Laminate);
-    //
+template<unsigned short DIM, class VOXEL_POLICY>
+class VoxSimpleMultiInclusions : public VoxGrid<DIM, vox::composite::OutputFormat<VOXEL_POLICY::voxelRule, DIM, PhaseType>>, protected MatrixPhaseHolder<PhaseType> {
 public:
+    static constexpr vox::VoxelRule VOXEL_RULE = VOXEL_POLICY::voxelRule;
     //! main constructor
-    VoxSimpleMultiInclusions(const MultiInclusions<DIM>& multiI, GridParameters<DIM> gridParameters);
+    VoxSimpleMultiInclusions(const MultiInclusions<DIM>& multiI, GridParameters<DIM> gridParameters,
+        VOXEL_POLICY voxelPolicy);
 
 protected:
     //! inner inclusions ref
     const MultiInclusions<DIM>* multiInclusions;
-    //! is there a matrix ?
-    bool matrixPresence;
-    //! phase of the matrix
-    PhaseType matrixPhase;
     //! fills the vector phaseFracVol
     void build() override;
 
 private:
-    //! stores the value of the half-diagonal of a voxel
-    double halfDiagVoxel;
     //! inspects whether the microInclusion intersects the voxel. If yes, fills it accordinng the VoxelRule
     //! \param indexVoxel : 3-D position of the voxel
     //! \param microInclusion : microInclusion
     //! \param dx : dimensions of the voxel
     template<class C>
     void computeInclusionVoxel(const C& microInclusion, const DiscPoint<DIM>& indexVoxel);
-    //! simple method for filling a voxel with a given list of phases and volume fractions
-    void fillVoxel(const DiscPoint<DIM>& indexVoxel, const vox::composite::OutputFormat<VOXEL_RULE, DIM, PhaseType>& phases2Include);
     //! fills the vector phaseFracVol, considering a single class of inclusions
     template<class C>
     void buildGridPhaseFrac_T_auxi(const vector<C>& inclusions);
@@ -67,11 +56,17 @@ private:
     //! \param inclusion : the considered inclusion
     template<class C>
     void buildGridPhaseFrac_singleInclusion(const C& inclusions);
-    //! guarantee that the grid has the desired properties (for phaseFracVol, each voxel is filled at 100%)
+    //! @brief guarantee that the grid has the desired properties (for phaseFracVol, each voxel is filled at 100%)
     void postProcessGrid();
     //! execute a single slice instruction
     template<class INCLUSION_TYPE>
     void execute(vox::auxi::SliceInstruction<long>, DiscPoint<DIM> ijk, const INCLUSION_TYPE& inclusion);
+
+private:
+    //! stores the value of the half-diagonal of a voxel
+    double halfDiagVoxel;
+    //! special rule for filling voxels
+    VOXEL_POLICY voxelPolicy;
 };
 
 }  // namespace vox

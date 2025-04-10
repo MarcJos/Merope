@@ -4,9 +4,8 @@
 //
 #pragma once
 
-#include "../../../AlgoPacking/src/Voxel.hxx"
+#include "../../../AlgoPacking/include/Voxel.hxx"
 
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {

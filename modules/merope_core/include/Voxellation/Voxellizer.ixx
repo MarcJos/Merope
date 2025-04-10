@@ -4,7 +4,9 @@
 
 #pragma once
 
-#include "../Grid/ManipOn_GridTypeBases.hxx"
+
+#include "../SingleVoxel/SingleVoxel_Headers.hxx"
+
 
 namespace merope {
 namespace vox {
@@ -49,35 +51,14 @@ CartesianGrid<DIM, composite::Change_Type_Composite<DIM, COMPOSITE, double>> app
 
 template<unsigned short DIM, class COMPOSITE>
 CartesianGrid<DIM, composite::Change_Type_Composite<DIM, COMPOSITE, double>> apply_coefficients(const CartesianGrid<DIM, COMPOSITE>& grid, const vector<double>& pureCoeffs) {
-    if constexpr (composite::is_Pure<COMPOSITE>) {
-        auto conversion = [&pureCoeffs](auto i) {
-            return pureCoeffs[i];
-            };
-        return convertGrid::auxi::localConvertCartesian<true, DIM, double>(grid, conversion);
-    } else if constexpr (composite::is_Iso<COMPOSITE>) {
-        auto conversion = [&pureCoeffs](const auto& listphaseFrac) {
-            composite::Iso<double> res{};
-            res.reserve(listphaseFrac.size());
-            for (const auto& pfn : listphaseFrac) {
-                res.push_back(PhaseFrac<double>(pureCoeffs[pfn.phase], pfn.fracVol));
-            }
-            return res;
-            };
-        return convertGrid::auxi::localConvertCartesian<true, DIM, composite::Iso<double>>(grid, conversion);
-    } else if constexpr (composite::is_AnIso<COMPOSITE>) {
-        auto conversion = [&pureCoeffs](const auto& listphaseFrac) {
-            composite::AnIso<DIM, double> res{};
-            res.reserve(listphaseFrac.size());
-            for (const auto& pfn : listphaseFrac) {
-                res.push_back(PhaseFracNormal<DIM, double>(pureCoeffs[pfn.phase], pfn.fracVol, pfn.normal));
-            }
-            return res;
-            };
-        return convertGrid::auxi::localConvertCartesian<true, DIM, composite::AnIso<DIM, double>>(grid, conversion);
-    } else {
-        cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("Unexpected");
-    }
+    auto conversion = [&pureCoeffs](auto i) {
+        return pureCoeffs[i];
+        };
+    auto apply_coeff = [&conversion](const auto& vox) {
+        return composite::transform_phase<DIM, double>(vox, conversion);
+        };
+    return convertGrid::auxi::localConvertCartesian<true, DIM, composite::Change_Type_Composite<DIM, COMPOSITE, double>>(
+        grid, apply_coeff);
 }
 
 

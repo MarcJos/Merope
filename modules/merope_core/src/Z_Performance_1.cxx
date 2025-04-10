@@ -2,9 +2,9 @@
 //!
 //! \brief
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
 #include "Test/Tests.hxx"
+
 
 using namespace std;
 using namespace sac_de_billes;

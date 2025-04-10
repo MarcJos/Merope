@@ -5,32 +5,28 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../Geometry/GeomTools.hxx"
+#include "../../../Geometry/include/GeomTools.hxx"
+
 #include "../Grid/CartesianGrid.hxx"
 #include "../Grid/ConvertGrix.hxx"
 #include "../Grid/GridManipulations.hxx"
 #include "../Grid/GridTypes.hxx"
-#include "../Grid/GridTypesBase.hxx"
+#include "../SingleVoxel/SingleVoxel_Headers.hxx"
 #include "../Grid/VtkHistogramm.hxx"
 #include "../Voxellation/VoxRecurStructure.hxx"
 #include "../VTKinout/VTKStream.hxx"
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {
 namespace vox {
 
-template<class STRUCTURE>
-using Phase_Type_From_Structure_Type = std::conditional_t<std::is_same_v<STRUCTURE, Structure<2>> or std::is_same_v<STRUCTURE, Structure<3>>, PhaseType, double>;
-
 namespace voxellizer {
-//! retrieve the natural output of a Structure + VoxelRule
-template<unsigned short DIM, VoxelRule VOXEL_RULE, class STRUCTURE>
-vox::CartesianGrid<DIM, composite::OutputFormat<VOXEL_RULE, DIM, Phase_Type_From_Structure_Type<STRUCTURE>>> transformStructIntoGrid(const STRUCTURE& structure, GridParameters<DIM> preSubGrid) {
-    return transformIntoGrid<DIM, composite::OutputFormat<VOXEL_RULE, DIM, Phase_Type_From_Structure_Type<STRUCTURE>>>(structure, preSubGrid);
+template<unsigned short DIM, class VOXEL_POLICY, class STRUCTURE>
+vox::CartesianGrid<DIM, composite::OutputFormat<VOXEL_POLICY::voxelRule, DIM, Phase_Type_From_Structure_Type<STRUCTURE>>>
+transformStructIntoGrid(const STRUCTURE& structure, GridParameters<DIM> preSubGrid, VOXEL_POLICY voxelPolicy) {
+    return transformIntoGrid<DIM>(structure, preSubGrid, voxelPolicy);
 }
 
 //! @return : the result of the application of a homogenization rule

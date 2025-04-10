@@ -1,5 +1,4 @@
 
-
 # AMITEX-FFTP
 
 `AMITEX-FFTP` is a parallel FFT solver, mostly for mechanics and thermics.
@@ -9,7 +8,9 @@ It is written in `Fortran`, and its native interface is mostly in `.xml` format.
 
 `Mérope` does not take part in developping `AMITEX-FFTP`, nor in providing documentation for it.
 The official documentation for `AMITEX-FFTP` is given [here](http://www.maisondelasimulation.fr/projects/amitex/general/_build/html/map-site.html).
-However, in order to *facilitate* some computations, `Mérope` proposes a simplified `Python` interface to `AMITEX-FFTP`.
+However, in order to *facilitate* some computations:
+- a `Python` interface `py4amitex` has been is available. See the documentation [here](https://amitexfftp.github.io/AMITEX/py4amitex/).
+- `Mérope` proposes a simplified `Python` interface to `AMITEX-FFTP` (*deprecated*).
 For advanced functionalities, the reader is encouraged to refer to the official documentation.
 
 
@@ -38,7 +39,15 @@ Basically, `Mérope` generates a file `Zone.vtk` that contains a voxellation of 
 For *thermics*, it simultaneously generates a coefficient fiels for thermal conductivity. The latter is transferred to `AMITEX-FFTP` through a file `Coeffs.txt` (the **name** is important), which contains the thermal coefficient of each phase.
 When using [composite voxels](/doc/VoxellationManual.md), each zone in `Zone.vtk` basically correspond to a certain percentage of the actual phases. (For example, it may contain zone = 0 for 0% phase A and 100% phase B, zone = 1 for 1% phase A and 99% phase B, etc.).
 
-# Python classes
+# Py4amitex
+
+- [Documentation](https://amitexfftp.github.io/AMITEX/py4amitex/index.html)
+- [Source code](https://gitlab.maisondelasimulation.fr/amitex/py4amitex/-/tree/master?ref_type=heads)
+- [Local examples](/tests/scripts_py4amitex) in thermics and in mechanics.
+
+# Python classes [DEPRECATED]
+
+Using these methods is not advised; the user should rather appeal to `py4amitex`.
 
 ## Launching AMITEX through a python interface
 
@@ -58,5 +67,5 @@ See [post_processing.py](tools/python/interface_amitex_fftp/post_processing.py).
 
 ## Computation of the thermal conductivity
 
-See [Thermal_amitex.py](tests/microstructures/buildVoxellation/Thermal_amitex.py).  
+- [*DEPRECATED*] [Thermal_amitex.py](tests/microstructures/buildVoxellation/Thermal_amitex.py).  
 

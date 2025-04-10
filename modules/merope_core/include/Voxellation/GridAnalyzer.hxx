@@ -1,11 +1,13 @@
 //! Copyright : see license.txt
 //!
 //! \brief
-
 #pragma once
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+
+#include "../../../GenericMerope/StdHeaders.hxx"
+
 #include "../Voxellation/Voxellizer.hxx"
+
 
 namespace merope {
 namespace vox {

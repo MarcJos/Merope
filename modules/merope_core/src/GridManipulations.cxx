@@ -2,12 +2,10 @@
 //!
 //! \brief
 //
-#include "../../AlgoPacking/src/StdHeaders.hxx"
+
 
 #include "Grid/GridManipulations.hxx"
 
-
-#include "MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -30,7 +28,7 @@ array<double, 2> gridAuxi::translateMask(
     const composite::Iso<PhaseType>& mask_i) {
     array<double, 2> result{ 0., 0. };
     for (const auto& phfv : mask_i) {
-        if (phfv.phase == 1) {
+        if (phfv.phase > 0) {
             result[1] += phfv.fracVol;
         } else {
             result[0] += phfv.fracVol;
@@ -53,7 +51,7 @@ array<double, 2> gridAuxi::translateMask(const composite::Iso<double>& voxelMask
         cerr << "Voxel Mask phase - 1 " << voxelMask[0].phase - 1 << endl;
         cerr << "Voxel Mask fracVol " << voxelMask[0].fracVol << endl;
         cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("Unexpected. Mask should represent a density");
+        Merope_assert(false, "Unexpected. Mask should represent a density");
     }
 
     double phi = max(min(1., voxelMask[0].phase), 0.);

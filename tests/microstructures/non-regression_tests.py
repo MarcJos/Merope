@@ -32,21 +32,30 @@ list_of_test_names = [
     'fields_output',
     'hexagones', 
     'inclusions', 
+    'intersectingSpheres',
     'laguerre_tess_non_periodic',
+    'largeSphere',
+    'many_cylinders', 
+    'many_cylinders_random_orient',
     'mesh_cylinder',
     'mesh_poly_0',
     'mesh_poly_1',
     'mesh_spheres_0',
     'mesh_spheres_1',
+    'mesh_spheres_2',
     'multiLayer', 
     'optimize_Laguerre_2D', 
+    'optimize_Laguerre_tess',
+    'mask_planeGeom',
+    'planeGeom_check',
     'polyCrystal', 
     'polyCrystal_2D', 
     'polyCrystal_filamentaire',
     'recursive_structure', 
     'spheroPolyhedron', 
     'test_stl_format',
-    'variousSpheroPolyhedron']
+    'variousSpheroPolyhedron',
+    'voro_wall']
 
 for test_name in list_of_test_names:
     execute_tests(test_name)

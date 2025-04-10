@@ -44,5 +44,5 @@ def make_XP(inclusions, name):
     multiInclusions.enlarge(multiInclusions.getAllIdentifiers(), 0.025)
     print_multi(multiInclusions, "larger_smaller_" + name + ".vtk")
 
-make_XP(polyCrystal, "crystal")
+make_XP(polyCrystal.toPolyInclusions(), "crystal")
 make_XP(sphIncl, "sphere")

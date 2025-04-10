@@ -5,12 +5,10 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
-#include "../Geometry/GeomTools.hxx"
-
-#include "../MeropeNamespace.hxx"
+#include "../../../Geometry/include/AmbiantSpace.hxx"
+#include "../../../Geometry/include/GeomTools.hxx"
 
 
 namespace merope {

@@ -6,11 +6,6 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-
-#include "../MeropeNamespace.hxx"
-
-
 namespace merope {
 
 template<unsigned short DIM>
@@ -49,7 +44,7 @@ inline void SphereSeeds<DIM>::fromFile(string fname) {
     ifstream fileStream(fname);
     if (!fileStream) {
         cerr << "Can't open file" + string(fname) << endl;
-        throw(runtime_error(__PRETTY_FUNCTION__));
+        Merope_assert(false, "Opening file");
     }
     string str;
     // Parse dimension

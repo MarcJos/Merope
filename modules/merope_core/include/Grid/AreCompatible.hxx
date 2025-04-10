@@ -5,15 +5,18 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
 #include "../MesoStructure/InsideTorus.hxx"
 #include "../Grid/PreGrid.hxx"
 
-#include "../MeropeNamespace.hxx"
-
 
 namespace merope {
+
+template<class C>
+bool areCompatible(const C&, const C&) {
+    return true;
+}
 
 template<unsigned short DIM>
 bool areCompatible(const InsideTorus<DIM>& i1, const InsideTorus<DIM>& i2) {

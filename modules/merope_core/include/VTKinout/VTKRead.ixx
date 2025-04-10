@@ -2,12 +2,10 @@
 //!
 //! \briefDiscrete periodical Geometries
 //
-
 #pragma once
 
-#include "../VTKinout/VTKStream.hxx"
 
-#include "../MeropeNamespace.hxx"
+#include "../VTKinout/VTKStream.hxx"
 
 
 namespace merope {

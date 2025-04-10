@@ -164,6 +164,7 @@ Here, $c_i$ and $r_i$ can be seen as the center and radius of a sphere.
 **Main methods** :
 - `LaguerreTess_3D([L1,L2,L3], sphereList)` : constructor, build from a list of spheres.
 - `computeTessels()` : build the tessellation (for later purpose).
+- `toPolyInclusions()` : return an object of type `PolyInclusions_3D`, *forgetting* that a Laguerre tessellation paves the torus.
 - `setAspRatio([aspRatio1, aspRatio2, aspRatio3])` : set a uniform aspect ratio on the whole periodic cuboid (in practice, the tessellation is built on a dilatated periodic cuboid and then squeezed back to the initial periodic cuboid). Same convention as *Neper*.
   Mathematically speaking, it boils down to the pre-process transform :
   ```math

@@ -1,7 +1,9 @@
 //! Copyright : see license.txt
 //!
 //! \brief
-#include "StdHeaders.hxx"
+
+#include "../../GenericMerope/StdHeaders.hxx"
+
 #include "MultiDArrayObject.hxx"
 
 namespace merope {

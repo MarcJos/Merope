@@ -4,9 +4,9 @@
 //
 #pragma once
 
-#include "../../../AlgoPacking/src/Loops.hxx"
 
-#include "../MeropeNamespace.hxx"
+#include "../../../GenericTools/Loops.hxx"
+
 #include "PreGrid.hxx"
 
 
@@ -93,17 +93,13 @@ inline array<array<long, 2>, DIM> vox::auxi::computeGridLimits(
 }
 
 template<unsigned short DIM>
-inline vector<array<array<long, 2>, DIM> > vox::auxi::intersectGridLimits(const array<array<long, 2>, DIM>& gridLimits,
+inline vector<array<array<long, 2>, DIM>> vox::auxi::intersectGridLimits(const array<array<long, 2>, DIM>& gridLimits,
     const GridParameters<DIM>& preSubGrid) {
-    if (preSubGrid.doesCoverTorus()) {
-        return vector<array<array<long, 2>, DIM>> {gridLimits};
-    } else {
-        array<vector<array<long, 2>>, DIM> indicesLimits;
-        for (size_t i = 0; i < DIM; i++) {
-            indicesLimits[i] = vox::auxi::auxi_intersectGridLimits(gridLimits[i], preSubGrid.getNbNodeBigGrid()[i], preSubGrid.getNMin()[i], preSubGrid.getNMax()[i]);
-        }
-        return cartesianProduct<DIM, array<long, 2>>(indicesLimits);
+    array<vector<array<long, 2>>, DIM> indicesLimits;
+    for (size_t i = 0; i < DIM; i++) {
+        indicesLimits[i] = vox::auxi::auxi_intersectGridLimits(gridLimits[i], preSubGrid.getNbNodeBigGrid()[i], preSubGrid.getNMin()[i], preSubGrid.getNMax()[i]);
     }
+    return cartesianProduct<DIM, array<long, 2>>(indicesLimits);
 }
 
 inline vector<array<long, 2>>  vox::auxi::auxi_intersectGridLimits(

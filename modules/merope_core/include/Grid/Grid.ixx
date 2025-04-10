@@ -5,12 +5,7 @@
 
 #pragma once
 
-
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-
 #include "../VTKinout/VTKRead.hxx"
-
-#include "../MeropeNamespace.hxx"
 #include "../VTKinout/VTK_adapter.hxx"
 
 

@@ -4,10 +4,8 @@
 //
 #pragma once
 
+
 #include "../Grid/AreCompatible.hxx"
-
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -26,8 +24,7 @@ inline void vox::VoxSimpleGauss<DIM>::build() {
             auxi_function::writeVectorToString(this->getVoxGrid().getNbNodeBigGrid(), cerr); cerr << endl;
             auxi_function::writeVectorToString(this->getVoxGrid().getNMin(), cerr); cerr << endl;
             auxi_function::writeVectorToString(this->getVoxGrid().getNMax(), cerr); cerr << endl;
-            cerr << __PRETTY_FUNCTION__ << endl;
-            throw runtime_error("Unexpected");
+            Merope_error_impossible();
         }
     }
     ////////////////////////////////
@@ -70,8 +67,7 @@ inline void vox::VoxSimpleGauss<DIM>::build() {
             this->getVoxGrid() = discretizedField;
         }
     } else {
-        cerr << __PRETTY_FUNCTION__ << endl;
-        throw invalid_argument("TypeField");
+        Merope_assert(false, " invalid_argument TypeField");
     }
 }
 
