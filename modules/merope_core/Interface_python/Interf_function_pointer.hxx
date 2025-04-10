@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
-#include "../../AlgoPacking/src/Geometry/Point.hxx"
+#include "../../GenericMerope/StdHeaders.hxx"
+#include "../../Geometry/include/Point.hxx"
 
 using namespace sac_de_billes;
 
@@ -56,9 +56,8 @@ struct Interf_TexturePointer {
             throw runtime_error("Uncompatible dimensions!");
         }
         if (DIM_TO > 1) {
-            std::cerr << __PRETTY_FUNCTION__ << "\n";
-            std::cerr << "Requested a function with output in dimension>1. \n" << endl;
-            throw runtime_error("Not programmed yet");
+            cerr << "Requested a function with output in dimension>1.";
+            Merope_error_not_done();
         }
         auto function_pointer = reinterpret_cast<INTERMEDIATE_POINT_FORMAT<DIM_TO>(*)(INTERMEDIATE_POINT_FORMAT<DIM_FROM>, long)>(
             reinterpret_cast<void*>(pointer_address));
@@ -103,9 +102,8 @@ struct Interf_FuncPointer {
             throw runtime_error("Uncompatible dimensions!");
         }
         if (DIM_TO > 1) {
-            std::cerr << __PRETTY_FUNCTION__ << "\n";
-            std::cerr << "Requested a function with output in dimension>1. \n" << endl;
-            throw runtime_error("Not programmed yet");
+            cerr << "Requested a function with output in dimension>1.\n";
+            Merope_error_not_done();
         }
         auto function_pointer = reinterpret_cast<INTERMEDIATE_POINT_FORMAT<DIM_TO>(*)(INTERMEDIATE_POINT_FORMAT<DIM_FROM>)>(
             reinterpret_cast<void*>(pointer_address));

@@ -9,10 +9,8 @@
 #include <iomanip>
 #include <cstring>
 
+
 #include "Grid/Grid.hxx"
-
-
-#include "MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -104,9 +102,9 @@ FFTField& FFTField::operator=(const FFTField& field) {
 #else
     memcpy(F, field.F, sizeof(cfloat) * FSize * nv);
 #endif
-  }
+    }
   return *this;
-}
+  }
 
 
 FFTField::~FFTField() {

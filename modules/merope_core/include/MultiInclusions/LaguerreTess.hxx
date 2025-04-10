@@ -5,22 +5,23 @@
 
 #pragma once
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
 
-#include "../../../AlgoPacking/src/AlgoNames.hxx"
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
-#include "../Geometry/AspRatio.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
+
+#include "../../../Geometry/include/AmbiantSpace.hxx"
+#include "../../../Geometry/include/AspRatio.hxx"
+
+#include "../../../AlgoPacking/include/AlgoNames.hxx"
+
 #include "../MesoStructure/InsideTorus.hxx"
 #include "../MicroInclusion/MicroInclusion.hxx"
-#include "PolyInclusions.hxx"
-
-#include "../MeropeNamespace.hxx"
+#include "ObjectInclusions.hxx"
 
 
 namespace merope {
 
 template<unsigned short DIM>
-class LaguerreTess final : public  PolyInclusions<DIM> {
+class LaguerreTess final : public  PolyInclusions<DIM>, public WithAspratio<DIM> {
     // class implementing Laguerre tessellation, with possibility to impose aspect ratio
 public:
     //! \param L_ : the torus dimensions
@@ -28,6 +29,10 @@ public:
     LaguerreTess(array<double, DIM> L_, vector<Sphere<DIM>> seeds_);
     //! compute the tessels appealing to voro++
     void computeTessels();
+    //! @brief : getter
+    const vector<Sphere<DIM>>& getSeeds() const { return seeds; }
+    //! @return only the polyInclusions inside it, forgetting the paving nature of Laguerre tessellations
+    PolyInclusions<DIM> toPolyInclusions() { this->computeTessels(); return static_cast<PolyInclusions<DIM>>(*this); };
 
 protected:
     //! seeds giving rise to the tessels

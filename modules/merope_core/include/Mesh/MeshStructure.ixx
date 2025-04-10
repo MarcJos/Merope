@@ -5,7 +5,12 @@
 #pragma once
 
 
-#include "../MeropeNamespace.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
+
+#include "../../../GenericTools/CPP_Functions.hxx"
+
+#include "../../../AlgoPacking/include/AlgoRSA.hxx"
+#include "../../../AlgoPacking/include/MultiDArrayObject.hxx"
 
 
 namespace merope {
@@ -33,7 +38,7 @@ void VoroMesh_NotPeriodic<DIM>::add_raw_mesh_data(const VoroMesh_UnStructureData
 }
 
 template<unsigned short DIM>
-inline void VoroMesh_NotPeriodic<DIM>::buildTree() {
+void VoroMesh_NotPeriodic<DIM>::buildTree() {
     connectRoot(dictPoint, dictEdge);
     connectRoot(dictEdge, dictCurveLoop);
     connectRoot(dictCurveLoop, dictSurface);
@@ -42,7 +47,7 @@ inline void VoroMesh_NotPeriodic<DIM>::buildTree() {
 }
 
 template<unsigned short DIM>
-inline bool VoroMesh_NotPeriodic<DIM>::isCoherent() const {
+bool VoroMesh_NotPeriodic<DIM>::isCoherent() const {
     auto testCoherence_loc = [this](const auto& dictRoot, const auto& dictLeaves, string nameError) {
         if (not geoObjects::isGraphCoherent(dictRoot, dictLeaves)) {
             this->print(cerr);
@@ -62,33 +67,69 @@ inline bool VoroMesh_NotPeriodic<DIM>::isCoherent() const {
 // GeoPerStructure<DIM>
 
 template<unsigned short DIM>
-inline VoroMesh_Periodic<DIM>::VoroMesh_Periodic(VoroMesh_UnStructureData<DIM> rawData, double adim_epsilon_0, double adim_epsilon_1) :
-    VoroMesh_NotPeriodic<DIM>(rawData), dictPerPoint{}, dictPerSurface{},
-    epsilon_0{ adim_epsilon_0 * *(min_element(rawData.L.begin(), rawData.L.begin())) },
-    epsilon_1{ adim_epsilon_1 * *(min_element(rawData.L.begin(), rawData.L.begin())) }{
+VoroMesh_Periodic<DIM>::VoroMesh_Periodic(const VoroMesh_UnStructureData<DIM>& rawData, bool check_coherence) :
+    VoroMesh_NotPeriodic<DIM>(rawData), dictPerPoint{}, dictPerSurface{}{
+    translate(rawData.vecPerPoint, dictPerPoint);
     translate(rawData.vecPerSurface, dictPerSurface);
-    unifyPoints();
-    buildPeriodicity(epsilon_1);
-    //! debug
-    this->isCoherent();
-    //!
-    removeClosePoints();
-    //! debug
-    this->isCoherent();
+    connectPerRoot(this->dictPoint, dictPerPoint);
+    connectPerRoot(this->dictSurface, dictPerSurface);
+    //
+    restrictTo_RootLeaves_withoutRootConnection(this->dictCurveLoop, this->dictSurface);
+    restrictTo_RootLeaves_withoutRootConnection(this->dictEdge, this->dictCurveLoop);
+    restrictTo_RootLeaves_withoutRootConnection(this->dictPoint, this->dictEdge);
+    //
+    bool hasChangedStructure = true;
+    while (hasChangedStructure) {
+        hasChangedStructure = false;
+        hasChangedStructure = this->removeAllSingular() or hasChangedStructure;
+        hasChangedStructure = this->mergeAll() or hasChangedStructure;
+    }
+    this->buildPerSurface();
+    this->orderPerSurface();
+    // verifications
+    if (check_coherence) {
+        this->verifyPeriodicity();
+        this->isStronglyCoherent();
+    }
 }
 
 template<unsigned short DIM>
-inline bool VoroMesh_Periodic<DIM>::isStronglyCoherent() const {
+bool VoroMesh_Periodic<DIM>::isStronglyCoherent() const {
+    // test local coherence
+    auto local_coherence = [](const auto& dictThing) {
+        for (const auto& [id, thing] : dictThing) {
+            if (not thing.isCoherent()) {
+                std::cerr << __PRETTY_FUNCTION__ << endl;
+                thing.print(std::cerr); std::cerr << endl;
+                throw runtime_error("Incoherent state");
+            }
+        }
+        };
+    local_coherence(this->dictPoint);
+    local_coherence(this->dictEdge);
+    local_coherence(this->dictCurveLoop);
+    local_coherence(this->dictSurface);
+    local_coherence(this->dictSurfaceLoop);
+    local_coherence(this->dictSolid);
+    local_coherence(this->dictPerPoint);
+    local_coherence(this->dictPerSurface);
+
     this->isCoherent();
+
+    // test if surfaces are shared
     for (const auto& [id, surf] : this->dictSurface) {
         if ((surf.template get<TypeRelation::Root>().size() == 2 and not surf.isPeriodic())
-            or (surf.template get<TypeRelation::Root>().size() == 1 and surf.isPeriodic())) {
+            or (surf.template get<TypeRelation::Root>().size() == 1 and surf.isPeriodic())
+            or (surf.template get<TypeRelation::Root>().size() == 1 and this->dictSurfaceLoop.at(*(surf.template get<TypeRelation::Root>().begin())).template get<TypeRelation::Root>().size() == 2)) {
             // OK
         } else {
             ofstream file("Errors.txt");
             this->print(file);
             cerr << "#############" << endl;
-            cerr << "surface id" << id << endl;
+            cerr << "surface id : " << id << endl;
+            cerr << "number of parents : " << surf.template get<TypeRelation::Root>().size() << endl;
+            cerr << std::boolalpha << "is periodic : " << surf.isPeriodic() << endl;
+            cerr << "see Errors.txt for infos on the mesh" << endl;
             throw runtime_error("The structure has singular surfaces");
         }
     }
@@ -96,7 +137,7 @@ inline bool VoroMesh_Periodic<DIM>::isStronglyCoherent() const {
 }
 
 template<unsigned short DIM>
-inline void VoroMesh_Periodic<DIM>::restrictEnveloppe() {
+void VoroMesh_Periodic<DIM>::restrictEnveloppe() {
     restrictTo_RootLeaves_withoutRootConnection(this->dictSurface, this->dictPerSurface);
     restrictTo_RootLeaves_withoutRootConnection(this->dictCurveLoop, this->dictSurface);
     restrictTo_RootLeaves_withoutRootConnection(this->dictEdge, this->dictCurveLoop);
@@ -107,56 +148,21 @@ inline void VoroMesh_Periodic<DIM>::restrictEnveloppe() {
     for (const auto& [id, surf] : this->dictSurface) {
         allSurfaces.push_back(id);
     }
+    //!
     constexpr Identifier surfLoop_id = 1;
     this->dictSurfaceLoop = { {surfLoop_id, geoObjects::SurfaceLoop(surfLoop_id, allSurfaces)} };
-    //!
     this->dictSolid = { {surfLoop_id, geoObjects::Solid(surfLoop_id, {surfLoop_id})} };
     //!
     this->buildTree();
-    this->buildPeriodicity(this->epsilon_1);
 }
 
-template<unsigned short DIM>
-inline void VoroMesh_Periodic<DIM>::unifyPoints() {
-    auto listCouplePoints = tooClosePoints(this->epsilon_0);
-    mergeAll(listCouplePoints);
-    this->removeAllSingular();
-    // verifications
-    // here, only close points related to opposed faces should be merged, not the ones with small edges
-    auto singularEdges = geoObjects::findSingular(this->dictEdge);
-    if (singularEdges.size() != 0) {
-        for (const auto& edge : singularEdges) {
-            cerr << edge.leaves[0] << endl;
-            cerr << edge.identifier << endl;
-        }
-        throw runtime_error("Singular line");
-    }
-}
+
 
 template<unsigned short DIM>
-inline void VoroMesh_Periodic<DIM>::buildPeriodicity(double epsilon_1_) {
-    // reset periodic parts
-    this->dictPerPoint = {};
-    for (auto& [id, pt] : this->dictPoint) {
-        pt.removePeriodicRoot();
-    }
-    //
-    this->dictPerSurface = {};
-    for (auto& [id, surf] : this->dictSurface) {
-        surf.removePeriodicRoot();
-    }
-    //
-    this->buildPerPoint(epsilon_1_);
-    this->buildPerSurface();
-    this->verifyPeriodicity();
-}
-
-template<unsigned short DIM>
-inline void VoroMesh_Periodic<DIM>::verifyPeriodicity() {
+void VoroMesh_Periodic<DIM>::orderPerSurface() {
     auto L = this->torus.L;
     auto goodOrdering = [&L](auto& pS) {  // necessary to correct the mesh generation. Forces the first component of the translation to be negative
-        size_t index = 0;
-        for (; index < 3; index++) {
+        for (size_t index = 0; index < 3; index++) {
             if (abs(pS.translation[index]) > 0.5 * L[index]) {
                 if (pS.translation[index] > 0) {
                     pS.swapSurf();
@@ -164,71 +170,100 @@ inline void VoroMesh_Periodic<DIM>::verifyPeriodicity() {
                 break;
             }
         }
-        if (index == 3) {
-            cerr << __PRETTY_FUNCTION__ << endl;
-            throw runtime_error("Unexpected");
-        }
         };
     for (auto& [i, pS] : this->dictPerSurface) {
-        auto ix = this->getPoints_from_Surface(pS.leaves[0]);
-        auto iy = this->getPoints_from_Surface(pS.leaves[1]);
-        if (ix.size() != iy.size()) {
-            cerr << __PRETTY_FUNCTION__ << endl;
-            throw runtime_error("Unexpected : two periodic surfaces have different numbers of points");
-        }
         goodOrdering(pS);
     }
 }
 
 template<unsigned short DIM>
-inline void VoroMesh_Periodic<DIM>::removeClosePoints() {
-    auto perTooClosePoints = this->periodicTooClosePoint(this->epsilon_1);
-    auto& listCouplePoint = get<0>(perTooClosePoints);
-    auto& listCouplePerPoint = get<1>(perTooClosePoints);
-    // 1) if have to merge periodic points, deal with them first
-    if (listCouplePerPoint.size() != 0) {
-        this->mergePerPoints(listCouplePerPoint);
-        this->removeClosePoints();
-    }
-    // 2) if not, deal with the others
-    else if (listCouplePoint.size() != 0) {
-        this->mergeAll(listCouplePoint);
-    }
-    this->removeAllSingular();
-}
-
-template<unsigned short DIM>
-inline void VoroMesh_Periodic<DIM>::buildPerPoint(double epsilon_1_) {
-    auto epsilon_0_copy = epsilon_1_;
-    auto tore = this->torus;
-    auto comparisonFunction = [epsilon_0_copy, &tore](const GeoPoint<DIM>& p1, const GeoPoint<DIM>& p2) {return p1.areSamePer(tore, p2, epsilon_0_copy);};
-    //
-    auto listPerPoint_id = sameThings::getReplacementList(this->dictPoint, comparisonFunction);
-    for (auto& samePts : listPerPoint_id) {
-        auto& pt1 = this->dictPoint.at(get<0>(samePts)), pt2 = this->dictPoint.at(get<1>(samePts));
-        auto perPointIndentifier = pt2.identifier;
-        if (dictPerPoint.find(perPointIndentifier) == dictPerPoint.end()) {
-            dictPerPoint.insert(make_pair(perPointIndentifier, PerPoint(perPointIndentifier, { perPointIndentifier })));
+void VoroMesh_Periodic<DIM>::verifyPeriodicity() const {
+    for (auto& [i, pS] : this->dictPerSurface) {
+        auto ix = this->getPoints_from_Surface(pS.leaves[0]);
+        auto iy = this->getPoints_from_Surface(pS.leaves[1]);
+        Merope_assert(ix.size() == iy.size(),
+            "Unexpected : two periodic surfaces have different numbers of points");
+        // check if all points coincide one to one with periodicity
+        bool correct_surface = true;
+        auto display_error = [&](int number) {
+            cerr << __PRETTY_FUNCTION__ << endl;
+            cerr << "Surface " << i << endl;
+            cerr << "warning : " << number << endl;
+            cerr << "All points of periodic surfaces are not identified as periodic points." << endl;
+            cerr << "Attempting to correct it" << endl;
+            correct_surface = false;
+            };
+        for (auto it1 = ix.begin(); it1 != ix.end(); it1++) {
+            auto& pt1 = this->dictPoint.at(*it1);
+            if (not pt1.isPeriodic()) {
+                display_error(1);
+                break;
+            }
+            //
+            bool success = false;
+            for (auto it2 = iy.begin(); it2 != iy.end(); it2++) {
+                auto& pt2 = this->dictPoint.at(*it2);
+                if (not pt2.isPeriodic()) {
+                    display_error(2);
+                    break;
+                } else if (pt1.getPeriodicRoot() == pt2.getPeriodicRoot()) {
+                    success = true;
+                    break;
+                }
+            }
+            //
+            if (not success) {
+                display_error(3);
+            }
         }
-        dictPerPoint.at(perPointIndentifier).leaves.push_back(pt1.identifier);
-        pt1.setPeriodicRoot(perPointIndentifier);
-        pt2.setPeriodicRoot(perPointIndentifier);
+        // if not all points coincide one to one with periodicity, try to correct
+        if (not correct_surface) {
+            bool success = false;
+            long index_s_1, index_s_2;
+            for (index_s_1 = 0; index_s_1 != ix.size(); index_s_1++) {
+                auto& pt1 = this->dictPoint.at(ix[index_s_1]);
+                if (pt1.isPeriodic()) {
+                    break;
+                }
+            }
+            for (index_s_2 = 0; index_s_2 != iy.size(); index_s_2++) {
+                auto& pt1 = this->dictPoint.at(ix[index_s_1]);
+                auto& pt2 = this->dictPoint.at(iy[index_s_2]);
+                if (pt2.isPeriodic() and pt1.getPeriodicRoot() == pt2.getPeriodicRoot()) {
+                    success = true;
+                    break;
+                }
+            }
+            if (not success) {
+                cerr << __PRETTY_FUNCTION__ << endl;
+                throw runtime_error("Unexpected that periodic surfaces share no common periodic point");
+            }
+            for (int j = 0; j < ix.size(); j++) {
+                index_s_1++;
+                index_s_2--;
+                index_s_1 = auxi_function::fast_modulo(index_s_1, ix.size());
+                index_s_2 = auxi_function::fast_modulo(index_s_2, ix.size());
+                auto& pt1 = this->dictPoint.at(ix[index_s_1]);
+                auto& pt2 = this->dictPoint.at(iy[index_s_2]);
+                Merope_assert((pt1.isPeriodic() and pt2.isPeriodic()) and (pt1.getPeriodicRoot() != pt2.getPeriodicRoot()), "Two points are not recognized as periodic");
+            }
+        }
     }
 }
 
 template<unsigned short DIM>
-inline vector<Identifier> mesh::meshStructure::VoroMesh_Periodic<DIM>::getPoints_from_Surface(Identifier surf_id) const {
+vector<Identifier> mesh::meshStructure::VoroMesh_Periodic<DIM>::getPoints_from_Surface(Identifier surf_id) const {
     std::vector<Identifier> result;
     auto cLoop_id = this->dictSurface.at(surf_id).leaves[0];
     for (auto edge_id : this->dictCurveLoop.at(cLoop_id).leaves) {
         if (edge_id > 0) result.push_back(this->dictEdge.at(abs(edge_id)).leaves[0]);
-        else            result.push_back(this->dictEdge.at(abs(edge_id)).leaves[1]);
+        else             result.push_back(this->dictEdge.at(abs(edge_id)).leaves[1]);
     }
     return result;
 }
 
 template<unsigned short DIM>
-inline std::set<Identifier> VoroMesh_Periodic<DIM>::getSurfaces_from_Point(Identifier pt_id) const {
+std::set<Identifier> VoroMesh_Periodic<DIM>::getSurfaces_from_Point(Identifier pt_id) const {
     std::set<Identifier> result{};
     for (Identifier edge_id : this->dictPoint.at(pt_id).template get<geoObjects::TypeRelation::Root>()) {
         for (Identifier cloop_id : this->dictEdge.at(edge_id).template get<geoObjects::TypeRelation::Root>()) {
@@ -239,7 +274,7 @@ inline std::set<Identifier> VoroMesh_Periodic<DIM>::getSurfaces_from_Point(Ident
 }
 
 template<unsigned short DIM>
-inline void VoroMesh_Periodic<DIM>::buildPerSurface() {
+void VoroMesh_Periodic<DIM>::buildPerSurface() {
     //! get all candidate surfaces
     for (const auto& pp : dictPerPoint) {
         const auto& perPoint = pp.second;
@@ -265,16 +300,11 @@ inline void VoroMesh_Periodic<DIM>::buildPerSurface() {
         }
     }
     //! update dictSurface
-    for (auto& ps : dictPerSurface) {
-        auto& perPlane = ps.second;
-        for (auto idPs : perPlane.leaves) {
-            this->dictSurface.at(idPs).setPeriodicRoot(perPlane.identifier);
-        }
-    }
+    connectPerRoot(this->dictSurface, dictPerSurface);
 }
 
 template<unsigned short DIM>
-inline Identifier VoroMesh_Periodic<DIM>::getMaxIndex() const {
+Identifier VoroMesh_Periodic<DIM>::getMaxIndex() const {
     Identifier result = 0;
     auto getMax = [&result](const auto& dict) {
         if (dict.size() > 0) {
@@ -292,23 +322,28 @@ inline Identifier VoroMesh_Periodic<DIM>::getMaxIndex() const {
 }
 
 template<unsigned short DIM>
-inline bool VoroMesh_Periodic<DIM>::comparePerSurface(Identifier surf_id1, Identifier surf_id2, const Point<DIM>& translation) const {
+bool VoroMesh_Periodic<DIM>::comparePerSurface(Identifier surf_id1, Identifier surf_id2, const Point<DIM>& translation) const {
     // same surfaces are no perodic copies
     if (surf_id1 != surf_id2 and geomTools::normeCarre<DIM>(translation) > 0.5 * *(min_element(this->torus.L.begin(), this->torus.L.begin()))) {
         //
         vector<Identifier> pts_1 = getPoints_from_Surface(surf_id1);
         vector<Identifier> pts_2 = getPoints_from_Surface(surf_id2);
-        size_t number_of_same_points = 0;
-        for (auto it1 = pts_1.begin(); it1 != pts_1.end(); it1++) {
-            for (auto it2 = pts_2.begin(); it2 != pts_2.end(); it2++) {
-                auto& pt1 = this->dictPoint.at(*it1);
-                auto& pt2 = this->dictPoint.at(*it2);
-                if (geomTools::normeCarre<DIM>(translation - pt1.coordinates + pt2.coordinates) < auxi_function::puissance<2>(this->epsilon_0)) {
-                    number_of_same_points++;
-                    if (number_of_same_points > 2) {
-                        return true;
-                    }
+        if (pts_1.size() != pts_2.size()) {
+            return false;
+        }
+        // magical ( warning )
+        constexpr double tol = 1e-10;
+        for (long i_begin = 0; i_begin < pts_1.size(); i_begin++) {
+            bool success = true;
+            for (long i = 0; i < pts_1.size(); i++) {
+                long j = auxi_function::fast_modulo(i_begin - i, pts_1.size());
+                if (geomTools::normeCarre<DIM>(this->dictPoint.at(pts_1[i]).coordinates - this->dictPoint.at(pts_2[j]).coordinates - translation) > tol * tol * geomTools::normeCarre<DIM>(this->torus.L)) {
+                    success = false;
+                    break;
                 }
+            }
+            if (success) {
+                return true;
             }
         }
     }
@@ -316,7 +351,7 @@ inline bool VoroMesh_Periodic<DIM>::comparePerSurface(Identifier surf_id1, Ident
 }
 
 template<unsigned short DIM>
-inline void VoroMesh_Periodic<DIM>::removeAllSingular() {
+bool VoroMesh_Periodic<DIM>::removeAllSingular() {
     bool hasRemoved = false;
     map<Identifier, GeoPoint<3>> emptyMap{};
     hasRemoved = hasRemoved or findSingularAndRemove(this->dictCurveLoop, this->dictEdge, this->dictPoint);
@@ -324,50 +359,25 @@ inline void VoroMesh_Periodic<DIM>::removeAllSingular() {
     hasRemoved = hasRemoved or findSingularAndRemovePeriodic(this->dictSurfaceLoop, this->dictSurface, this->dictCurveLoop, this->dictPerSurface);
     hasRemoved = hasRemoved or findSingularAndRemove(this->dictSolid, this->dictSurfaceLoop, this->dictSurface);
     hasRemoved = hasRemoved or findSingularAndRemove(emptyMap, this->dictSolid, this->dictSurfaceLoop);
-    if (hasRemoved) this->removeAllSingular();
-}
-
-template<unsigned short DIM>
-inline vector<SameThings<Identifier>> mesh::meshStructure::VoroMesh_Periodic<DIM>::getClosePerPoints(
-    const vector<SameThings<GeoPoint<DIM>>>& closePointDoublePer) const {
-    auto dictPP = this->dictPerPoint;
-    auto getPerPoints = [&dictPP](const auto& samePt) {
-        auto id_perPoint1 = get<0>(samePt).getPeriodicRoot();
-        auto id_perPoint2 = get<1>(samePt).getPeriodicRoot();
-        return make_tuple(dictPP.at(id_perPoint1), dictPP.at(id_perPoint2), AreSame::Same);
-        };
-    vector<SameThings<PerPoint>> samePerPoints{};
-    std::transform(closePointDoublePer.begin(), closePointDoublePer.end(), std::back_inserter(samePerPoints), getPerPoints);
-    return sameThings::auxi::replaceGraph(samePerPoints);  // removes duplicates and order well
-}
-
-template<unsigned short DIM>
-inline void VoroMesh_Periodic<DIM>::mergePerPoints(const vector<SameThings<Identifier> >& samePoints) {
-    for (const auto& sp : samePoints) {
-        this->mergeSinglePerPoint(this->dictPerPoint.at(get<0>(sp)), this->dictPerPoint.at(get<1>(sp)));
+    if (hasRemoved) {
+        this->removeAllSingular();
+    } else {
+        // verifications
+        // here, only close points related to opposed faces should be merged, not the ones with small edges
+        auto singularEdges = geoObjects::findSingular(this->dictEdge);
+        if (singularEdges.size() != 0) {
+            for (const auto& edge : singularEdges) {
+                cerr << edge.leaves[0] << endl;
+                cerr << edge.identifier << endl;
+            }
+            throw runtime_error("Singular line");
+        }
     }
+    return hasRemoved;
 }
 
 template<unsigned short DIM>
-inline void mesh::meshStructure::VoroMesh_Periodic<DIM>::mergeSinglePerPoint(
-    const PerPoint& perPt1, const PerPoint& perPt2) {
-    auto refPoint = this->dictPoint.at(perPt1.leaves[0]);
-    //! recover all the idPoints
-    vector<Identifier>  allIdPoints = perPt1.leaves; allIdPoints.insert(allIdPoints.end(), perPt2.leaves.begin(), perPt2.leaves.end());
-    sort(allIdPoints.begin(), allIdPoints.end());
-    allIdPoints.erase(unique(allIdPoints.begin(), allIdPoints.end()), allIdPoints.end());
-    //!
-    for (const auto& idPt : allIdPoints) {
-        auto& point = this->dictPoint.at(idPt);
-        point.setPeriodicRoot(perPt2.identifier);
-    }
-    dictPerPoint.at(perPt2.identifier).leaves = allIdPoints;
-    dictPerPoint.erase(perPt1.identifier);
-    this->alignPerPoints(perPt2.identifier);
-}
-
-template<unsigned short DIM>
-inline geoObjects::PhysicalSurface mesh::meshStructure::VoroMesh_Periodic<DIM>::getOuterSurface(Identifier id) const {
+geoObjects::PhysicalSurface mesh::meshStructure::VoroMesh_Periodic<DIM>::getPeriodicOuterSurface(Identifier id) const {
     vector<Identifier> allPerSurfaces{};
     for (const auto& [id_, perSurf] : this->dictPerSurface) {
         allPerSurfaces.push_back(perSurf.leaves[0]);
@@ -378,7 +388,7 @@ inline geoObjects::PhysicalSurface mesh::meshStructure::VoroMesh_Periodic<DIM>::
 }
 
 template<unsigned short DIM>
-inline void mesh::meshStructure::VoroMesh_NotPeriodic<DIM>::print(std::ostream& f) const {
+void mesh::meshStructure::VoroMesh_NotPeriodic<DIM>::print(std::ostream& f) const {
     f << "--------------" << endl;
     f << "GeoStructure<" << DIM << ">" << endl;
     auto printAll = [&f](const auto& dict) {
@@ -397,7 +407,7 @@ inline void mesh::meshStructure::VoroMesh_NotPeriodic<DIM>::print(std::ostream& 
 }
 
 template<unsigned short DIM>
-inline void mesh::meshStructure::VoroMesh_Periodic<DIM>::print(std::ostream& f) const {
+void mesh::meshStructure::VoroMesh_Periodic<DIM>::print(std::ostream& f) const {
     f << "--------------" << endl;
     f << "Nb Point" << this->dictPoint.size() << endl;
     f << "Nb Edges" << this->dictEdge.size() << endl;
@@ -421,32 +431,15 @@ inline void mesh::meshStructure::VoroMesh_Periodic<DIM>::print(std::ostream& f) 
 }
 
 template<unsigned short DIM>
-inline void VoroMesh_Periodic<DIM>::alignPerPoints(Identifier perPoint_id) {
-    const auto& list_pt_id = this->dictPerPoint.at(perPoint_id).leaves;
-    if (list_pt_id.size() > 1) {
-        const auto& refCoordinates = this->dictPoint.at(list_pt_id[0]).coordinates;
-        Point<DIM>& L = this->torus.L;
-        for (Identifier pt_id : list_pt_id) {
-            auto& coordinates = this->dictPoint.at(pt_id).coordinates;
-            for (size_t i = 0; i < DIM; i++) {
-                coordinates[i] = round((coordinates[i] - refCoordinates[i]) / L[i]) * L[i] + refCoordinates[i];
-            }
-        }
-    }
-}
-
-template<unsigned short DIM>
-inline void VoroMesh_Periodic<DIM>::mergeAll(
-    vector<SameThings<Identifier>> listSamePoints) {
-    map<Identifier, GeoPoint<DIM>> emptyMap{};
-    updatePeriodicMerge(listSamePoints, this->dictPoint, this->dictPerPoint);
-    vec_merge(listSamePoints, this->dictEdge, this->dictPoint, emptyMap);
-    //
+bool VoroMesh_Periodic<DIM>::mergeAll() {
+    bool hasMerged = false;
     auto listSameEdges = sameThings::getReplacementList(this->dictEdge);
     vec_merge(listSameEdges, this->dictCurveLoop, this->dictEdge, this->dictPoint);
+    hasMerged = hasMerged or (listSameEdges.size() > 0);
     //
     auto listSameCurveLoops = sameThings::getReplacementList(this->dictCurveLoop);
     vec_merge(listSameCurveLoops, this->dictSurface, this->dictCurveLoop, this->dictEdge);
+    hasMerged = hasMerged or (listSameCurveLoops.size() > 0);
     //
     auto listSameSurfaces = sameThings::getReplacementList(this->dictSurface);
     // ugly
@@ -458,51 +451,18 @@ inline void VoroMesh_Periodic<DIM>::mergeAll(
     // ugly
     updatePeriodicMerge(listSameSurfaces, this->dictSurface, this->dictPerSurface);
     vec_merge(listSameSurfaces, this->dictSurfaceLoop, this->dictSurface, this->dictCurveLoop);
+    hasMerged = hasMerged or (listSameSurfaces.size() > 0);
     //
     auto listSameSurfaceLoops = sameThings::getReplacementList(this->dictSurfaceLoop);
     vec_merge(listSameSurfaceLoops, this->dictSolid, this->dictSurfaceLoop, this->dictSurface);
-}
-
-template<unsigned short DIM>
-inline vector<sameThings::SameThings<Identifier>> VoroMesh_Periodic<DIM>::tooClosePoints(double adimensionalDistance) const {
-    double epsilon = adimensionalDistance * (*(min_element(this->torus.L.begin(), this->torus.L.end())));
-    auto comparisonFunction = [epsilon](const GeoPoint<DIM>& p1, const GeoPoint<DIM>& p2) {return p1.areSame(p2, epsilon);};
-    return sameThings::getReplacementList(this->dictPoint, comparisonFunction);
-}
-
-template<unsigned short DIM>
-inline tuple<vector<sameThings::SameThings<Identifier>>, vector<sameThings::SameThings<Identifier>>>
-VoroMesh_Periodic<DIM>::periodicTooClosePoint(double adimensionalDistance) const {
-    const auto& dictPt = this->dictPoint;
-    auto areBothPeriodic = [&dictPt](const auto& sameThing) {
-        // if both are in the same periodic point, this is false
-        const auto& pt1 = dictPt.at(get<0>(sameThing)), pt2 = dictPt.at(get<1>(sameThing));
-        if (pt1.isPeriodic() and not pt2.isPeriodic()) {
-            cerr << __PRETTY_FUNCTION__ << endl;
-            throw runtime_error("Unexpected : two points are close but one is not periodic!");
-        }
-        return pt1.isPeriodic() and pt2.isPeriodic() and (pt1.getPeriodicRoot() != pt2.getPeriodicRoot());
-        };
-    auto sameConcretePoints = [&dictPt](const auto& sameThing) {
-        return make_tuple(dictPt.at(get<0>(sameThing)), dictPt.at(get<1>(sameThing)), get<2>(sameThing));
-        };
-    //!
-    auto closePoints = this->tooClosePoints(adimensionalDistance);
-    vector<SameThings<GeoPoint<DIM>>> ptsNonPer{}, ptsDoublePer{};
-    for (const auto& same_cp_id : closePoints) {
-        if (areBothPeriodic(same_cp_id)) {
-            ptsDoublePer.push_back(sameConcretePoints(same_cp_id));
-        } else {
-            ptsNonPer.push_back(sameConcretePoints(same_cp_id));
-        }
-    }
-    return make_tuple(sameThings::auxi::replaceGraph(ptsNonPer), this->getClosePerPoints(ptsDoublePer));
+    hasMerged = hasMerged or (listSameSurfaceLoops.size() > 0);
+    return hasMerged;
 }
 
 // GeoUnStructureData<DIM>
 
 template<unsigned short DIM>
-inline Identifier VoroMesh_UnStructureData<DIM>::getMaxIndex() const {
+Identifier VoroMesh_UnStructureData<DIM>::getMaxIndex() const {
     Identifier maxIndex = 0;
     auto getMax = [&maxIndex](const auto& list) {
         if (list.size() > 0) {
@@ -515,7 +475,7 @@ inline Identifier VoroMesh_UnStructureData<DIM>::getMaxIndex() const {
 }
 
 template<unsigned short DIM>
-inline void VoroMesh_UnStructureData<DIM>::shiftIndices(Identifier shift) {
+void VoroMesh_UnStructureData<DIM>::shiftIndices(Identifier shift) {
     auto shiftLoc = [shift](auto& list) {
         for (auto& elem : list) {
             elem.shiftIndices(shift);
@@ -525,13 +485,13 @@ inline void VoroMesh_UnStructureData<DIM>::shiftIndices(Identifier shift) {
 }
 
 template<unsigned short DIM>
-inline void VoroMesh_UnStructureData<DIM>::reset() {
+void VoroMesh_UnStructureData<DIM>::reset() {
     applyOnAllVectors([](auto& vec) { vec = {};});
 }
 
 template<unsigned short DIM>
 template<class FUNCTION>
-inline void VoroMesh_UnStructureData<DIM>::applyOnAllVectors(FUNCTION function) {
+void VoroMesh_UnStructureData<DIM>::applyOnAllVectors(FUNCTION function) {
     function(vecPoint);
     function(vecEdge);
     function(vecCurveLoop);
@@ -539,11 +499,12 @@ inline void VoroMesh_UnStructureData<DIM>::applyOnAllVectors(FUNCTION function) 
     function(vecSurfaceLoop);
     function(vecSolid);
     function(vecPerSurface);
+    function(vecPerPoint);
 }
 
 template<unsigned short DIM>
 template<class FUNCTION>
-inline void VoroMesh_UnStructureData<DIM>::applyOnAllVectors(FUNCTION function) const {
+void VoroMesh_UnStructureData<DIM>::applyOnAllVectors(FUNCTION function) const {
     function(vecPoint);
     function(vecEdge);
     function(vecCurveLoop);
@@ -551,13 +512,14 @@ inline void VoroMesh_UnStructureData<DIM>::applyOnAllVectors(FUNCTION function) 
     function(vecSurfaceLoop);
     function(vecSolid);
     function(vecPerSurface);
+    function(vecPerPoint);
 }
 
 template<unsigned short DIM>
-inline void VoroMesh_UnStructureData<DIM>::fromGeoPerStructure(
-    VoroMesh_Periodic<DIM> geoStructure) {
-    this->L = geoStructure.torus.L;
+void VoroMesh_UnStructureData<DIM>::fromGeoPerStructure(
+    const VoroMesh_Periodic<DIM>& geoStructure) {
     this->reset();
+    this->L = geoStructure.torus.L;
     auto copyInto = [](auto list1, auto& list2) {
         for (const auto& item : list1) {
             list2.push_back(item.second);
@@ -570,10 +532,11 @@ inline void VoroMesh_UnStructureData<DIM>::fromGeoPerStructure(
     copyInto(geoStructure.dictSurfaceLoop, this->vecSurfaceLoop);
     copyInto(geoStructure.dictSolid, this->vecSolid);
     copyInto(geoStructure.dictPerSurface, this->vecPerSurface);
+    copyInto(geoStructure.dictPerPoint, this->vecPerPoint);
 }
 
 template<unsigned short DIM>
-inline void VoroMesh_UnStructureData<DIM>::append_with_shift(VoroMesh_UnStructureData<DIM> rawData) {
+void VoroMesh_UnStructureData<DIM>::append_with_shift(VoroMesh_UnStructureData<DIM> rawData) {
     // fixme : unefficient
     auto index = this->getMaxIndex();
     // fixme : unefficient
@@ -583,7 +546,7 @@ inline void VoroMesh_UnStructureData<DIM>::append_with_shift(VoroMesh_UnStructur
 }
 
 template<unsigned short DIM>
-inline void VoroMesh_UnStructureData<DIM>::append(const VoroMesh_UnStructureData<DIM>& rawData) {
+void VoroMesh_UnStructureData<DIM>::append(const VoroMesh_UnStructureData<DIM>& rawData) {
     auto append_aux = [](auto& vec1, const auto& vec2) {
         vec1.insert(vec1.end(), vec2.begin(), vec2.end());
         };
@@ -594,12 +557,13 @@ inline void VoroMesh_UnStructureData<DIM>::append(const VoroMesh_UnStructureData
     append_aux(this->vecSurfaceLoop, rawData.vecSurfaceLoop);
     append_aux(this->vecSolid, rawData.vecSolid);
     append_aux(this->vecPerSurface, rawData.vecPerSurface);
+    append_aux(this->vecPerPoint, rawData.vecPerPoint);
 }
 
 //! template functions
 
 template<class DICT_THINGS, class DICT_PERIODIC_THINGS>
-inline void updatePeriodicMerge(vector<SameThings<Identifier>> vecThings_id, const DICT_THINGS& dictThings, DICT_PERIODIC_THINGS& dictPerThings) {
+void updatePeriodicMerge(vector<SameThings<Identifier>> vecThings_id, const DICT_THINGS& dictThings, DICT_PERIODIC_THINGS& dictPerThings) {
     for (auto& sameThings : vecThings_id) {
         auto& thing1 = dictThings.at(get<0>(sameThings)), thing2 = dictThings.at(get<1>(sameThings));
         if (thing1.isPeriodic()) {
@@ -610,7 +574,7 @@ inline void updatePeriodicMerge(vector<SameThings<Identifier>> vecThings_id, con
 }
 
 template<class VEC, class DICT>
-inline void translate(const VEC& vec, DICT& dict) {
+void translate(const VEC& vec, DICT& dict) {
     for (const auto& elem : vec) {
         // verify coherence
         if (dict.find(elem.identifier) != dict.end()) {
@@ -642,8 +606,21 @@ void connectRoot(DICT_THINGS& dictThings, const DICT_ROOT& dictRoots) {
     }
 }
 
+template<class DICT_THINGS, class DICT_ROOT>
+void connectPerRoot(DICT_THINGS& dictThings, const DICT_ROOT& dictPerRoots) {
+    for (auto& [id, leaf] : dictThings) {
+        leaf.removePeriodicRoot();
+    }
+    for (auto& ps : dictPerRoots) {
+        auto& perRoot = ps.second;
+        for (auto idPs : perRoot.leaves) {
+            dictThings.at(idPs).setPeriodicRoot(perRoot.identifier);
+        }
+    }
+}
+
 template<unsigned short DIM>
-inline bool verifyTranslate(const AmbiantSpace::Tore<DIM>& torus, const Point<DIM>& translation, double epsilon) {
+bool verifyTranslate(const AmbiantSpace::Tore<DIM>& torus, const Point<DIM>& translation, double epsilon) {
     return geomTools::normeCarre(torus.projection(translation)) < epsilon * epsilon;
 }
 
@@ -653,7 +630,7 @@ void restrictTo_RootLeaves_withoutRootConnection(DICT_LEAF& dictThings, const DI
     std::set<Identifier> all_things_id{};
     for (const auto& [id, root] : dictRoots) {
         for (auto thing_id : root.leaves) {
-            all_things_id.insert(thing_id);
+            all_things_id.insert(abs(thing_id));
         }
     }
     auxi_function::erase_if(dictThings, [&all_things_id](const auto& thing) {

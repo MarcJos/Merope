@@ -6,11 +6,9 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
 #include "TypeCrystal.hxx"
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {

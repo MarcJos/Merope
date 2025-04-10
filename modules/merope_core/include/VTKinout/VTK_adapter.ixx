@@ -1,13 +1,13 @@
 //! Copyright : see license.txt
 //!
 //! \brief
-
 #pragma once
+
 
 #include "../Grid/ConvertGrix.hxx"
 
-namespace merope {
 
+namespace merope {
 namespace vtk_adapter {
 
 template<class PHASE_OUT>

@@ -5,14 +5,14 @@
 //
 #pragma once
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
 
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
-#include "../Geometry/GeomTools.hxx"
-#include "../Geometry/SpheroPolyhedron.hxx"
-#include "../Geometry/AuxiConvexPolyhedron.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../MeropeNamespace.hxx"
+#include "../../../Geometry/include/AmbiantSpace.hxx"
+#include "../../../Geometry/include/GeomTools.hxx"
+#include "../../../Geometry/include/SpheroPolyhedron.hxx"
+#include "../../../Geometry/include/AuxiConvexPolyhedron.hxx"
+
 
 namespace merope {
 namespace smallShape {

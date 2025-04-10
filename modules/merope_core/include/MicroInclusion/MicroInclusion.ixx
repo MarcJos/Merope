@@ -5,9 +5,8 @@
 
 #pragma once
 
-#include "../MeropeNamespace.hxx"
 
-#include "../Geometry/Trim.hxx"
+#include "../../../Geometry/include/Trim.hxx"
 
 
 namespace merope {

@@ -5,13 +5,8 @@
 //!
 
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
-
-#include "Geometry/Rotation.hxx"
-#include "../../AlgoPacking/src/Geometry/GeomTypes.hxx"
-
-
-#include "MeropeNamespace.hxx"
+#include "../../Geometry/include/Rotation.hxx"
+#include "../../Geometry/include/GeomTypes.hxx"
 
 
 namespace merope {

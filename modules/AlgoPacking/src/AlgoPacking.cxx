@@ -3,10 +3,10 @@
 //! \brief
 //!
 
-#include "AlgoPacking.hxx"
+#include "../../Geometry/include/AmbiantSpace.hxx"
 
+#include "AlgoPacking.hxx"
 #include "AlgoRSA.hxx"
-#include "AmbiantSpace.hxx"
 
 namespace sac_de_billes {
 

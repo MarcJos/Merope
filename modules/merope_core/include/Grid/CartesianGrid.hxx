@@ -5,13 +5,15 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
-#include "../../../AlgoPacking/src/Loops.hxx"
-#include "../../../AlgoPacking/src/MultiDArrayObject.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../MeropeNamespace.hxx"
-#include "../Grid/ListPhaseFrac.hxx"
+#include "../../../GenericTools/Loops.hxx"
+
+#include "../../../Geometry/include/AmbiantSpace.hxx"
+
+#include "../../../AlgoPacking/include/MultiDArrayObject.hxx"
+
+#include "../SingleVoxel/SingleVoxel_Headers.hxx"
 #include "../Grid/PreGrid.hxx"
 
 namespace merope {
@@ -28,6 +30,12 @@ public:
             SubArrayDimensions<DIM>(gridParameters_.getNbNodes(), gridParameters_.getNMin(), gridParameters_.getNMax()),
             VOXEL_TYPE{}
         ),
+        gridParameters(gridParameters_) {}
+    //! constructor
+    CartesianGrid(GridParameters<DIM> gridParameters_, VOXEL_TYPE voxel) :
+        MultiDArrayObject<DIM, VOXEL_TYPE, SubArrayDimensions<DIM>>(
+            SubArrayDimensions<DIM>(gridParameters_.getNbNodes(), gridParameters_.getNMin(), gridParameters_.getNMax()),
+            voxel),
         gridParameters(gridParameters_) {}
     //! getter
     const GridParameters<DIM>& getGridParameters() const { return gridParameters; }

@@ -2,17 +2,13 @@
 //!
 //! \brief
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
 #include "Mesh/TestMesh.hxx"
-#include "../../AlgoPacking/src/Interface.hxx"
+#include "../../AlgoPacking/include/Interface.hxx"
 #include "Mesh/GmshWriter.hxx"
 #include "MultiInclusions/MultiInclusions.hxx"
 #include "MicroToMesh/MeshGenerator.hxx"
 #include "Voronoi/VoroToMeshGraph.hxx"
-
-
-#include "MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -62,13 +58,13 @@ void testMesh::test1() {
     vector<Solid>           vecSolid{ so };
     //
 
-    mesh::meshStructure::VoroMesh_UnStructureData<DIM> rawData{ L, vGeo, vecEdge, vecCurveLoop, vecSurface, vecSurfaceLoop, vecSolid, {} };
+    mesh::meshStructure::VoroMesh_UnStructureData<DIM> rawData{ L, vGeo, vecEdge, vecCurveLoop, vecSurface, vecSurfaceLoop, vecSolid, {}, {} };
     //!
-    mesh::meshStructure::VoroMesh_Periodic<DIM> geoPerStruct(rawData);
+    mesh::meshStructure::VoroMesh_Periodic<DIM> geoPerStruct(rawData, false);
     //!
     string nameFile = "OutputFile.geo";
     ofstream f{ nameFile };
-    mesh::gmsh_writer::write(geoPerStruct, f);
+    mesh::gmsh_writer::write<mesh::gmsh_writer::MeshMethod::native_gmsh>(geoPerStruct, f);
 }
 
 void testMesh::test2() {
@@ -106,14 +102,14 @@ void testMesh::test2() {
 
     microToMesh::voroTranslater::VoroToMeshGraph voroTranslater(L, theSpheres);
     mesh::meshStructure::VoroMesh_UnStructureData<3> rawMeshData = voroTranslater.getMeshData();
-    mesh::meshStructure::VoroMesh_Periodic<DIM> geoPerStructure(rawMeshData);
+    mesh::meshStructure::VoroMesh_Periodic<DIM> geoPerStructure(rawMeshData, true);
     ofstream f1("Output_0.geo");
     //geoPerStructure.print(cerr);
-    mesh::gmsh_writer::write(geoPerStructure, f1);
+    mesh::gmsh_writer::write<mesh::gmsh_writer::MeshMethod::native_gmsh>(geoPerStructure, f1);
 
     ofstream f2("Output_0_enveloppe.geo");
     geoPerStructure.restrictEnveloppe();
-    mesh::gmsh_writer::write(geoPerStructure, f2);
+    mesh::gmsh_writer::write<mesh::gmsh_writer::MeshMethod::native_gmsh>(geoPerStructure, f2);
 }
 
 void testMesh::test3() {
@@ -189,14 +185,13 @@ void testMesh::test5() {
     meshGenerator.setMeshOrder(1);
     meshGenerator.setMeshSize(0.025);
     meshGenerator.setMultiInclusions(multiInclusions);
-    meshGenerator.setAdimMergeDistance0(1.e-5);
-    meshGenerator.setAdimMergeDistance1(1.e-2);
+    meshGenerator.setAdimMergeDistance(1.e-5);
     meshGenerator.write("mmm_mesh.geo");
 }
 
-void testMesh::test6() {
+void testMesh::test6(int nb_sph) {
     Point<3> L = { 1, 1, 1 };
-    int nbSpheres = 16;
+    int nbSpheres = nb_sph;
     double distMin = 0.05;
     int randomSeed = 0;
     auto theSpheres = sac_de_billes::algoSpheres::fillMaxRSA<3>(AmbiantSpace::NameShape::Tore, L, nbSpheres, randomSeed, distMin);

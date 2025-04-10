@@ -12,14 +12,13 @@
 #include <pybind11/stl_bind.h>
 #include<iostream>
 
-#include "../src/AlgoRSA.hxx"
-#include "../src/AlgoPacking.hxx"
-#include "../src/SphereManipulator.hxx"
-#include "../src/AlgoWP.hxx"
-#include "../src/AlgoBool.hxx"
-#include "../src/Interface.hxx"
-#include "../src/AlgoNames.hxx"
-#include "../src/GlobalShape.hxx"
+#include "../include/AlgoRSA.hxx"
+#include "../include/AlgoPacking.hxx"
+#include "../include/SphereManipulator.hxx"
+#include "../include/AlgoWP.hxx"
+#include "../include/AlgoBool.hxx"
+#include "../include/Interface.hxx"
+#include "../include/AlgoNames.hxx"
 
 namespace py = pybind11;
 
@@ -56,6 +55,7 @@ inline void createModule(py::module_& rsa) {
 		.def("setNamePhase", &AlgoRSA<3>::setNamePhase)
 		.def("proceed", &AlgoRSA<3>::proceed)
 		.def("printDump", &AlgoRSA<3>::printDump)
+		.def("printVTK", &AlgoRSA<3>::printVTK)
 		.def("printCSV", &AlgoRSA<3>::printCSV)
 		.def("printPos", &AlgoRSA<3>::printPos)
 		.def("getPlacedSpheres", &AlgoRSA<3>::getPlacedSpheres_nonT)
@@ -79,6 +79,7 @@ inline void createModule(py::module_& rsa) {
 		.def("setNamePhase", &AlgoRSA<2>::setNamePhase)
 		.def("proceed", &AlgoRSA<2>::proceed)
 		.def("printDump", &AlgoRSA<2>::printDump)
+		.def("printVTK", &AlgoRSA<2>::printVTK)
 		.def("printCSV", &AlgoRSA<2>::printCSV)
 		.def("getPlacedSpheres", &AlgoRSA<2>::getPlacedSpheres_nonT)
 		.def("getSpheres", &AlgoRSA<2>::getSpheres)
@@ -101,6 +102,7 @@ inline void createModule(py::module_& rsa) {
 		.def("setNamePhase", &AlgoBool<3>::setNamePhase)
 		.def("proceed", &AlgoBool<3>::proceed)
 		.def("printDump", &AlgoBool<3>::printDump)
+		.def("printVTK", &AlgoBool<3>::printVTK)
 		.def("printCSV", &AlgoBool<3>::printCSV)
 		.def("printPos", &AlgoBool<3>::printPos)
 		.def("getPlacedSpheres", &AlgoBool<3>::getPlacedSpheres_nonT)
@@ -124,6 +126,7 @@ inline void createModule(py::module_& rsa) {
 		.def("setNamePhase", &AlgoBool<2>::setNamePhase)
 		.def("proceed", &AlgoBool<2>::proceed)
 		.def("printDump", &AlgoBool<2>::printDump)
+		.def("printVTK", &AlgoBool<2>::printVTK)
 		.def("printCSV", &AlgoBool<2>::printCSV)
 		.def("getPlacedSpheres", &AlgoBool<2>::getPlacedSpheres_nonT)
 		.def("getSpheres", &AlgoBool<2>::getSpheres)
@@ -146,6 +149,7 @@ inline void createModule(py::module_& rsa) {
 		.def("setNamePhase", &AlgoWP<3>::setNamePhase)
 		.def("proceed", &AlgoWP<3>::proceed)
 		.def("printDump", &AlgoWP<3>::printDump)
+		.def("printVTK", &AlgoWP<3>::printVTK)
 		.def("printCSV", &AlgoWP<3>::printCSV)
 		.def("printPos", &AlgoWP<3>::printPos)
 		.def("getPlacedSpheres", &AlgoWP<3>::getPlacedSpheres_nonT)
@@ -169,6 +173,7 @@ inline void createModule(py::module_& rsa) {
 		.def("setNamePhase", &AlgoWP<2>::setNamePhase)
 		.def("proceed", &AlgoWP<2>::proceed)
 		.def("printDump", &AlgoWP<2>::printDump)
+		.def("printVTK", &AlgoWP<2>::printVTK)
 		.def("printCSV", &AlgoWP<2>::printCSV)
 		.def("getPlacedSpheres", &AlgoWP<2>::getPlacedSpheres_nonT)
 		.def("getSpheres", &AlgoWP<2>::getSpheres)
@@ -194,6 +199,7 @@ inline void createModule(py::module_& rsa) {
 		.def(py::init<std::vector<Sphere<2>>, std::array<double, 2>>())
 		.def("printVER", &SphereManipulator<2>::printVER)
 		.def("printDump", &SphereManipulator<2>::printDump)
+		.def("printVTK", &SphereManipulator<2>::printVTK)
 		.def("printCSV", &SphereManipulator<2>::printCSV)
 		.def("getPlacedSpheres", &SphereManipulator<2>::getPlacedSpheres_nonT)
 		.def("getSpheres", &SphereManipulator<2>::getSpheres)
@@ -213,6 +219,7 @@ inline void createModule(py::module_& rsa) {
 		.def(py::init<std::vector<Sphere<3>>, std::array<double, 3>>())
 		.def("printVER", &SphereManipulator<3>::printVER)
 		.def("printDump", &SphereManipulator<3>::printDump)
+		.def("printVTK", &SphereManipulator<3>::printVTK)
 		.def("printCSV", &SphereManipulator<3>::printCSV)
 		.def("printPos", &SphereManipulator<3>::printPos)
 		.def("getPlacedSpheres", &SphereManipulator<3>::getPlacedSpheres_nonT)
@@ -235,9 +242,6 @@ inline void createModule(py::module_& rsa) {
 	// openmp
 	rsa.def("omp_set_num_threads", &omp_set_num_threads);
 	rsa.def("omp_get_num_threads", &sac_de_billes::auxi_function::get_num_threads);
-
-	// rsa.def("fromCumHisto_3D", &algoSpheres::fromCumHisto<3>);
-	// rsa.def("fromCumHisto_2D", &algoSpheres::fromCumHisto<2>);
 
 	rsa.def("throwSpheres_3D", static_cast<std::vector<Sphere<3>>(*)(const algoSpheres::TypeAlgo&,
 		AmbiantSpace::NameShape, std::array<double, 3>, unsigned, std::vector<std::array<double, 2>>, vector<PhaseType>, double)>(&algoSpheres::throwSpheres<3>));

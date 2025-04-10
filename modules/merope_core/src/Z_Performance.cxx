@@ -2,7 +2,6 @@
 //!
 //! \brief
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
 #include "Test/Tests.hxx"
 

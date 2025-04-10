@@ -4,8 +4,6 @@
 //
 #pragma once
 
-#include "../MeropeNamespace.hxx"
-
 
 namespace merope {
 namespace vox {

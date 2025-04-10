@@ -6,16 +6,20 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-#include "../MeropeNamespace.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
+#include "../../../GenericTools/SOA.hxx"
+
+#include "../../../Geometry/include/AmbiantSpace.hxx"
+
+#include "../SingleVoxel/SingleVoxel_Headers.hxx"
+
 #include "../MultiInclusions/LaguerreTess.hxx"
 #include "../MultiInclusions/Rectangle.hxx"
 #include "../MultiInclusions/SphereInclusions.hxx"
 #include "../MultiInclusions/ObjectInclusions.hxx"
+
 #include "../MicroInclusion/MicroInclusion.hxx"
-#include "../../../AlgoPacking/src/SOA.hxx"
 
 
 
@@ -31,7 +35,8 @@ using SOA_for_MultiI = std::enable_if_t<DIM == 2 or DIM == 3,
 template<unsigned short DIM>
 class MultiInclusions final :
         public InsideTorus<DIM>,
-        private  SOA_for_MultiI<DIM> {
+        private  SOA_for_MultiI<DIM>,
+        public MatrixPhaseHolder<PhaseType> {
         //! class for NON-INTERSECTING inclusions inside a matrix
 public:
         using SOA_type = SOA_for_MultiI<DIM>;
@@ -49,6 +54,8 @@ public:
         //! from Object vectors
         template<class ObjectInc>
         void setInclusions(const vector<ObjectInc>& vectInclusions, Point<DIM> L);
+        //! from a rectangle
+        void setInclusions(const Rectangle<DIM>& rect);
         //! enlarge each inclusion
         //! \param identifiers : concerned identifiers of inclusions
         //! \param width : width of the enlargement
@@ -56,8 +63,6 @@ public:
         void enlarge(const vector<Identifier>& identifiers, double width) {
                 this->enlarge(identifiers, vector<double>(identifiers.size(), width));
         }
-        //! from a rectangle
-        void setInclusions(const Rectangle<DIM>& rect);
         //! add a layer
         //! \param layersToAdd : instructions for adding a layer
         void addLayer(vector<smallShape::LayerInstructions> layersToAdd);
@@ -91,30 +96,20 @@ public:
                 TEST_FUNCTION insert_matrix_phase) const;
         //! get all the centers of the inclusions
         vector<Point<DIM>> getAllCenters() const;
-        //! set the matrix phase
-        void setMatrixPhase(PhaseType matrixPhase_) {
-                matrixPresence = true;
-                this->matrixPhase = matrixPhase_;
-        }
         //! get inclusions
         using SOA_type::get;
         using SOA_type::apply_on_all;
-
-        //! getter
-        PhaseType getMatrixPhase() const { return matrixPhase; }
-        //! is there a matrix ?
-        bool is_there_matrix() const { return matrixPresence; }
-
-private:
-        //! is there a matrix ?
-        bool matrixPresence;
-        //! Phase of the matrix
-        PhaseType matrixPhase;
+        //! @return : the inner laguerre tesselation if applicable
+        const LaguerreTess<DIM>& getLaguerreTess() const;
+        //! @return : is a Laguerre tessellation
+        bool isLaguerreTess() const { return laguerreTess != nullptr; }
 private:
         //! check whether the identifier is actually in the structure
         //! if not, throws an error
         //! \param layersToAdd : layer that we wish to add
         bool checkAddLayer(vector<smallShape::LayerInstructions> layersToAdd) const;
+        //! inner Laguerre tessellation if applicable
+        shared_ptr<const LaguerreTess<DIM>> laguerreTess;
 };
 
 namespace auxi_MultiInclusions {

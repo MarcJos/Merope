@@ -4,17 +4,13 @@
 
 #pragma once
 
-#include<vector>
-#include<iostream>
-
 #include<fftw/fftw3.h>
 
-#include<assert.h>
+#include "../../../GenericMerope/StdHeaders.hxx"
+
+#include "../../../GenericMerope/localMFront.h"
 
 #include"../FFTW3/NumericTypes.h"
-#include "../localMFront.h"
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {

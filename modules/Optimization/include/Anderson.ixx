@@ -7,8 +7,6 @@
 
 namespace optimization {
 
-using namespace std;
-
 namespace Anderson {
 
 template<unsigned short NB_ITER, class VECTOR, class FIXED_POINT>

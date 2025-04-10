@@ -6,18 +6,15 @@
 
 #pragma once
 
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../Geometry/include/AmbiantSpace.hxx"
 
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
 #include "../Grid/CartesianGrid.hxx"
 #include "../Grid/Grid.hxx"
 #include "../Grid/GridTypes.hxx"
 #include "../MicroInclusion/MicroInclusion.hxx"
 #include "../Physics/Homogenization.hxx"
-
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {

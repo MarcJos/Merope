@@ -2,10 +2,10 @@
 //!
 //! \brief
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
 #include "Mesh/TestMesh.hxx"
 #include "Test/Tests.hxx"
+
 
 using namespace std;
 using namespace sac_de_billes;
@@ -30,7 +30,7 @@ int main() {
     cerr << "testMesh::test2();" << endl;
     testMesh::test1();
     cerr << "testMesh::test1();" << endl;
-    ///
+    //
 
     clock_t t_0 = clock();
     cerr << "---4" << endl;
@@ -56,6 +56,10 @@ int main() {
     Tests::testFields();
     cerr << "---------------11" << endl;
 
+
+
+    merope::Tests::gridRep0();
+    cerr << "------------gridRep0" << endl;
 
     cerr << "Time : " << (static_cast<double>(clock() - t_0)) / CLOCKS_PER_SEC << endl;
 

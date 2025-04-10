@@ -3,11 +3,8 @@
 //! \brief
 //
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
-#include "MesoStructure/RecurStructure.hxx"
-
-#include "MeropeNamespace.hxx"
+#include "SingleVoxel/RecurStructure.hxx"
 
 
 namespace merope {

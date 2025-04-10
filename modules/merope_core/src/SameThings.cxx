@@ -2,11 +2,9 @@
 //!
 //! \brief
 //
+
 #include "Mesh/SameThings.hxx"
-#include "../../AlgoPacking/src/AuxiFunctions.hxx"
-
-
-#include "MeropeNamespace.hxx"
+#include "../../GenericTools/AuxiFunctions.hxx"
 
 
 namespace merope {

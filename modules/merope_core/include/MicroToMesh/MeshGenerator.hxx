@@ -4,37 +4,35 @@
 //
 #pragma once
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
+
+#include "../../../GenericMerope/StdHeaders.hxx"
+
+#include "../../../Geometry/include/AmbiantSpace.hxx"
 
 #include "../Mesh/MeshStructure.hxx"
 #include "../MultiInclusions/MultiInclusions.hxx"
-
-#include "../MeropeNamespace.hxx"
+#include "../Mesh/GmshWriter.hxx"
 
 
 namespace merope {
 namespace mesh {
 namespace generator {
-using namespace sac_de_billes;
-
 
 class MeshGenerator {
 public:
     //! constructor
     MeshGenerator() : meshSize{ 0.05 }, meshOrder{ 1 },
-        adimensionnalMergeDistance_0{ 1.e-5 },
-        adimensionnalMergeDistance_1{ 1.e-5 },
+        adimensionnalMergeDistance{ 1.e-5 },
         binaryOutput{ false },
         nameOutput({}),
         ignore_interior{},
         multiInclusions{ nullptr } {}
     //! write the gmsh input into a stream
     //! \param f : outputstream
-    void write(std::ostream& f) const;
+    void write(std::ostream& f, gmsh_writer::MeshMethod meshMethod = gmsh_writer::MeshMethod::native_gmsh) const;
     //! write the gmsh input into a file
     //! \param nameFile : the name of the file
-    void write(string nameFile) const;
+    void write(string nameFile, gmsh_writer::MeshMethod meshMethod = gmsh_writer::MeshMethod::native_gmsh) const;
 
     //! @brief : const getter
     const vector<string> get_nameOutput() const { return nameOutput; }
@@ -51,9 +49,7 @@ public:
     //! setter
     void setMeshSize(double meshSize_) { this->meshSize = meshSize_; }
     //! setter
-    void setAdimMergeDistance0(double adimensionnalMergeDistance0_) { adimensionnalMergeDistance_0 = adimensionnalMergeDistance0_; }
-    //! setter
-    void setAdimMergeDistance1(double adimensionnalMergeDistance1_) { adimensionnalMergeDistance_1 = adimensionnalMergeDistance1_; }
+    void setAdimMergeDistance(double adimensionnalMergeDistance_) { adimensionnalMergeDistance = adimensionnalMergeDistance_; }
     //! setter
     void setBinaryOutput(bool binaryOutput_) { binaryOutput = binaryOutput_; }
     //! parametrization
@@ -66,9 +62,7 @@ private:
     //! order of the mesh elements
     size_t meshOrder;
     //! triggers the merge distance
-    double adimensionnalMergeDistance_0;
-    //! triggers the merge distance
-    double adimensionnalMergeDistance_1;
+    double adimensionnalMergeDistance;
     //! decides whether the output format is binary
     bool binaryOutput;
     //! @brief name of the output
@@ -106,6 +100,7 @@ void remove_ignored_phase(mesh::meshStructure::VoroMesh_Periodic_Physical<3>& ge
 //! @brief write all components of the mesh
 //! @param f : output (usually, text files)
 //! @param geoPerStructure : mesh informations
+template<gmsh_writer::MeshMethod meshMethod>
 void write_all(std::ostream& f, const mesh::meshStructure::VoroMesh_Periodic_Physical<3>& geoPerStructure);
 //! @brief from geoPerStructure.dictPhysical volumes, create their boundaries, indicated as physical surfaces.
 //! These share the same indices as those.

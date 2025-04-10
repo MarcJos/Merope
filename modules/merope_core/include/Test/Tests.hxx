@@ -5,9 +5,7 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-
-#include "../MeropeNamespace.hxx"
+#include "../../GenericMerope/StdHeaders.hxx"
 
 
 namespace merope {
@@ -29,6 +27,7 @@ public:
     static void testFields2();
     static void polyCrystalCentroidal(bool use_acceleration);
     static void outputLaminate();
+    static void gridRep0();
 };
 
 }  // namespace merope

@@ -4,28 +4,32 @@
 //
 #pragma once
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
 
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
+
+#include "../../../Geometry/include/AmbiantSpace.hxx"
+
 #include "../MesoStructure/InsideTorus.hxx"
 #include "../MicroInclusion/MicroInclusion.hxx"
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {
 
 template<unsigned short DIM, class OBJECT>
-class ObjectInclusions final : public InsideTorus<DIM> {
+class ObjectInclusions : public InsideTorus<DIM> {
 public:
-    //! constructor
+    //! @brief : constructor
     ObjectInclusions() : InsideTorus<DIM>(), objectVector{}{}
+    //! @brief : destructor
+    virtual ~ObjectInclusions() {}
     ObjectInclusions(array<double, DIM> L_, const vector<OBJECT>& objectVector_) : InsideTorus<DIM>(L_) { this->setInclusions(objectVector_); }
-    //! get all the cells
+    //! @brief : get all the cells
     const vector<OBJECT>& getMicroInclusions() const { return objectVector; }
-    //! adds another spheroPolyhedron
+    //! @brief : get all the cells
+    vector<OBJECT>& getMicroInclusions() { return objectVector; }
+    //! @brief : adds another spheroPolyhedron
     void addInclusion(OBJECT objectInclusion) { this->objectVector.emplace_back(objectInclusion); }
-    //! set spheroPolyhedrons
+    //! @brief : set spheroPolyhedrons
     void setInclusions(const vector<OBJECT>& objectVector_) { this->objectVector = objectVector_; }
 
 protected:
@@ -41,5 +45,8 @@ using EllipseInclusions = ObjectInclusions<DIM, smallShape::EllipseInc<DIM>>;
 
 template<unsigned short DIM>
 using CylinderInclusions = ObjectInclusions<DIM, smallShape::CylinderInc<DIM>>;
+
+template<unsigned short DIM>
+using PolyInclusions = ObjectInclusions<DIM, smallShape::ConvexPolyhedronInc<DIM>>;
 
 }  // namespace merope

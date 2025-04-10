@@ -5,17 +5,17 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
+#include "../../../GenericTools/AuxiFunctions.hxx"
+
+#include "../../../Geometry/include/AmbiantSpace.hxx"
+
 #include "../MultiInclusions/LaguerreTess.hxx"
 #include "../MultiInclusions/MultiInclusions.hxx"
 #include "../MultiInclusions/SphereSeeds.hxx"
 #include "../MesoStructure/Structure.hxx"
 #include "../Obsolete_MesoStructure/MicroType.hxx"
-#include "../../../AlgoPacking/src/AuxiFunctions.hxx"
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {

@@ -4,15 +4,10 @@
 //!
 
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
-
 #include "Grid/Grid.hxx"
 #include "VTKinout/TIFFRead.hxx"
 #include "VTKinout/VTKRead.hxx"
 #include "VTKinout/VTKStream.hxx"
-
-
-#include "MeropeNamespace.hxx"
 
 
 namespace merope {

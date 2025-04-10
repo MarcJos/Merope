@@ -4,11 +4,7 @@
 //!
 
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
-
 #include "VTKinout/VTKStream.hxx"
-
-#include "MeropeNamespace.hxx"
 
 
 namespace merope {

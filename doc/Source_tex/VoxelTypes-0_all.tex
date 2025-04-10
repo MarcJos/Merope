@@ -1,0 +1,92 @@
+\documentclass[tikz]{standalone}
+\usepackage{tikz}
+\usepackage{graphics}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{patterns}
+\usetikzlibrary{shapes}
+\usetikzlibrary{arrows.meta,arrows}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%  latex --shell-escape CasLevcek.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amssymb} 		%%pour faire lessim
+\usepackage{amsmath}		%%pour faire equation*
+\usepackage{amsthm} 		%%environnement théorème (!!!)
+\usepackage{array,multirow,makecell}
+
+% \usetikzlibrary{external} % set up externalization
+
+% \tikzexternalize[shell escape=-enable-write18] % activate externalisation
+
+% \tikzset{external/system call={latex \tikzexternalcheckshellescape -halt-on-error
+		% -interaction=batchmode -jobname "\image" "\texsource" && 
+		% dvips -o "\image".ps "\image".dvi &&
+		% ps2eps -l "\image.ps"}}
+
+
+\newcommand{\aaA}{1.5}
+
+\newcommand{\aaB}{3}
+\newcommand{\aaC}{4.5}
+\newcommand{\aaD}{6}
+
+\begin{document}
+		\begin{tikzpicture}[scale = 2.5]
+		
+		\fill [color = blue, opacity=0.5] (1, 0) -- (0.4142, 0) arc (19.5:48.5:1.5) -- (0,1)--(1,1)--cycle;
+		\draw (0, 0) rectangle (1, 1);
+		\draw[color=gray] (0.5, -0.5) arc (0:90:1.5);
+		\draw (0.4142, 0) arc (19.5:48.5:1.5);
+		\fill [color = red, opacity=0.5] (0, 0) -- (0.4142, 0) arc (19.5:48.5:1.5) -- cycle;
+		\draw (-1, -0.5) node {$\bullet$};
+		\draw (-1, -0.5) node[right] {$O$};
+		\draw (0.5, 0.5) node {$\bullet$};
+		\draw (0.5, 0.5) node[right] {$C$};
+		\draw (0, 0) node[above right] {$16\%$};
+		\draw (0.4, 0.6) node[above right] {$84\%$};
+		% Plane Geom
+		\fill [color = blue, opacity=0.5] (\aaA + 1, 0)--(\aaA + 0.470,0) -- (\aaA + 0, 0.7) -- (\aaA + 0,1)--(\aaA + 1,1)--cycle;
+		\draw (\aaA + 0, 0) rectangle (\aaA + 1, 1);
+		\draw (\aaA + 0, 0) rectangle (\aaA + 1, 1);
+		\draw[dashed] (\aaA + 0.4142, 0) arc (19.5:48.5:1.5);
+		\fill [color = red, opacity=0.5] (\aaA + 0, 0) -- (\aaA + 0, 0.7)--(\aaA + 0.470,0) -- cycle;
+		\draw[->] (\aaA + 0.248, 0.333)--(\aaA + 0.398, 0.432);
+		\draw (\aaA + 0, 0.7)--(\aaA + 0.470,0);
+		\draw (\aaA+0, 0) node[above right] {$17\%$};
+		\draw (\aaA+0.4, 0.6) node[above right] {$83\%$};
+		% AnIso
+		\draw (\aaB+0, 0) rectangle (\aaB+1, 1);		
+		\draw (\aaB+0, 0) rectangle (\aaB+1, 1);		
+		\fill [color = blue, opacity=0.5] (\aaB+0, 1)--(\aaB+0,0.165) -- (\aaB+1,0.165) -- (\aaB+1,1)--cycle;
+		\fill [color = red, opacity=0.5] (\aaB+0, 0)--(\aaB+0,0.165) -- (\aaB+1,0.165) -- (\aaB+1,0)--cycle;		
+		\draw[->] (\aaB+0.45, 0.83)--(\aaB+0.3, 0.73);
+		\draw (\aaB+0.42, 0.78) node[right] {$84\%$};		
+		\draw[->] (\aaB+0.3, 0.03)--(\aaB+0.45, 0.13);
+		\draw (\aaB+0.42, 0.08) node[right] {$17\%$};
+		% Iso
+		\draw (\aaC+0, 0) rectangle (\aaC+1, 1);
+		\draw (\aaC+0, 0) rectangle (\aaC+1, 1);
+		\fill [color = blue, opacity=0.5] (\aaC+0, 1)--(\aaC+0,0.165) -- (\aaC+1,0.165) -- (\aaC+1,1)--cycle;
+		\fill [color = red, opacity=0.5] (\aaC+0, 0)--(\aaC+0,0.165) -- (\aaC+1,0.165) -- (\aaC+1,0)--cycle;
+		\draw (\aaC+0.42, 0.78) node[right] {$84\%$};
+		\draw (\aaC+0.42, 0.08) node[right] {$17\%$};
+		% Center
+		\draw (\aaD+0, 0) rectangle (\aaD+1, 1);
+		\draw (\aaD+0, 0) rectangle (\aaD+1, 1);
+		\fill [color = blue, opacity=0.5] (\aaD+0, 0) rectangle (\aaD+1, 1);		
+		\draw (\aaD+0.5, 0.5) node {$\bullet$};
+		\draw (\aaD+0.5, 0.5) node[right] {$C$};
+		
+		%
+		\draw (0.5, 1.25) node {\underline{Reference geometry}};
+		\draw (0.5 + \aaA, 1.25) node {\underline{PolyGeom}};
+		\draw (0.5 + \aaB, 1.25) node {\underline{AnIsotropic}};
+		\draw (0.5 + \aaC, 1.25) node {\underline{Isotropic}};
+		\draw (0.5 + \aaD, 1.25) node {\underline{Center}};
+	\end{tikzpicture}
+\end{document}

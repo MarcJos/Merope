@@ -6,16 +6,12 @@
 #pragma once
 
 
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-
-#include "../Grid/VoxelRule.hxx"
+#include "../SingleVoxel/SingleVoxel_Headers.hxx"
 #include "../Grid/CartesianGrid.hxx"
 #include "../Grid/PreGrid.hxx"
 #include "../MesoStructure/Structure.hxx"
-
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -28,6 +24,8 @@ class VoxGrid {
 public:
     VoxGrid(GridParameters<DIM> gridParameters_) :
         voxGrid{ make_unique<GRID_TYPE>(GRID_TYPE(gridParameters_)) } {}
+    VoxGrid(GridParameters<DIM> gridParameters_, VOXEL_TYPE vox) :
+        voxGrid{ make_unique<GRID_TYPE>(GRID_TYPE(gridParameters_, vox)) } {}
     //! destructor
     virtual ~VoxGrid() {}
     //! getter on the grid of volume fractions

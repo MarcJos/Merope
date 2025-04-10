@@ -3,11 +3,8 @@
 //! \brief
 //
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
 #include "Physics/Homogenization.hxx"
-
-#include "MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -47,7 +44,7 @@ std::function<double(const vector<double>&, const vector<double>&)> getHomogRule
     else if (hr == Rule::Voigt)        return [](const vector<double>& fracVol, const vector<double>& coeff) {return homogVoigt(fracVol, coeff);};
     else if (hr == Rule::Smallest)     return [](const vector<double>& fracVol, const vector<double>& coeff) {return homogSmall(fracVol, coeff);};
     else if (hr == Rule::Largest)      return [](const vector<double>& fracVol, const vector<double>& coeff) {return homogLarge(fracVol, coeff);};
-    else  throw invalid_argument(__PRETTY_FUNCTION__);
+    else  Merope_assert(false, "Invalid argument");
 }
 
 }  // namespace homogenization

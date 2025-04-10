@@ -5,14 +5,14 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../../../AlgoPacking/src/Interface.hxx"
-#include "../Geometry/GeomTools.hxx"
+#include "../../../Geometry/include/GeomTools.hxx"
+
+#include "../../../AlgoPacking/include/Interface.hxx"
+
 #include "../MesoStructure/InsideTorus.hxx"
 #include "../MultiInclusions/SphereSeeds.hxx"
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {

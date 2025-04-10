@@ -4,10 +4,6 @@
 //
 #pragma once
 
-#include "../MeropeNamespace.hxx"
-
-
-
 namespace merope {
 namespace vox {
 
@@ -106,8 +102,7 @@ geomTools::Intersection_LineConvex vox::auxi::auxi_convexGrid::getLimits_innerFu
     ////
     ////
     else {
-        cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("Should be programmed");
+        Merope_error_not_done();
     }
 }
 
@@ -142,10 +137,9 @@ inline bool vox::auxi::auxi_convexGrid::getLimits(const C& smallShape, const arr
     return (localLimits[0] < localLimits[1]);
 }
 
-inline void vox::auxi::auxi_convexGrid::verifySliceInstruction(vector<vox::auxi::SliceInstruction<long>> sliceInstruction) {
+bool vox::auxi::auxi_convexGrid::verifySliceInstruction(vector<vox::auxi::SliceInstruction<long>> sliceInstruction) {
     bool problem = false;
     if (sliceInstruction.size() == 0) {
-        return;
     } else {
         stable_sort(sliceInstruction.begin(), sliceInstruction.end(), [](auto& si1, auto& si2) {
             return si1.limits[0] < si2.limits[0];
@@ -164,6 +158,7 @@ inline void vox::auxi::auxi_convexGrid::verifySliceInstruction(vector<vox::auxi:
         }
         throw runtime_error("Big Problem");
     }
+    return not problem;
 }
 
 template<unsigned short DIM>
@@ -198,8 +193,6 @@ inline void auxi::ConvexGrid<DIM>::layerSlice(const C& singlePolyhedron, bool& f
 template<unsigned short DIM>
 template<VoxelRule voxelRule, class C>
 inline void auxi::ConvexGrid<DIM>::compute(const C& smallShape) {
-    static_assert(voxelRule == VoxelRule::Center or voxelRule == VoxelRule::Average or voxelRule == VoxelRule::Laminate);
-    //
     const auto& innerFaces = smallShape.getInnerInclusions();
     size_t indexMax = getAllFirstIndices().size();
     for (size_t index = 0; index < indexMax; index++) {
@@ -224,7 +217,7 @@ inline void auxi::ConvexGrid<DIM>::compute(const C& smallShape) {
                     VoxelType::Composite, smallShape.getPhaseForVoxellation(iPhase));
             }
         }
-        // vox::auxi::auxi_convexGrid::verifySliceInstruction(sliceInstructions[index]); | FOR DEBUG debug
+        assert(vox::auxi::auxi_convexGrid::verifySliceInstruction(sliceInstructions[index]));
     }
 }
 

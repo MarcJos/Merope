@@ -2,17 +2,17 @@
 //!
 //! \brief
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
 #include "Mesh/TestMesh.hxx"
 #include "Test/Tests.hxx"
-#include "../../AlgoPacking/src/Interface.hxx"
+#include "../../AlgoPacking/include/Interface.hxx"
 #include "MultiInclusions/LaguerreTess.hxx"
 #include "MultiInclusions/MultiInclusions.hxx"
 #include "MesoStructure/Structure.hxx"
 #include "Voxellation/Voxellizer.hxx"
 #include "VTKinout/VTK_adapter.hxx"
 #include "Field/CartesianField.hxx"
+
 
 using namespace merope;
 using namespace sac_de_billes;
@@ -54,7 +54,7 @@ int main() {
     array<size_t, DIM> nbNodes = { n, n, n };
 
     auto grid_parameters = vox::create_grid_parameters_N_L<DIM>(nbNodes, L);
-    auto phaseGrid = vox::voxellizer::transformStructIntoGrid<DIM, vox::VoxelRule::Center>(structure, grid_parameters);
+    auto phaseGrid = vox::voxellizer::transformStructIntoGrid<DIM>(structure, grid_parameters, vox::VoxelPolicy<vox::VoxelRule::Center, true>());
     vtk_adapter::printVTK<unsigned short>(phaseGrid, "Laguerre.vtk");
 
     //! apply texture

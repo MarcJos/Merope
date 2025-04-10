@@ -4,13 +4,7 @@
 //!
 
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
-
-
-#include "../../AlgoPacking/src/Geometry/GeomConstants.hxx"
-
-
-#include "MeropeNamespace.hxx"
+#include "../../Geometry/include/GeomConstants.hxx"
 #include "../../merope_core/include/geneOrientations.hxx"
 
 

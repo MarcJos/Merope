@@ -3,14 +3,10 @@
 //! \briefReader for a periodic discrete medium
 //! given by a VTK File (DATASET STRUCTURED_POINTS)
 //
-
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-
-
-#include "../MeropeNamespace.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
 
 namespace merope {
@@ -66,33 +62,6 @@ public:
     //! \param mt Material Id data type
     void getParamG(unsigned char& d, size_t& nx, size_t& ny, size_t& nz,
         double& lx, double& ly, double& lz, MType& mt) const;
-    //! Get the component list
-    //! \return the component list
-    const vector<Comp>& getCmps() const;
-
-    //! Read one component
-    //! \param c Component
-    //! \param tabv Table value, in BigEndian
-    void readComp(const Comp& c, vector<float>& tabv);
-    //! Read one component
-    //! \param name Component name
-    //! \param tabv Table value, in BigEndian
-    //! \return the component number
-    unsigned char readComp(const char* name, vector<float>& tabv);
-
-    //! Parse the variable list
-    //! \param strainN Strain tensor field name
-    //! \param stressN Stress tensor field name
-    void variables(const char* strainN, const char* stressN);
-protected:
-    //! CELL DATA field reading
-    //! \param p Position in the stream
-    //! \param tv Table value, in BigEndian
-    void fromCELL(const streampos p, float* tv);
-    //! Gather the components
-    //! \param strainN Strain tensor field name
-    //! \param stressN Stress tensor field name
-    void gatherL(const char* strainN, const char* stressN);
 };
 
 }  // namespace merope

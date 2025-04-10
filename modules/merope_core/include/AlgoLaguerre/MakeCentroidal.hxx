@@ -4,11 +4,14 @@
 
 #pragma once
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
-#include "../Voronoi/VoroInterface.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
+
+#include "../../../Geometry/include/AmbiantSpace.hxx"
+
 #include "../../../Optimization/include/Anderson.hxx"
 #include "../../../Optimization/include/BarzilaiBorwein.hxx"
+
+#include "../Voronoi/VoroInterface.hxx"
 
 namespace merope {
 using namespace sac_de_billes;

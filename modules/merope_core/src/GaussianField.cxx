@@ -2,13 +2,9 @@
 //!
 //! \brief
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
 #include "Field/GaussianField.hxx"
 #include "FFTW3/FFTScalarField.hxx"
-
-
-#include "MeropeNamespace.hxx"
 
 
 namespace merope {

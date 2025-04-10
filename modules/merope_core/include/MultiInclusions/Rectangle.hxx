@@ -6,12 +6,9 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
 #include "../MesoStructure/InsideTorus.hxx"
-
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {

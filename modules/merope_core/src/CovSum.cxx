@@ -3,12 +3,8 @@
 //! \brief
 //
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
 
 #include "Field/CovSum.hxx"
-
-
-#include "MeropeNamespace.hxx"
 
 
 namespace merope {

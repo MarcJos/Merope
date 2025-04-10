@@ -4,12 +4,11 @@
 //
 #pragma once
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+
+#include "../../../GenericMerope/StdHeaders.hxx"
 
 #include "../Grid/CartesianGrid.hxx"
-#include "../Grid/GridTypesBase.hxx"
-
-#include "../MeropeNamespace.hxx"
+#include "../SingleVoxel/GridTypesBase.hxx"
 
 
 namespace merope {

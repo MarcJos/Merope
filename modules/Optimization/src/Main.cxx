@@ -4,8 +4,6 @@
 
 #include "../include/Tests.hxx"
 
-using namespace std;
-
 int main() {
     optimization::tests::test1_BarzilaiBorwein();
     optimization::tests::test2_BarzilaiBorwein();

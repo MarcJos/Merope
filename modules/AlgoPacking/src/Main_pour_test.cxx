@@ -2,13 +2,14 @@
 //!
 //! \brief
 //
-#include "StdHeaders.hxx"
+#include "../../GenericMerope/StdHeaders.hxx"
+
+#include "../../Geometry/include/AmbiantSpace.hxx"
 
 #include "AlgoPacking.hxx"
 #include "For_testing.hxx"
 #include "SphereManipulator.hxx"
 #include "AlgoWP.hxx"
-#include "AmbiantSpace.hxx"
 
 using  namespace sac_de_billes;
 using namespace std;
@@ -27,7 +28,7 @@ int main() {
     algoRSA_aux_test::MultiTestBool();
     algoRSA_aux_test::volInter();
     algoRSA_aux_test::ExclusionDistance();
-    algoRSA_aux_test::TestPerf();
+    //algoRSA_aux_test::TestPerf();
     algoRSA_aux_test::GeomTests();
     return 0;
 }

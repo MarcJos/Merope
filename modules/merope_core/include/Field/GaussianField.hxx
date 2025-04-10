@@ -4,14 +4,9 @@
 //
 #pragma once
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../GenericMerope/StdHeaders.hxx"
 
-
-#include "../../../AlgoPacking/src/Geometry/GeomTypes.hxx"
-
-
-#include "../MeropeNamespace.hxx"
-
+#include "../../../Geometry/include/GeomTypes.hxx"
 
 namespace merope {
 

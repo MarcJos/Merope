@@ -4,16 +4,15 @@
 //
 #pragma once
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-#include "../MeropeNamespace.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
+#include "../../../Geometry/include/AmbiantSpace.hxx"
+#include "../../../Geometry/include/GeomTools.hxx"
 
-#include "../Geometry/GeomTools.hxx"
 #include "../Grid/CartesianGrid.hxx"
 #include "../Grid/GridTypes.hxx"
 #include "../Grid/PreGrid.hxx"
-#include "../Grid/VoxelRule.hxx"
+#include "../SingleVoxel/SingleVoxel_Headers.hxx"
 #include "../MicroInclusion/MicroInclusion.hxx"
 
 namespace merope {
@@ -140,8 +139,8 @@ template<unsigned short DIM, class Inclusion>
 geomTools::Intersection_LineConvex getLimits_innerFunction(array<double, 2>& dbLocalLimits, const Inclusion& inclusion,
         const Point<DIM - 1>& x1x2, double distance);
 
-//! fixme
-void verifySliceInstruction(vector<vox::auxi::SliceInstruction<long>>);
+//! for debugging
+bool verifySliceInstruction(vector<vox::auxi::SliceInstruction<long>>);
 }  // namespace auxi_convexGrid
 
 }  // namespace auxi

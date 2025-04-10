@@ -4,16 +4,6 @@
 //
 #pragma once
 
-#include <string>
-#include <iostream>
-#include <vector>
-#include <array>
-#include <type_traits>
-
-
-#include "../MeropeNamespace.hxx"
-
-
 namespace merope {
 
 template<class C>
@@ -78,8 +68,7 @@ void FFTScalarField::setCov(const double Lx, const double Ly, const double Lz,
                     } else if constexpr (std::is_same_v<C, std::function<double(std::array<double, 2>)>>) {
                         *vi = cs(std::array<double, 2>{hy, hz});
                     } else {
-                        cerr << __PRETTY_FUNCTION__ << endl;
-                        throw runtime_error("Unexpected");
+                        Merope_error_impossible();
                     }
                 }
                 // In place shift
@@ -134,10 +123,7 @@ void FFTScalarField::loopOnFrequencies(const FUNCTION& function, bool use_omp) {
 template<class COVARIANCE_TYPE>
 void FFTScalarField::build(const Grid* grid, const COVARIANCE_TYPE& cs,
     bool IP, int seed, unsigned flags_, bool showCovariance) {
-    if (flags_ != FFTW_ESTIMATE) {
-        cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("Unexpected");
-    }
+    Merope_assert(flags_ == FFTW_ESTIMATE, "Unexpected");
     // Variables number
     nv = 1;
     alloc(IP);

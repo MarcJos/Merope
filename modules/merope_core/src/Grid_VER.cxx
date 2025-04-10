@@ -4,12 +4,7 @@
 //!
 
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
-
 #include "Grid/Grid_VER.hxx"
-
-
-#include "MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -68,10 +63,9 @@ size_t vox::aux::symmetriseAuxi(size_t N1, size_t i, size_t N2) {
 
 void Grid_VER::removeUnusedPhase(vector<double>& coefficients) {
     if (coefficients.size() < this->phases.size()) {
-        cerr << __PRETTY_FUNCTION__ << endl;
         auxi_function::writeVectorToString(coefficients, cerr); cerr << endl;
         cerr << this->phases.size() << endl;
-        throw runtime_error("Problem");
+        Merope_assert(false, "Problem");
     }
     ///
     size_t currentPhase = 0;

@@ -18,5 +18,6 @@ add_subdirectory(pybind11)
 add_subdirectory(AlgoPacking)
 add_subdirectory(merope_core)
 add_subdirectory(Optimization)
+add_subdirectory(ctest_all)
 
 

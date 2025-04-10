@@ -5,9 +5,8 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-
-#include "../MeropeNamespace.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
+#include "../../../GenericTools/CPP_Functions.hxx"
 
 
 namespace merope {

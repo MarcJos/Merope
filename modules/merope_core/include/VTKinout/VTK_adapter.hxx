@@ -1,13 +1,12 @@
 //! Copyright : see license.txt
 //!
 //! \brief
-
 #pragma once
 
 
-#include "../MeropeNamespace.hxx"
 #include "../Grid/CartesianGrid.hxx"
 #include "VTKStream.hxx"
+
 
 namespace merope {
 namespace vtk_adapter {

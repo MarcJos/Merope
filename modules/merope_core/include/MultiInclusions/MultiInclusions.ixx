@@ -5,7 +5,8 @@
 
 #pragma once
 
-#include "../MeropeNamespace.hxx"
+
+#include "../../../GenericTools/CPP_Functions.hxx"
 
 
 namespace merope {
@@ -29,11 +30,12 @@ void MultiInclusions<DIM>::setInnerShapes(const C& inclusions) {
     for (size_t i = 0; i < inclusions.size(); i++) {
         vectorShapes[i].identifier = i;
     }
+    laguerreTess = nullptr;
 }
 
 template<unsigned short DIM>
 MultiInclusions<DIM>::MultiInclusions() :
-    InsideTorus<DIM>(), SOA_type(), matrixPresence{ false }, matrixPhase{ 0 } {
+    InsideTorus<DIM>(), SOA_type(), MatrixPhaseHolder<PhaseType>{}, laguerreTess{ nullptr }{
 }
 
 template<unsigned short DIM>
@@ -41,12 +43,13 @@ void MultiInclusions<DIM>::setInclusions(LaguerreTess<DIM> polyX) {
     this->setLength(polyX.getL());
     polyX.computeTessels();
     setInnerShapes(polyX.getMicroInclusions());
+    this->laguerreTess.reset(new LaguerreTess<DIM>(polyX));
 }
 
 template<unsigned short DIM>
 void MultiInclusions<DIM>::setInclusions(const PolyInclusions<DIM>& polyInc) {
     this->setLength(polyInc.getL());
-    this->setMatrixPhase(0);
+    this->setMatrixPhase_if_not_present(0);
     setInnerShapes(polyInc.getMicroInclusions());
 }
 
@@ -54,7 +57,7 @@ template<unsigned short DIM>
 void MultiInclusions<DIM>::setInclusions(
     const SphereInclusions<DIM>& sphereI) {
     this->setLength(sphereI.getL());
-    this->setMatrixPhase(0);
+    this->setMatrixPhase_if_not_present(0);
 
     vector<smallShape::SphereInc<DIM>> theSphereInc{};
     transform(sphereI.getSpheres().begin(), sphereI.getSpheres().end(), std::back_inserter(theSphereInc), [](const auto& sph) {
@@ -74,14 +77,14 @@ template<class ObjectInc>
 void MultiInclusions<DIM>::setInclusions(
     const vector<ObjectInc>& vectInclusions, Point<DIM> L) {
     this->setLength(L);
-    this->setMatrixPhase(0);
+    this->setMatrixPhase_if_not_present(0);
     setInnerShapes(vectInclusions);
 }
 
 template<unsigned short DIM>
 void MultiInclusions<DIM>::setInclusions(const Rectangle<DIM>& rect) {
     this->setLength(rect.getL());
-    this->setMatrixPhase(0);
+    this->setMatrixPhase_if_not_present(0);
     vector<smallShape::ConvexPolyhedronInc<DIM>> thePolyhedrons = {
             smallShape::Rectangle<DIM>(1, create_array<DIM>(0.), rect.recL) };
     setInnerShapes(thePolyhedrons);
@@ -113,6 +116,7 @@ void MultiInclusions<DIM>::addLayer(
 
 template<unsigned short DIM>
 void MultiInclusions<DIM>::enlarge(const vector<Identifier>& identifiers, const vector<double>& width) {
+    Merope_warning(not isLaguerreTess(), "Laguerre tessellation : impossible to enlarge (no space between tessels)");
     auto instructions = smallShape::auxi_layerInstructions::buildInstructionVector(identifiers, vector<PhaseType>(width.size()), width);
     apply_on_all([&instructions](auto& vectorInclusions) {
         auxi_MultiInclusions::enlarge_T(instructions, vectorInclusions);
@@ -232,13 +236,22 @@ vector<PhaseType> MultiInclusions<DIM>::getAllPhases(TEST_AND_FILL_FUNCTION test
         });
     //!
     if (insert_matrix_phase(allPhases)) {
-        allPhases.insert(matrixPhase);
+        allPhases.insert(getMatrixPhase());
     }
     vector<PhaseType> result{ };
     copy(allPhases.begin(), allPhases.end(), back_inserter(result));
     return result;
 }
 
+template<unsigned short DIM>
+const LaguerreTess<DIM>& MultiInclusions<DIM>::getLaguerreTess() const {
+    if (laguerreTess) {
+        return *laguerreTess;
+    } else {
+        std::cerr << __PRETTY_FUNCTION__ << endl;
+        throw runtime_error("No unerlying Laguerre tessellation!");
+    }
+}
 
 //!
 vector<Identifier> auxi_MultiInclusions::getAllIdentifiers(
@@ -255,8 +268,8 @@ void auxi_MultiInclusions::enlarge_T(vector<smallShape::LayerInstructions> all_i
     INCLUSIONVECTOR& inclusions) {
     using C = typename INCLUSIONVECTOR::value_type;
     auto pointerInclusions = sortInclusionAndInstructions<C>(inclusions, all_instructions);
-    auto instruction = [](C* inclusion, const smallShape::LayerInstructions& instruction) {
-        inclusion->enlarge(instruction.width);
+    auto instruction = [](C* inclusion, const smallShape::LayerInstructions& instruction_) {
+        inclusion->enlarge(instruction_.width);
         };
     applyLayerInstruction_T<C>(all_instructions, pointerInclusions, instruction);
 }

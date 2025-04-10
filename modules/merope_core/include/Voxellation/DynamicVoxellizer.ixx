@@ -1,10 +1,11 @@
 //! Copyright : see license.txt
 //!
 //! \brief
-
 #pragma once
 
+
 #include "../Grid/ConvertGrix.hxx"
+
 
 namespace merope {
 namespace vox {
@@ -27,9 +28,9 @@ const CartesianGrid<DIM, COMPOSITE_CELL>& GridRepresentation<DIM>::get() const {
 template<unsigned short DIM>
 template<class ERROR_MESSAGE_TYPE>
 void GridRepresentation<DIM>::raise_error_internal_type_message(ERROR_MESSAGE_TYPE error_message) const {
-    cerr << error_message << endl;
-    print_type(cerr); cerr << endl;
-    throw runtime_error("GridRepresentation is not in a correct state to return the deisred field");
+    cerr << error_message << endl << endl;
+    cerr << "Type is : "; print_type(cerr); cerr << endl << endl;
+    throw runtime_error("GridRepresentation is not in a correct state to return the desired field");
 }
 
 template<unsigned short DIM, class INTERNAL_FIELD, class COMPOSITE>
@@ -69,8 +70,7 @@ void GridRepresentation<DIM>::apply_homogRule(homogenization::Rule homogRule) {
         internal_field = vox::voxellizer::applyHomogRule_T<homogenization::Rule::Largest>(field_iso);
         return;
     }
-    cerr << __PRETTY_FUNCTION__ << endl;
-    throw runtime_error("Impossible");
+    Merope_error_impossible();
 }
 
 template<unsigned short DIM>
@@ -92,8 +92,7 @@ void GridRepresentation<DIM>::apply_homogRule(homogenization::Rule homogRule, ve
         internal_field = vox::voxellizer::applyHomogRule_T<homogenization::Rule::Largest>(field_iso, coefficients);
         return;
     }
-    cerr << __PRETTY_FUNCTION__ << endl;
-    throw runtime_error("Impossible");
+    Merope_error_impossible();
 }
 
 template<unsigned short DIM>
@@ -119,6 +118,8 @@ void GridRepresentation<DIM>::try_on_all(FUNCTION function) const {
     try_on_single<vox::composite::Iso<double>>(function);
     try_on_single<vox::composite::AnIso<DIM, PhaseType>>(function);
     try_on_single<vox::composite::AnIso<DIM, double>>(function);
+    try_on_single<vox::composite::PolyGeom<DIM, PhaseType>>(function);
+    try_on_single<vox::composite::PolyGeom<DIM, double>>(function);
 
     try_on_single<vox::composite::stl_format_Iso<PhaseType>>(function);
     try_on_single<vox::composite::stl_format_Iso<double>>(function);
@@ -135,11 +136,19 @@ void GridRepresentation<DIM>::try_on_all(FUNCTION function) {
     try_on_single<vox::composite::Iso<double>>(function);
     try_on_single<vox::composite::AnIso<DIM, PhaseType>>(function);
     try_on_single<vox::composite::AnIso<DIM, double>>(function);
+    try_on_single<vox::composite::PolyGeom<DIM, PhaseType>>(function);
+    try_on_single<vox::composite::PolyGeom<DIM, double>>(function);
 
     try_on_single<vox::composite::stl_format_Iso<PhaseType>>(function);
     try_on_single<vox::composite::stl_format_Iso<double>>(function);
     try_on_single<vox::composite::stl_format_AnIso<DIM, PhaseType>>(function);
     try_on_single<vox::composite::stl_format_AnIso<DIM, double>>(function);
+}
+
+template<unsigned short DIM>
+template<VoxelRule VOXEL_RULE, bool Assume_no_Intersection, class PHASE_TYPE, class STRUCTURE>
+void GridRepresentation<DIM>::construct(const STRUCTURE& structure, GridParameters<DIM> preSubGrid, VoxelPolicy<VOXEL_RULE, Assume_no_Intersection, PHASE_TYPE> voxelPolicy) {
+    internal_field = voxellizer::transformStructIntoGrid<DIM>(structure, preSubGrid, voxelPolicy);
 }
 
 template<unsigned short DIM>
@@ -186,11 +195,12 @@ void GridRepresentation<DIM>::removeUnusedPhase() {
     }
 }
 
-
 template<unsigned short DIM, class INTERNAL_FIELD, class COMPOSITE>
 void local_convert_to_stl_format(const CartesianGrid<DIM, COMPOSITE>& field,
     INTERNAL_FIELD& internal_field) {
-    if constexpr (composite::is_composite<COMPOSITE>) {
+    if constexpr (vox::composite::is_Pure<COMPOSITE>
+        or vox::composite::is_Iso<COMPOSITE>
+        or vox::composite::is_AnIso<COMPOSITE>) {
         internal_field = vox::convertGrid::convert_to_stl_format<DIM>(field);
     }
 }
@@ -203,39 +213,70 @@ void GridRepresentation<DIM>::convert_to_stl_format() {
     try_on_all(conversion);
 }
 
+template<unsigned short DIM, class COMPOSITE_OUT, class COMPOSITE_IN,
+    class COMPOSITE_FIELD, class INTERNAL_FIELD>
+void local_convert_to(const CartesianGrid<DIM, COMPOSITE_FIELD>& field,
+    INTERNAL_FIELD& internal_field) {
+    if constexpr (is_same_v<COMPOSITE_IN, COMPOSITE_FIELD>) {
+        internal_field = vox::convertGrid::convert_to<DIM, COMPOSITE_OUT, COMPOSITE_IN>(field);
+    }
+
+}
+
+template<unsigned short DIM>
+template<class COMPOSITE_OUT, class COMPOSITE_IN>
+void GridRepresentation<DIM>::convert_to() {
+    auto conversion = [this](const auto& field) {
+        local_convert_to<DIM, COMPOSITE_OUT, COMPOSITE_IN>(field, this->internal_field);
+        };
+    try_on_all(conversion);
+}
+
+template<unsigned short DIM>
+void GridRepresentation<DIM>::convert_to_Iso_format() {
+    convert_to<vox::composite::Iso<PhaseType>, vox::composite::AnIso<DIM, PhaseType>>();
+    convert_to<vox::composite::Iso<double>, vox::composite::AnIso<DIM, double>>();
+    //
+    convert_to<vox::composite::Iso<PhaseType>, vox::composite::PolyGeom<DIM, PhaseType>>();
+    convert_to<vox::composite::Iso<double>, vox::composite::PolyGeom<DIM, double>>();
+    //
+    convert_to<vox::composite::Iso<PhaseType>, vox::composite::Pure<PhaseType>>();
+    convert_to<vox::composite::Iso<double>, vox::composite::Pure<double>>();
+}
+
+template<unsigned short DIM>
+void GridRepresentation<DIM>::convert_to_AnIso_format() {
+    convert_to<vox::composite::AnIso<DIM, PhaseType>, vox::composite::PolyGeom<DIM, PhaseType>>();
+    convert_to<vox::composite::AnIso<DIM, double>, vox::composite::PolyGeom<DIM, double>>();
+}
+
 template<unsigned short DIM, class COMPOSITE>
 string name_type_of(CartesianGrid<DIM, COMPOSITE>) {
     if constexpr (is_same_v<COMPOSITE, vox::composite::Pure<PhaseType>>) {
         return "vox::composite::Pure<PhaseType>";
-    }
-    if constexpr (is_same_v<COMPOSITE, vox::composite::Pure<double>>) {
+    } else if constexpr (is_same_v<COMPOSITE, vox::composite::Pure<double>>) {
         return "vox::composite::Pure<double>";
-    }
-    if constexpr (is_same_v<COMPOSITE, vox::composite::Iso<PhaseType>>) {
+    } else if constexpr (is_same_v<COMPOSITE, vox::composite::Iso<PhaseType>>) {
         return "vox::composite::Iso<PhaseType>";
-    }
-    if constexpr (is_same_v<COMPOSITE, vox::composite::Iso<double>>) {
+    } else if constexpr (is_same_v<COMPOSITE, vox::composite::Iso<double>>) {
         return "vox::composite::Iso<double>";
-    }
-    if constexpr (is_same_v<COMPOSITE, vox::composite::AnIso<DIM, PhaseType>>) {
+    } else if constexpr (is_same_v<COMPOSITE, vox::composite::AnIso<DIM, PhaseType>>) {
         return "vox::composite::AnIso<DIM, PhaseType>";
-    }
-    if constexpr (is_same_v<COMPOSITE, vox::composite::AnIso<DIM, double>>) {
+    } else if constexpr (is_same_v<COMPOSITE, vox::composite::AnIso<DIM, double>>) {
         return "vox::composite::AnIso<DIM, double>";
-    }
-    if constexpr (is_same_v<COMPOSITE, vox::composite::stl_format_Iso<PhaseType>>) {
+    } else if constexpr (is_same_v<COMPOSITE, vox::composite::PolyGeom<DIM, PhaseType>>) {
+        return "vox::composite::PolyGeom<DIM, PhaseType>";
+    } else if constexpr (is_same_v<COMPOSITE, vox::composite::PolyGeom<DIM, double>>) {
+        return "vox::composite::PolyGeom<DIM, double>";
+    } else if constexpr (is_same_v<COMPOSITE, vox::composite::stl_format_Iso<PhaseType>>) {
         return "vox::composite::stl_format_Iso<PhaseType>";
-    }
-    if constexpr (is_same_v<COMPOSITE, vox::composite::stl_format_Iso<double>>) {
+    } else if constexpr (is_same_v<COMPOSITE, vox::composite::stl_format_Iso<double>>) {
         return "vox::composite::stl_format_Iso<double>";
-    }
-    if constexpr (is_same_v<COMPOSITE, vox::composite::stl_format_AnIso<DIM, PhaseType>>) {
+    } else if constexpr (is_same_v<COMPOSITE, vox::composite::stl_format_AnIso<DIM, PhaseType>>) {
         return "vox::composite::stl_format_AnIso<DIM, PhaseType>";
-    }
-    if constexpr (is_same_v<COMPOSITE, vox::composite::stl_format_AnIso<DIM, double>>) {
+    } else if constexpr (is_same_v<COMPOSITE, vox::composite::stl_format_AnIso<DIM, double>>) {
         return "vox::composite::stl_format_AnIso<DIM, double>";
-    }
-    throw runtime_error("Unknown type");
+    } else Merope_static_error(COMPOSITE, "Unknown type");
 }
 
 }  // namespace  voxellizer

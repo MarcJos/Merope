@@ -2,13 +2,11 @@
 //!
 //! \briefDefines a VTK stream format
 //
-
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-
-#include "../MeropeNamespace.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
+#include "../../../GenericTools/CPP_Functions.hxx"
 
 
 namespace merope {
@@ -52,7 +50,7 @@ public:
                 } else if constexpr (DIM == 2) {
                         STRUCTURED_POINTS(n[0], n[1], dx[0], dx[1]);
                 } else {
-                        cerr << __PRETTY_FUNCTION__ << endl; throw std::invalid_argument("DIM");
+                        Merope_assert(false, " invalid_argument DIM");
                 }
         }
 

@@ -5,26 +5,23 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
+#include "../../../GenericMerope/StdHeaders.hxx"
 
-#include <concepts>
+#include "../../../GenericTools/CPP_Functions.hxx"
 
-#include "../../../AlgoPacking/src/AmbiantSpace.hxx"
-#include "../Geometry/GeomTools.hxx"
+#include "../../../Geometry/include/AmbiantSpace.hxx"
+#include "../../../Geometry/include/GeomTools.hxx"
+
 #include "../MesoStructure/InsideTorus.hxx"
 #include "../MicroInclusion/MicroInclusion.hxx"
 
-#include "container.hh"
-#include "pre_container.hh"
-#include "wall.hh"
+#include "voro++.hh"
 
 //! prepare the use of voro++
 namespace voro {
 class container_poly;
 class voronoicell;
 }
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {
@@ -40,7 +37,7 @@ public:
     //! \param L : lenghts of the torus
     //! \param voropp_container : pointer to be modified, shall contain at the end the tessellation
     //! \param periodicity : periodicity in all directions
-    PreparedVoroppContainer(const vector<Sphere<3>>& centerTessels, array<double, 3> L, array<bool, 3> periodicity = { true,true,true });
+    PreparedVoroppContainer(const vector<Sphere<3>>& centerTessels, array<double, 3> L, array<bool, 3> periodicity_ = { true,true,true });
     //! @brief : destructor
     virtual ~PreparedVoroppContainer() {
         delete voropp_container;
@@ -60,6 +57,9 @@ private:
     PreparedVoroppContainer operator=(PreparedVoroppContainer) = delete;
     //! parameter for voro++
     static constexpr int VOROPP_INIT_MEM = 8;
+protected:
+    //! periodicity in each direction
+    array<bool, 3> periodicity;
 };
 
 class ListOfVoroppCells : protected InsideTorus<3>, public PreparedVoroppContainer {
@@ -92,7 +92,7 @@ public:
     //! \param L : lengths of the torus
     //! \param centerTesssels : center and weights of the tessels
     //! \param periodicity : center and weights of the tessels
-    VoroInterface(array<double, DIM> L, const vector<Sphere<DIM>>& centerTessels, array<bool, DIM> periodicity = create_array<DIM, bool>(true));
+    VoroInterface(array<double, DIM> L, const vector<Sphere<DIM>>& centerTessels, array<bool, DIM> periodicity_ = create_array<DIM, bool>(true));
     //! \returns the tessel containing the point
     //! \param pt : a point of the torus
     int findTessel(const Point<DIM>& pt);
@@ -105,6 +105,11 @@ public:
     //! write cells in custom file with format (vertex, edges, faces etc) specified in char. 
     //! See Voro++ documentation for char format syntax and options: https://math.lbl.gov/voro++/doc/custom.html
     vector<smallShape::ConvexPolyhedronInc<DIM>> getMicroInclusions();
+    //! @return a list of solids defined as an identifier + a list of face identifiers, and a list of faces given by an identifier + a halfspace
+    std::pair<std::map<Identifier, vector<Identifier>>, std::map<Identifier, HalfSpace<3>>> computeSolids();
+    //! get the cells centers
+    //! \warning : will not work in dimension d = 2
+    std::map<Identifier, Point<3>> getCellCenters();
     //! get all the cells
     //! \warning : will not work in dimension d = 2
     vector<SingleCell> getSingleCells();
@@ -153,6 +158,11 @@ public:
     vector<Identifier> neighbors;
     //! print into the stream f
     void print(std::ostream& f) const;
+    //! dilate the shape by the factor dilation
+    void linTransform(double dilation);
+    //! @brief : remove a given face
+    //! @warning : does not remove accordingly the points
+    void removeFace(size_t id_face);
 private:
     //! correct the normal so that none is (0, 0, 0)
     void correctNormals();
@@ -228,9 +238,27 @@ vector<Point<3>> compute_relative_centroids(const vector<Sphere<3>>& centerTesse
 template<class Func>
 void loop_on_voroppcontainer(voro::container_poly* voropp_container, Func my_function);
 
+namespace auxi {
+//! @return a list of solids defined as an identifier + a list of face identifiers, and a list of faces given by an identifier + a halfspace
+//! @param L : lenghts of the domain
+//! @param outputVoroPP : output from voro++
+//! @param adimensionnalMergeDistance : merge distance for identifying points
+std::pair<std::map<Identifier, vector<Identifier>>, std::map<Identifier, HalfSpace<3>>> computeSolids(Point<3> L, const vector<merope::voroInterface::SingleCell>& outputVoroPP, array<bool, 3> periodicity);
+
+//! @return the corresponding face for a given face of index id_face on a cell of identifier id_cell
+//! the corresponding face should be glued on the latter, but is the outer face of another cell
+//! @param getCell : from a cell identifier to a singleCell
+//! @param id_cell : identifier of the given cell
+//! @param id_face : index of the face
+//! @tparam Ignore_Negative_Neighbor : negative neighbor, which correspond to boundaries are ignored. If negative neighbor arise with periodic boundaries, not clear what is going on. Hence, a bug arises.
+template<bool Ignore_Negative_Neighbor>
+pair<Identifier, vector<size_t>> correspondingFaces(std::function<const merope::voroInterface::SingleCell* (Identifier)> getCell,
+    Identifier id_cell, size_t id_face);
+
+}  // namespace  auxi
+
 }  // namespace voroInterface
 }  // namespace merope
 
 
 #include "../Voronoi/VoroInterface.ixx"
-

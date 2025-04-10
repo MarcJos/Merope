@@ -2,9 +2,9 @@
 //!
 //! \brief
 
-#include "Geometry/BasicGeometricOperations.hxx"
+#include "../../Geometry/include/BasicGeometricOperations.hxx"
 
-namespace sac_de_billes {
+namespace merope {
 namespace geomTools {
 
 double determinant(const Point<2>& pt0, const Point<2>& pt1) {
@@ -12,6 +12,6 @@ double determinant(const Point<2>& pt0, const Point<2>& pt1) {
 }
 
 }  // namespace  geomTools
-}  // namespace  sac_de_billes
+}  // namespace  merope
 
 

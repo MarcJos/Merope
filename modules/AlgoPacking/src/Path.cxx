@@ -2,12 +2,12 @@
 //!
 //! \brief
 //
-#include "StdHeaders.hxx"
+
+#include "../../GenericMerope/StdHeaders.hxx"
 
 #include "Path.hxx"
 
 namespace sac_de_billes {
-using namespace std;
 
 Path::Path() :
     pathForCorners{ buildPathForCoin() },

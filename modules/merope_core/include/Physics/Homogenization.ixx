@@ -4,8 +4,6 @@
 //
 #pragma once
 
-#include "../MeropeNamespace.hxx"
-
 
 namespace merope {
 namespace homogenization {
@@ -17,7 +15,7 @@ inline double homogenization::homog(const vector<double>& fracVol,
         else if  constexpr (hr == Rule::Voigt)       return homogVoigt(fracVol, coeff);
         else if constexpr (hr == Rule::Smallest)     return homogSmall(fracVol, coeff);
         else if constexpr (hr == Rule::Largest)      return homogLarge(fracVol, coeff);
-        else  throw invalid_argument(__PRETTY_FUNCTION__);
+        else  Merope_assert(false, "Invalid Homogenization Rule");
 }
 
 }  // namespace homogenization

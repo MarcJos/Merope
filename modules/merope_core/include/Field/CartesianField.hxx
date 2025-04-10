@@ -5,17 +5,12 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/StdHeaders.hxx"
-
+#include "../../GenericMerope/StdHeaders.hxx"
 
 #include "../Field/GaussianField.hxx"
 #include "../Field/RealScalarField.hxx"
 #include "../Grid/PreGrid.hxx"
 #include "../Grid/GridTypes.hxx"
-
-
-#include "../MeropeNamespace.hxx"
-
 
 namespace merope {
 

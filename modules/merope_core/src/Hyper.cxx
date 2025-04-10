@@ -4,12 +4,7 @@
 //!
 
 
-#include "../../AlgoPacking/src/StdHeaders.hxx"
-
-#include "Geometry/Hyper.hxx"
-
-
-#include "MeropeNamespace.hxx"
+#include "../../Geometry/include/Hyper.hxx"
 
 
 namespace merope {

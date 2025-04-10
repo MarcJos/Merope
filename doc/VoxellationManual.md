@@ -13,12 +13,15 @@ The voxelation procedure aims at turning an abstract description of a structure 
 There are different ways to perform this transformation, depending on the information that is stored inside each voxel, which one one the following :
 - a `Pure` phase,
 - an `Iso`-tropic mixture of different phases,
-- an `AnIso`-tropic mixture of different phases.
+- an `AnIso`-tropic mixture of different phases,
+- a union of polyedra internal to the voxel, termed as `PolyGeom`.
+
 Finally, the aim is to put the voxelation in the TMFFT format or the [AMITEX format](http://www.maisondelasimulation.fr/projects/amitex/user_guide/_build/html/input_files.html).
 
 We explain first the principles, and then, how to appeal to the adequate Python functions.
 
 :warning: Unfortunately, a typing error lies in the code, where the incorrect ''voxellation'' is used instead of the correct ''voxelation''. For retrocompatibility reasons, we maintain the word ``voxellation'' in the code.
+
 
 # Voxelation principles and functionalities
 
@@ -36,7 +39,7 @@ This logic is not easily tractable to Python; hence, the interface differs sligh
 
 ## From a Structure/FieldStructure to a voxelation
 
-### From a Structure to a voxelation
+### Local representation of the geometry inside a voxel
 
 To compute the representation in each voxel, one `VoxelRule` is used:
 - `Center` : each voxel is of `Pure` type. That is, each voxel contains a single phase, which is identified from the geometry as the phase of the center of the voxel.
@@ -45,9 +48,45 @@ To compute the representation in each voxel, one `VoxelRule` is used:
   - Renormalization is performed so that it is guaranteed that the volume fractions sum up to 1 (with an error of order $10^{-6}$).
   - Boolean operations are performed in a coherent way w.r.t. the averaging process. Nevertheless, since they are performed on the level of the voxelations, information is lost in the process, yielding further approximations.
     - :warning: More precisely, the user has to be cautious when appealing to `VoxelRule.Average` in combination with complex microstructures. For example, the following is **not recommended** : define a new `Structure` by `Structure_3D(structure_3D_1, structure_3D_2, mask)` with `mask=structure_3D_2`. Indeed, assume that `structure_3D_1` has only phase 0, and that the `structure_3D_2` has only phases 1 and 0. Then the volume fraction of phase 1 inside a voxel will be approximated as the square of its actual value, which is not accurate for all intermediate values.
-- `Laminate` : each voxel is `AnIso` type. It represents an `Iso`-tropic mixture by storing a normal associated with each phase besides an `Iso`-tropic representation. Algorithmically, it appeals to the same functions and concepts as `Average` (hence, it suffers from the same drawbacks).
+- `Laminate` : each voxel is `AnIso` type. It represents an `AnIso`-tropic mixture by storing a normal associated with each phase besides an `Iso`-tropic representation. Algorithmically, it appeals to the same functions and concepts as `Average` (hence, it suffers from the same drawbacks).
+- `PolyGeom` : each voxel is `PolyGeom` type. It represents the inner geometry of the voxel by means polyhedra. This representation is exact if the underlying geometry is itself made of polyhedra, and approximate if it is made of smooth surface.
 
-Here, the phase is naturally an integer, and we think of `Pure(int)`, `Iso(int)` and `AnIso(int)` voxelations.
+Here, the phase is naturally an integer, and we think of `Pure(int)`, `Iso(int)` and `AnIso(int)`, `PolyGeom(int)` voxelations.
+
+The following pictures illustrate the geometrical "discretizations" for the voxelation of the boundary of a sphere :  
+<img src="/doc/Pictures/VoxelSphere.png" alt="drawing" width="800"/>  
+
+ and of a (2D) polyhedron :  
+<img src="/doc/Pictures/VoxelPoly.png" alt="drawing" width="800"/>  
+
+Note that :
+- the `Center` rule is not precise in both cases.
+- the `Iso`- and and `AnIso`-tropic representations are quite correct in the case of a single smooth interface, but generically false when facing edges/vertices. Since these do not track the inner geometry, they become false on boundaries when resorting to boolean operations (masks, etc.).
+- the `PolyGeom` yields exact representation in the second case, and a decent approximate one in the first case. Since it tracks the inner geometry, it yields precise results on boundaries even when resorting to boolean operations (masks, etc.).
+
+:snowflake: When studying complex microstructures, and striving for high-precision volumes fractions, we advice to compute first with the `PolyGeom` rule and then convert to `Iso`-tropic voxels. This **is not** the same as directly using the `Iso`-tropic voxels.
+
+### Assumptions on intersections
+
+#### Default behaviour : no intersecting objects
+By default, the Merope geometry of `MultiInclusions` is assumed to be made of non-intersecting inclusions. 
+It leads to unpredictable behavior if this assumption is not statisfied, or at least not approximately satisfied (for example, it is not a problem if some inclusions slightly penetrate each others).
+
+#### Allowing for intersections
+
+With `Center` and `PolyGeom` voxel rules, it is possible to deal with intersecting objects.
+In this case, the phase of the intersection is sequentially transformed into a novel phase, depending on the previous phase values by means of a user-defined function $f$.
+More precisely, if two objects of phase $i$ and $j$ are intersecting each other, the resulting intersection will have a phase $f(i, j)$.
+
+:warning: This process is sequential.
+In particular, if 3 objects of phases $i, j, k$ share a common part, this part can have either a phase $f(i, f(j,k)), f(f(i,j), k), f(j, f(k, i))...$.
+Be aware that the order of evaluation for $f$ is not defined.
+Be also aware that it is generally not sufficient to define $f$ only on pre-existing phases of intersecting inclusions.
+On the contrary, it should be defined for **all** pairs $(i, j)$ such that $i$ and $j$ are:
+- a pre-existing phase of the intersecting inclusions,
+- equal to $f(i', j')$ for admissible $i'$ and $j'$.
+Notice that in general, **both** $f(i,j)$ and $f(j, i)$ must be defined.
+
 
 ### From a FieldStructure to a voxelation
 
@@ -55,6 +94,7 @@ These voxelations, which are well-suited to represent discrete geometries, where
 In particular :
 - `Pure(real)` voxelations of such functions boils down to a center-valued $P_0$ discretization,
 - `Iso(real)` and `AnIso(real)` voxelations correspond to transforming phases stored `Iso(int)` / `AnIso(int)` into a real value (by allocating a coefficient depending on the phase, for example).
+- `PolyGeom(real)` is **not defined**.
 
 ## Composite field, from phase to real values
 
@@ -105,7 +145,7 @@ These are printed as real-valued and integer-valued fields, respectively, by mea
 
 ### Segmentation and format for AMITEX/TMFFT
 
-AMITEX and TMFFT only accept phase voxelations where :
+AMITEX (for basic voxels) and TMFFT only accept phase voxelations where :
 - each voxel contains an integer $n \in [0, N]$,
 - each phase $n \in [0, N]$ is present in at least one voxel (for $N$ sufficiently small).
 
@@ -114,6 +154,7 @@ Hence before using such a solver :
 - integer-valued fields should have their phases potentially changed so that they pave a integral segment $\{0, 1, 2, \dots, N\}$.
 
 Such operations are performed by Mérope by means of functions `printVTK_segmented` and `printVTK_removeUnusedPhase`, respectively.
+
 
 # Python Interface
 
@@ -128,12 +169,12 @@ Mérope implements a subgrid of voxels of centers $(n_1 * dx_1, n_2*dx_2, n_3 * 
 - `merope.vox.create_grid_parameters_N_L_3D(nbNodes, nMin, nMax, L)` : Return a subgrid `merope.vox.GridParameters_3D` of given dimensions.
 - `merope.vox.create_grid_parameters_N_L_3D(nbNodes, L) = merope.vox.create_grid_parameters_N_L_3D(nbNodes, nMin = [0, 0, 0], nMax = nbNodes, L)` : Return a subgrid `merope.vox.GridParameters_3D` of given dimensions. Notice the default parameters for the whole grid.
 
-
 ## Voxel rule
 
 - `merope.vox.VoxelRule.Center` : for building `Pure` voxels
 - `merope.vox.VoxelRule.Average` : for building `Iso`-tropic mixtures of different phases
 - `merope.vox.VoxelRule.Laminate` : for building `AnIso`-tropic mixtures of different phases
+- `merope.vox.VoxelRUle.PolyGeom` : for building `PolyGeom` mixtures of different phases, each described by means of a simple geometry, based on polyhedra inside the voxel. 
 
 ## Handle for grid of composite voxels
 
@@ -144,19 +185,26 @@ It performs inplace all the transfroms requested by the user.
   - `merope.vox.GridRepresentation_3D(structure_3D, gridParameters_3D, voxelRule)` : Constructor. Builds a composite voxel grid. Depends on:
     - parameter `structure_3D` : of type `merope.Structure_3D`, structure to be voxellized
     - parameter `gridParameters_3D` : of type `merope.vox.GridParameters_3D`, grid dimensions
-    - parameter `voxelRule` : chosen among `merope.vox.VoxelRule.Center`, `merope.vox.VoxelRule.Average`, `merope.vox.VoxelRule.Laminate`
+    - parameter `voxelRule` : chosen among `merope.vox.VoxelRule.Center`, `merope.vox.VoxelRule.Average`, `merope.vox.VoxelRule.Laminate`, 
   - `merope.vox.GridRepresentation_3D(fieldStructure_3D, gridParameters_3D, voxelRule)` : Constructor. Builds a composite voxel grid. Depends on:
     - parameter `fieldStructure_3D` : of type `merope.FieldStructure_3D`, structure to be voxellized
     - parameter `gridParameters_3D` : of type `merope.vox.GridParameters_3D`, grid dimensions
     - parameter `voxelRule` : chosen among `merope.vox.VoxelRule.Center`, `merope.vox.VoxelRule.Average`, `merope.vox.VoxelRule.Laminate`
+  - `merope.vox.GridRepresentation_3D(merope.Structure_3D, gridParameters_3D, voxelRule, mappings)`
+    - parameter `structure_3D` : of type `merope.Structure_3D`, structure to be voxellized
+    - parameter `gridParameters_3D` : of type `merope.vox.GridParameters_3D`, grid dimensions
+    - parameter `voxelRule` : chosen among `merope.vox.VoxelRule.Center`, `merope.vox.VoxelRule.PolyGeom`, PolyGeom for proper computation of subvolumes 
+    - parameter `mappings` : of type `dict`, maps intersection of couples of phases (i,j) to  another phase k  
   - `gridRepresentation_3D.apply_coefficients(coefficients)` : replace the internal field by replacing phase `n` by given `coefficients[n]`.
-    - require : internal representation should be of type `Pure(int)`, `Iso(int)`, `AnIso(int)`
+    - require : internal representation should be of type `Pure(int)`, `Iso(int)`, `AnIso(int)`, `PolyGeom(int)`
   - `gridRepresentation_3D.apply_homogRule(homogRule)` : apply on the internal field the chosen homogenization rule
     - parameter `homogRule` : chosen among `merope.HomogenizationRule.Voigt` (arithmetic average), `merope.HomogenizationRule.Reuss` (harmonic average), `merope.HomogenizationRule.Largest`, `merope.HomogenizationRule.Smallest`
     - require : internal representation should be of type `Iso(real)`
   - `gridRepresentation_3D.apply_homogRule(homogRule, coefficients)` : equivalent to successively appealing to
     - `gridRepresentation_3D.apply_coefficients(coefficients)`
     - `gridRepresentation_3D.apply_homogRule(homogRule)`
+  - `gridRepresentation_3D.convert_to_Iso_format()` : convert the internal state of the Grid to the Iso format (if applicable)
+  - `gridRepresentation_3D.convert_to_AnIso_format()` : convert the internal state of the Grid to the AnIso format (if applicable)
   - `gridRepresentation_3D.convert_to_stl_format()` : converts the internal field into the associated stl format
   - `gridRepresentation_3D.removeUnusedPhase()` : change the phase id so that all phases are inside [0, N] with each phase present at least in one voxel while preserving the phase order.
   - `gridRepresentation_3D.get_PurePhaseField()`: if internal representation is of type `Pure(int)`, return it as a Cartesian grid.

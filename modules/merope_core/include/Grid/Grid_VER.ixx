@@ -5,14 +5,12 @@
 #pragma once
 
 
-#include "../../../AlgoPacking/src/Loops.hxx"
+#include "../../../GenericTools/Loops.hxx"
+
 #include "../Grid/CartesianGrid.hxx"
 #include "../MicroInclusion/MicroInclusion.hxx"
 #include "../VTKinout/VTKRead.hxx"
 #include "../VTKinout/VTKStream.hxx"
-
-
-#include "../MeropeNamespace.hxx"
 
 
 namespace merope {

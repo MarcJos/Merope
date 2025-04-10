@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include "../MeropeNamespace.hxx"
-
 
 namespace merope {
 
@@ -83,8 +81,7 @@ inline MultiInclusions<DIM> InterfaceMultiInclusions<DIM>::buildSimple() {
         laguerreTess.setAspRatio(this->aspratio);
         multiInclusions.setInclusions(laguerreTess);
     } else {
-        cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("Undefined behavior");
+        Merope_assert(false, "Undefined behavior");
     }
     return multiInclusions;
 }
@@ -101,8 +98,7 @@ template<unsigned short DIM>
 inline void InterfaceStructure<DIM>::setErosionPhase(
     PhaseType erosionPhase_) {
     if (colorization == ColorMaterialID::Erode) {
-        cerr << "__PRETTY_FUNCTION__";
-        throw runtime_error("Impossible to set the erosionPhase for a material of type Erode. "
+        Merope_assert(false, "Impossible to set the erosionPhase for a material of type Erode. "
             "It is equal to the number of spheres + 1."
             "Consider use Erode2Mat instead");
     }
@@ -223,8 +219,7 @@ template<unsigned short DIM>
 inline PhaseType InterfaceStructure<DIM>::temporaryErosionPhase() const {
     switch (this->colorization) {
     case(ColorMaterialID::Poly):
-        cerr << __PRETTY_FUNCTION__ << endl;
-        throw runtime_error("Should not be used.");
+        Merope_assert(false, "ColorMaterialID::Poly Should not be used.");
     case(ColorMaterialID::Erode):
         return mainInclusions.getSpheres().size();
         break;
