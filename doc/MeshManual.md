@@ -67,9 +67,11 @@ More precisely, to each phase is associated :
 ## Spherical inclusions
 
 <img src="/doc/Pictures/Mesh_200spheres.png" alt="drawing" width="500"/>
+
 See [mesh_spheres_0.py](/tests/microstructures/mesh_spheres_0/mesh_spheres_0.py)
 
 ## Laguerre tessellations
 
 <img src="/doc/Pictures/Mesh_Polyhedron.png" alt="drawing" width="500"/>
+
 See [mesh_poly_0.py](/tests/microstructures/mesh_poly_0/mesh_poly_0.py)
