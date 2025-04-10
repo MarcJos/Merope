@@ -51,13 +51,13 @@ Using these methods is not advised; the user should rather appeal to `py4amitex`
 
 ## Launching AMITEX through a python interface
 
-See [amitex_wrapper.py](tools/python/interface_amitex_fftp/amitex_wrapper.py).
+See [amitex_wrapper.py](/tools/python/interface_amitex_fftp/amitex_wrapper.py).
 
 - `computeThermalCoeff("Zone.vtk",number_of_processor)` : compute the homogenized thermal coefficient related to the voxellatin `Zone.vtk`, (with implicit coefficients given by `Coeffs.txt` in the folder).
 
 ## Post-processing AMITEX results
 
-See [post_processing.py](tools/python/interface_amitex_fftp/post_processing.py).
+See [post_processing.py](/tools/python/interface_amitex_fftp/post_processing.py).
 
 - `readThermalFluxGrad(nameFile)` : get the thermal flux, and the thermal gradient from the file `nameFile` (typically `output.std`) produced by `AMITEX-FFTP`
 - `printThermalCoeff(nameFolder)` : the folder is assumed to contain 3 subfolders names `result_1`, `result_2`, `result_3` (created by `amitex_fftp.Lancement_AMITEX.computeThermalCoeff("Zone.vtk",number_of_processor)`), and each of them should contain a file `output.std`. Then, the function `printThermalCoeff` prints and return the matrix of the thermal conductivity.
