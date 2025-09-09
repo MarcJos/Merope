@@ -20,4 +20,10 @@ add_subdirectory(merope_core)
 add_subdirectory(Optimization)
 add_subdirectory(ctest_all)
 
+install(DIRECTORY GenericMerope DESTINATION .)
+install(DIRECTORY GenericTools DESTINATION .)
+install(DIRECTORY Geometry DESTINATION .)
+install(DIRECTORY Optimization DESTINATION .)
+install(DIRECTORY voro-plus-plus DESTINATION .)
+
 
