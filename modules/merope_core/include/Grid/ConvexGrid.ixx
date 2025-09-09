@@ -137,7 +137,7 @@ inline bool vox::auxi::auxi_convexGrid::getLimits(const C& smallShape, const arr
     return (localLimits[0] < localLimits[1]);
 }
 
-bool vox::auxi::auxi_convexGrid::verifySliceInstruction(vector<vox::auxi::SliceInstruction<long>> sliceInstruction) {
+inline bool vox::auxi::auxi_convexGrid::verifySliceInstruction(vector<vox::auxi::SliceInstruction<long>> sliceInstruction) {
     bool problem = false;
     if (sliceInstruction.size() == 0) {
     } else {

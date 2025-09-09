@@ -39,7 +39,7 @@ See [overlapping_coated_inclusions.py](/tests/microstructures/coated_inclusions/
 
 <img src="/doc/Pictures/Voxels_composites.png" alt="drawing" width="500"/>
 
-See [Inclusions_Voxellisation.py](/tests/microstructures/inclusions/Inclusions_Voxellisation.py).
+See [Inclusions_Voxellisation.py](/tests/microstructures/inclusions/inclusions.py).
 
 ### Inclusions with layers
 

@@ -5,7 +5,7 @@
 #pragma once
 
 
-#include "../../GenericMerope/StdHeaders.hxx"
+#include "../GenericMerope/StdHeaders.hxx"
 
 namespace merope {
 namespace cppFunctions {
