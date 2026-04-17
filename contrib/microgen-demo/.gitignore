@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+htmlcov/
+.coverage
+.mypy_cache/
+.ruff_cache/
+*.vtk
+*.microgen
+merope_*.py
+combs_*.py
